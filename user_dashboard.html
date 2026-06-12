@@ -109,7 +109,7 @@
                     </p>
                 </header>
 
-                <!-- <section class="stats">
+                <section class="stats">
                     <div class="stat-card stat-card--points">
                         <span class="stat-card__label">Points Earned:</span>
                         <div class="stat-card__amount">
@@ -143,8 +143,14 @@
                 <section class="notes-grid">
                     <article class="note-card">
                         <div class="note-card__thumb">
-                            <div style="width:100%; height:100%; background: linear-gradient(45deg, #a78bfa, #7c3aed); opacity: 0.6;"></div>
+                            <img src="img/mynotes1.png" alt="CSC660 Cover" style="width: 100%; height: 100%; object-fit: cover;">
+                            
                             <button class="note-card__menu">⋮</button>
+                            
+                            <div class="note-card__dropdown">
+                                <button class="dropdown-item btn-edit">Edit</button>
+                                <button class="dropdown-item btn-delete">Delete</button>
+                            </div>
                         </div>
                         <div class="note-card__body">
                             <div class="note-card__tags">
@@ -162,8 +168,14 @@
 
                     <article class="note-card">
                         <div class="note-card__thumb">
-                            <div style="width:100%; height:100%; background: linear-gradient(45deg, #60a5fa, #3b82f6); opacity: 0.6;"></div>
+                            <img src="img/mynotes2.png" alt="CSC577 Cover" style="width: 100%; height: 100%; object-fit: cover;">
+                            
                             <button class="note-card__menu">⋮</button>
+                            
+                            <div class="note-card__dropdown">
+                                <button class="dropdown-item btn-edit">Edit</button>
+                                <button class="dropdown-item btn-delete">Delete</button>
+                            </div>
                         </div>
                         <div class="note-card__body">
                             <div class="note-card__tags">
@@ -190,7 +202,7 @@
                         <span class="note-card--upload__title">New Upload</span>
                         <p class="note-card--upload__sub">Upload and share your notes with your friends.</p>
                     </div>
-                </section> -->
+                </section>
 
             </div>
         </main>
@@ -198,14 +210,39 @@
 
     <script>
     const sidebarItems = document.querySelectorAll('.sidebar__item');
-
     sidebarItems.forEach(item => {
         item.addEventListener('click', function (e) {
             sidebarItems.forEach(i => i.classList.remove('active'));
             this.classList.add('active');
         });
     });
-</script>
+
+    // menu dropdown for delete or edit note
+    const menuButtons = document.querySelectorAll('.note-card__menu');
+
+    menuButtons.forEach(button => {
+        button.addEventListener('click', function (event) {
+            event.stopPropagation();
+            
+            const parentThumb = this.parentElement;
+            const currentDropdown = parentThumb.querySelector('.note-card__dropdown');
+            
+            document.querySelectorAll('.note-card__dropdown').forEach(dropdown => {
+                if (dropdown !== currentDropdown) {
+                    dropdown.classList.remove('show');
+                }
+            });
+            
+            currentDropdown.classList.toggle('show');
+        });
+    });
+
+    window.addEventListener('click', function () {
+        document.querySelectorAll('.note-card__dropdown').forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
+    });
+    </script>
 
 </body>
 </html>
