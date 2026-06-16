@@ -1,4 +1,3 @@
-
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -405,6 +404,14 @@ a {
     border-bottom-color: #6D3BD7;
 }
 
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
 /* my notes */
 .notes-grid {
     display: grid;
@@ -506,7 +513,7 @@ a {
     flex-shrink: 0;
 }
 
-/* dropdown dor edit note or delete */
+/* dropdown for edit note or delete */
 .note-card__menu {
     position: absolute;
     top: 10px;
@@ -577,6 +584,11 @@ a {
     background: #fff0f0;
 }
 
+/* remove bookmark */
+.dropdown-item.btn-unbookmark {
+    color: #6D3BD7;
+}
+
 .note-card--upload {
     display: flex;
     flex-direction: column;
@@ -630,6 +642,15 @@ a {
     line-height: 1.4;
 }
 
+@keyframes sectionPulse {
+    0%   { background: transparent; }
+    30%  { background: #f3effe; border-radius: 12px; }
+    100% { background: transparent; }
+}
+
+.section-highlight {
+    animation: sectionPulse 1s ease-out;
+}
 
 @media (min-width: 501px) {
     .stat-card--uploads {
