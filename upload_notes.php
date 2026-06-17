@@ -1,8 +1,7 @@
-
 <?php
+
 // ====================================================================
 // 1. DATABASE CONNECTION
-//    Replace these with your actual database details.
 // ====================================================================
 $db_host = "localhost";
 $db_user = "root";
@@ -16,20 +15,42 @@ if ($conn->connect_error) {
 }
 
 // ====================================================================
-// 2. CHECK LOGGED-IN STUDENT
-//    Notes.studentID is required (foreign key to Student).
-//    Until you have a login page, this falls back to studentID = 1
-//    so you can test the upload form. Replace this once login exists:
-//
-//        session_start();
-//        if (!isset($_SESSION['studentID'])) {
-//            header("Location: login.php");
-//            exit;
-//        }
-//        $studentID = $_SESSION['studentID'];
+// 2. CHECK LOGGED-IN STUDENT (Bulletproof Validation)
 // ====================================================================
 session_start();
-$studentID = $_SESSION['studentID'] ?? 1; // TEMPORARY fallback for testing
+
+// 1. Grab whatever ID is currently active (Session or test fallback)
+$targetID = isset($_SESSION['studentID']) ? (int)$_SESSION['studentID'] : 1;
+
+// 2. Check if that exact ID actually exists in your student table right now
+$checkUser = $conn->query("SELECT studentID FROM student WHERE studentID = " . $targetID);
+
+if ($checkUser && $checkUser->num_rows > 0) {
+    // Perfect! The ID exists in the database. Use it.
+    $studentID = $targetID;
+} else {
+    // The ID does NOT exist (like ID 2). Force fallback to a known working account!
+    // We will check if your Test Student (ID 1) exists.
+    $checkFallback = $conn->query("SELECT studentID FROM student WHERE studentID = 1");
+    
+    if ($checkFallback && $checkFallback->num_rows > 0) {
+        $studentID = 1;
+    } else {
+        // Ultimate backup: find ANY student record available to prevent crashing
+        $anyUser = $conn->query("SELECT studentID FROM student LIMIT 1");
+        if ($anyUser && $anyUser->num_rows > 0) {
+            $row = $anyUser->fetch_assoc();
+            $studentID = (int)$row['studentID'];
+        } else {
+            // If the table is completely clean/empty, insert ID 1 on the fly
+            $conn->query("INSERT IGNORE INTO student (studentID, studentName, studentEmail, studentPassword, programme, semester) 
+                          VALUES (1, 'Test Student', 'test@test.com', '123', 'Computer Science', 1)");
+            $studentID = 1;
+        }
+    }
+}
+
+// Clear out that debug line below once this works!
 
 // ====================================================================
 // 3. HANDLE FORM SUBMISSION
@@ -41,8 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ---- Get text fields from the form ----
     $title       = trim($_POST['notestitle']);
     $description = trim($_POST['description']);
-    $pricing     = ucfirst($_POST['pricing']);           // "free" or "paid" -> stored as noteType
-    $subjectID   = (int) $_POST['subjectid'];   // comes from Subject table
+    $pricing     = strtolower(trim($_POST['pricing'])); 
+    $subjectID   = (int) $_POST['subjectid'];           
     $price       = ($pricing === 'paid') ? (float) $_POST['price'] : 0.00;
 
     // ---- Basic validation ----
@@ -77,7 +98,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = "File upload error (code " . $file['error'] . ").";
         } else {
 
-            // Allowed file types
             $allowedExt = ['pdf', 'doc', 'docx', 'ppt', 'pptx', 'jpg', 'png'];
             $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 
@@ -85,44 +105,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $errors[] = "File type not allowed. Allowed types: " . implode(', ', $allowedExt);
             } else {
 
-                // Folder where files will be stored (must exist & be writable)
                 $uploadDir = __DIR__ . '/uploads/';
 
                 if (!is_dir($uploadDir)) {
                     mkdir($uploadDir, 0755, true);
                 }
 
-                // Create a unique filename so files don't overwrite each other
                 $safeName = uniqid('note_', true) . '.' . $ext;
                 $destination = $uploadDir . $safeName;
-                $relativePath = 'uploads/' . $safeName; // stored in DB as filePath
+                $relativePath = 'uploads/' . $safeName; 
 
                 if (move_uploaded_file($file['tmp_name'], $destination)) {
 
                     // ---- Save details to the database ----
                     $stmt = $conn->prepare(
-                        "INSERT INTO Notes (title, description, filePath, noteType, price, studentID, subjectID)
+                        "INSERT INTO notes (title, description, filePath, noteType, price, studentID, subjectID)
                          VALUES (?, ?, ?, ?, ?, ?, ?)"
                     );
 
-                    $stmt->bind_param(
-                        "ssssdii",
-                        $title,
-                        $description,
-                        $relativePath,
-                        $pricing,
-                        $price,
-                        $studentID,
-                        $subjectID
-                    );
-
-                    if ($stmt->execute()) {
-                        $message = "Note uploaded successfully!";
+                    if ($stmt === false) {
+                        $errors[] = "Prepare statement failed: " . $conn->error;
                     } else {
-                        $message = "Database error: " . $stmt->error;
-                    }
+                        // Forcing $studentID explicitly to integer type ('i')
+                        $stmt->bind_param(
+                            "ssssdii",
+                            $title,
+                            $description,
+                            $relativePath,
+                            $pricing,
+                            $price,
+                            $studentID,
+                            $subjectID
+                        );
 
-                    $stmt->close();
+                        // !!! ADD THIS TEMPORARY DEBUG LINE !!!
+echo "DEBUG: Trying to insert note with studentID = (" . var_export($studentID, true) . ")"; 
+
+if ($stmt->execute()) {
+    header("Location: notes.php");
+    exit;
+} else {
+
+                            $message = "Database error: " . $stmt->error;
+                        }
+                        $stmt->close();
+                    }
 
                 } else {
                     $errors[] = "Failed to move uploaded file. Check folder permissions.";
@@ -137,10 +164,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // ====================================================================
-// 4. LOAD SUBJECTS FOR THE DROPDOWN
+// 4. LOAD SUBJECTS FOR THE DROPDOWN (Fixed uppercase 'Subject' bug)
 // ====================================================================
 $subjects = [];
-$result = $conn->query("SELECT subjectID, subjectCode, subjectName FROM Subject ORDER BY subjectCode");
+$result = $conn->query("SELECT subjectID, subjectCode, subjectName FROM subject ORDER BY subjectCode");
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $subjects[] = $row;
@@ -151,14 +178,256 @@ $conn->close();
 
 include_once("sidebar.php");
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Notes</title>
+    <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'>
+    <link rel='stylesheet' href="sidebar.css">
+    <style>
+        /* ── Sidebar shift ─────────────────────────────── */
+        .sidebar:hover ~ .main {
+            margin-left: 220px;
+        }
 
-<title>Upload Notes</title>
+        .main {
+            font-family: 'Inter', sans-serif;
+            margin-top: 0;
+        }
 
-<link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'>
-<link rel='stylesheet' href="sidebar.css">
-<link rel='stylesheet' href="upload_notes.css">
+        /* ── Upload container ──────────────────────────── */
+        .upload-container {
+            max-width: 850px;
+            margin: auto;
+            padding: 48px 40px;
+        }
+
+        .upload-container h1 {
+            font-size: 36px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 36px;
+            color: #1a1a1a;
+        }
+
+        /* ── Labels ────────────────────────────────────── */
+        .upload-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        /* ── Inputs, textarea, select ──────────────────── */
+        .upload-container input[type="text"],
+        .upload-container input[type="number"],
+        .upload-container textarea,
+        .upload-container select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1.5px solid #e0ddd6;
+            border-radius: 10px;
+            margin-bottom: 24px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            color: #1a1a1a;
+            background: #ffffff;
+            transition: border-color 0.15s;
+            outline: none;
+        }
+
+        .upload-container input[type="text"]:focus,
+        .upload-container input[type="number"]:focus,
+        .upload-container textarea:focus,
+        .upload-container select:focus {
+            border-color: #6D3BD7;
+        }
+
+        .upload-container textarea {
+            resize: vertical;
+            min-height: 110px;
+        }
+
+        /* ── Upload box ────────────────────────────────── */
+        .upload-box {
+            border: 2px dashed #c4b5fd;
+            background: #fdfbff;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 28px;
+            transition: border-color 0.15s, background 0.15s;
+        }
+
+        .upload-box:hover {
+            border-color: #6D3BD7;
+            background: #f5f0ff;
+        }
+
+        .upload-box label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #6D3BD7;
+            text-transform: none;
+            letter-spacing: 0;
+            margin-bottom: 12px;
+        }
+
+        .upload-box input[type="file"] {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #6b6860;
+        }
+
+        /* ── Submit button ─────────────────────────────── */
+        .btn-wrapper {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        input[type="submit"] {
+            background: #6D3BD7;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 64px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        input[type="submit"]:hover {
+            background: #5a2cc2;
+        }
+
+        /* ── Monetization Cards ────────────────────────── */
+        .monetization-container {
+            margin: 24px 0 32px 0;
+        }
+
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .card-group {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .upload-container .monetization-card {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: flex-start !important;
+            border: 1.5px solid #e0ddd6; 
+            border-radius: 12px;
+            padding: 20px;
+            min-width: 280px;
+            flex: 1;
+            cursor: pointer;
+            transition: border-color 0.15s, background-color 0.15s;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            text-transform: none !important;
+            margin-bottom: 0px !important;
+        }
+
+        .monetization-card:hover {
+            border-color: #c4b5fd;
+            background-color: #fdfbff;
+        }
+
+        .monetization-card:has(input[type="radio"]:checked) {
+            border-color: #6D3BD7 !important; 
+            background-color: #f5f0ff;
+        }
+
+        .monetization-card input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .custom-radio {
+            position: relative;
+            display: inline-block !important;
+            min-width: 20px;
+            max-width: 20px;
+            height: 20px;
+            border: 2px solid #c4b5fd;
+            border-radius: 50%;
+            margin-right: 14px;
+            margin-top: 2px;
+            background: #fff;
+            box-sizing: border-box;
+        }
+
+        .monetization-card input[type="radio"]:checked + .custom-radio {
+            border-color: #6D3BD7;
+        }
+
+        .monetization-card input[type="radio"]:checked + .custom-radio::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #6D3BD7;
+        }
+
+        .card-content {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+
+        .card-heading {
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+            text-transform: none !important; 
+            letter-spacing: 0 !important;
+            display: block !important;
+        }
+
+        .card-subtext {
+            font-size: 13px !important;
+            font-weight: 400 !important;
+            color: #6b6860;
+            line-height: 1.4;
+            text-transform: none !important;
+            letter-spacing: 0 !important;
+            display: block !important;
+        }
+
+        /* ── Responsive ────────────────────────────────── */
+        @media (max-width: 640px) {
+            .card-group {
+                flex-direction: column !important;
+            }
+            .upload-container {
+                padding: 24px 20px;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
 <div class="main">
@@ -166,50 +435,56 @@ include_once("sidebar.php");
     <h1>Upload Details</h1>
 
     <?php if (!empty($message)): ?>
-        <div class="form-message">
+        <div class="form-message" style="color: #dc2626; margin-bottom: 20px; font-weight: 500;">
             <?= $message ?>
         </div>
     <?php endif; ?>
 
     <form action="" method="POST" enctype="multipart/form-data">
 
-        <!-- FILE -->
         <div class="upload-box">
             <label>Upload File</label><br>
             <input type="file" name="fileUpload" required>
         </div>
 
-        <!-- TITLE -->
         <div class="form-group">
             <label>NOTE TITLE</label>
             <input type="text" name="notestitle" required
                    value="<?= isset($_POST['notestitle']) ? htmlspecialchars($_POST['notestitle']) : '' ?>">
         </div>
 
-        <!-- DESCRIPTION -->
         <div class="form-group">
             <label>DESCRIPTION</label>
             <textarea name="description" required><?= isset($_POST['description']) ? htmlspecialchars($_POST['description']) : '' ?></textarea>
         </div>
 
-        <!-- MONETIZATION -->
-        <label>MONETIZATION</label><br>
+        <div class="monetization-container">
+            <div class="section-title">MONETIZATION</div>
+            <div class="card-group">
+                <label class="monetization-card">
+                    <input type="radio" name="pricing" value="free"
+                    <?= (!isset($_POST['pricing']) || $_POST['pricing'] === 'free') ? 'checked' : '' ?>
+                    onchange="togglePrice(this)">
+                    <span class="custom-radio"></span>
+                    <div class="card-content">
+                        <span class="card-heading">Free</span>
+                        <span class="card-subtext">Help fellow students by sharing for free</span>
+                    </div>
+                </label>
 
-        <label>
-            <input type="radio" name="pricing" value="free"
-                   <?= (!isset($_POST['pricing']) || $_POST['pricing'] === 'free') ? 'checked' : '' ?>
-                   onchange="togglePrice(this)"> Free
-        </label>
+                <label class="monetization-card">
+                    <input type="radio" name="pricing" value="paid"
+                           <?= (isset($_POST['pricing']) && $_POST['pricing'] === 'paid') ? 'checked' : '' ?>
+                           onchange="togglePrice(this)">
+                    <span class="custom-radio"></span>
+                    <div class="card-content">
+                        <span class="card-heading">Paid</span>
+                        <span class="card-subtext">Set a price and earn from your hard work</span>
+                    </div>
+                </label>
+            </div>
+        </div>
 
-        <label>
-            <input type="radio" name="pricing" value="paid"
-                   <?= (isset($_POST['pricing']) && $_POST['pricing'] === 'paid') ? 'checked' : '' ?>
-                   onchange="togglePrice(this)"> Paid
-        </label>
-
-        <br><br>
-
-        <!-- SUBJECT -->
         <label>SUBJECT CODE</label>
         <select name="subjectid" required>
             <option value="">-- Select Subject --</option>
@@ -223,16 +498,12 @@ include_once("sidebar.php");
 
         <br><br>
 
-        <!-- PRICE (hidden unless "Paid" is selected) -->
         <div id="priceField" style="display: <?= (isset($_POST['pricing']) && $_POST['pricing'] === 'paid') ? 'block' : 'none' ?>;">
             <label>PRICE</label>
             <input type="number" name="price" step="0.01" placeholder="RM 0.00"
                    value="<?= isset($_POST['price']) ? htmlspecialchars($_POST['price']) : '' ?>">
         </div>
 
-        <br>
-
-        <!-- SUBMIT -->
         <div class="btn-wrapper">
             <input type="submit" value="Upload Notes">
         </div>

@@ -21,7 +21,6 @@ $studentID = $_SESSION['studentID'] ?? 1;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_noteID'])) {
     $deleteID = (int) $_POST['delete_noteID'];
 
-    // Fetch file path first so we can delete the file from disk
     $stmt = $conn->prepare("SELECT filePath FROM Notes WHERE noteID = ? AND studentID = ?");
     $stmt->bind_param("ii", $deleteID, $studentID);
     $stmt->execute();
@@ -38,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_noteID'])) {
              ->execute_query([$deleteID, $studentID]);
     }
 
-    header("Location: my_notes.php");
+    header("Location: notes.php"); 
     exit;
 }
 
@@ -48,8 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_noteID'])) {
 $notes = [];
 $stmt = $conn->prepare(
     "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType,
-            n.price, n.uploadDate, s.subjectCode,
-            CONCAT('Semester ', n.semester) AS semesterLabel
+            n.price, n.uploadDate, s.subjectCode
      FROM Notes n
      JOIN Subject s ON n.subjectID = s.subjectID
      WHERE n.studentID = ?
@@ -64,17 +62,14 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 $conn->close();
 
-// ====================================================================
-// HELPER – pick a gradient cover colour per subject code
-// ====================================================================
 function subjectGradient(string $code): string {
     $palettes = [
-        ['#a78bfa','#7c3aed'],  // violet
-        ['#60a5fa','#2563eb'],  // blue
-        ['#34d399','#059669'],  // emerald
-        ['#f472b6','#db2777'],  // pink
-        ['#fb923c','#ea580c'],  // orange
-        ['#818cf8','#4f46e5'],  // indigo
+        ['#a78bfa','#7c3aed'], 
+        ['#60a5fa','#2563eb'],  
+        ['#34d399','#059669'],  
+        ['#f472b6','#db2777'],  
+        ['#fb923c','#ea580c'],  
+        ['#818cf8','#4f46e5'],  
     ];
     $idx = crc32($code) % count($palettes);
     [$a, $b] = $palettes[abs($idx)];
@@ -87,11 +82,11 @@ include_once("sidebar.php");
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Notes – UiTMNoteLink</title>
     <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="sidebar.css">
     <style>
-        /* ── Reset & base ───────────────────────────── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
@@ -100,14 +95,18 @@ include_once("sidebar.php");
             color: #1e1b4b;
         }
 
-        /* ── Main content area (sits beside sidebar) ── */
+        /* ── FIXED OVERLAP: Dynamic padding calculation preventing side navbar intersection ── */
         .main {
-            margin-left: 280px;          /* match your sidebar width */
             padding: 36px 40px;
             min-height: 100vh;
+            display: block;
+            position: relative;
+            z-index: 1;
+            /* Adjusts if your sidebar size varies dynamically */
+            margin-left: var(--sidebar-width, 260px); 
+            transition: margin-left 0.3s ease;
         }
 
-        /* ── Tab bar ────────────────────────────────── */
         .tabs {
             display: flex;
             gap: 28px;
@@ -130,14 +129,14 @@ include_once("sidebar.php");
             font-weight: 600;
         }
 
-        /* ── Card grid ──────────────────────────────── */
+        /* ── RESPONSIVE GRID CONFIGURATION ── */
         .notes-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-            gap: 22px;
+            /* Default large screen: exactly 3 columns per row */
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
         }
 
-        /* ── Individual card ────────────────────────── */
         .note-card {
             background: #fff;
             border-radius: 14px;
@@ -145,13 +144,14 @@ include_once("sidebar.php");
             box-shadow: 0 1px 4px rgba(109,40,217,.08);
             transition: box-shadow .2s, transform .2s;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
         .note-card:hover {
             box-shadow: 0 6px 20px rgba(109,40,217,.14);
             transform: translateY(-2px);
         }
 
-        /* Cover image / gradient */
         .card-cover {
             height: 150px;
             position: relative;
@@ -174,7 +174,6 @@ include_once("sidebar.php");
             text-shadow: 0 1px 4px rgba(0,0,0,.3);
         }
 
-        /* Three-dot menu */
         .card-menu-btn {
             position: absolute;
             top: 10px;
@@ -190,7 +189,7 @@ include_once("sidebar.php");
             justify-content: center;
             color: #fff;
             font-size: 18px;
-            line-height: 1;
+            line-index: 1;
             z-index: 2;
         }
         .card-menu-btn:hover { background: rgba(255,255,255,.4); }
@@ -226,8 +225,12 @@ include_once("sidebar.php");
         .card-dropdown button:hover { background: #f3f4f6; }
         .card-dropdown .delete-btn { color: #dc2626; }
 
-        /* Card body */
-        .card-body { padding: 14px 16px 16px; }
+        .card-body { 
+            padding: 14px 16px 16px; 
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
 
         .card-tags {
             display: flex;
@@ -253,7 +256,7 @@ include_once("sidebar.php");
         .card-desc {
             font-size: 12px;
             color: #6b7280;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -264,10 +267,9 @@ include_once("sidebar.php");
             display: flex;
             align-items: center;
             gap: 5px;
+            margin-top: auto; 
         }
-        .card-date svg { flex-shrink: 0; }
 
-        /* ── "New Upload" dashed card ───────────────── */
         .new-upload-card {
             border: 2px dashed #c4b5fd;
             border-radius: 14px;
@@ -307,59 +309,59 @@ include_once("sidebar.php");
             color: #9ca3af;
         }
 
-        /* ── Empty state ────────────────────────────── */
         .empty-state {
             grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
             color: #9ca3af;
         }
-        .empty-state svg { margin-bottom: 14px; }
-        .empty-state p { font-size: 14px; }
+
+        /* ── MEDIA RESPONSIVENESS BREAKPOINTS ── */
+        @media (max-width: 1100px) {
+            .notes-grid {
+                grid-template-columns: repeat(2, 1fr); /* Drops to two columns on small desktop scales */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                margin-left: 70px; /* Reduces side-nav padding block when minimized to prevent overlaps */
+                padding: 20px;
+            }
+            .notes-grid {
+                grid-template-columns: 1fr; /* Drops into exactly 1 item per row column */
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="main">
-
-    <!-- Tabs -->
     <div class="tabs">
-        <a href="my_notes.php" class="tab active">My Notes</a>
+        <a href="notes.php" class="tab active">My Notes</a>
         <a href="bookmarks.php" class="tab">Bookmarks</a>
     </div>
 
-    <!-- Grid -->
     <div class="notes-grid">
-
         <?php if (empty($notes)): ?>
             <div class="empty-state">
-                <svg width="48" height="48" fill="none" stroke="#c4b5fd" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path d="M9 12h6m-3-3v6M4 6h16M4 10h4M4 14h4M4 18h4"/>
-                </svg>
                 <p>No notes yet. Upload your first one!</p>
             </div>
         <?php else: ?>
             <?php foreach ($notes as $note): ?>
                 <?php
-                    // Determine cover: use file thumbnail for images, gradient otherwise
                     $ext = strtolower(pathinfo($note['filePath'], PATHINFO_EXTENSION));
                     $isImage = in_array($ext, ['jpg','jpeg','png','gif','webp']);
                     $dateFormatted = date('M j, Y', strtotime($note['uploadDate']));
-                    // semester label fallback
-                    $semLabel = $note['semesterLabel'] ?? '';
                 ?>
                 <div class="note-card">
-
-                    <!-- Cover -->
                     <div class="card-cover" <?= $isImage ? '' : 'style="' . subjectGradient($note['subjectCode']) . '"' ?>>
                         <?php if ($isImage): ?>
-                            <img src="<?= htmlspecialchars($note['filePath']) ?>"
-                                 alt="<?= htmlspecialchars($note['title']) ?>">
+                            <img src="<?= htmlspecialchars($note['filePath']) ?>" alt="<?= htmlspecialchars($note['title']) ?>">
                         <?php else: ?>
                             <span class="cover-label"><?= htmlspecialchars($note['subjectCode']) ?></span>
                         <?php endif; ?>
 
-                        <!-- Three-dot menu -->
                         <button class="card-menu-btn" onclick="toggleMenu(event, <?= $note['noteID'] ?>)">⋮</button>
                         <div class="card-dropdown" id="menu-<?= $note['noteID'] ?>">
                             <a href="<?= htmlspecialchars($note['filePath']) ?>" target="_blank">View / Download</a>
@@ -371,34 +373,29 @@ include_once("sidebar.php");
                         </div>
                     </div>
 
-                    <!-- Body -->
                     <div class="card-body">
                         <div class="card-tags">
                             <span class="tag"><?= htmlspecialchars($note['subjectCode']) ?></span>
-                            <?php if ($semLabel): ?>
-                                <span class="tag"><?= htmlspecialchars($semLabel) ?></span>
-                            <?php endif; ?>
-                            <?php if ($note['noteType'] === 'paid'): ?>
-                                <span class="tag" style="background:#fef3c7;color:#d97706;">
-                                    RM <?= number_format($note['price'], 2) ?>
-                                </span>
+                            <?php if (strtolower($note['noteType']) === 'paid'): ?>
+                                <span class="tag" style="background: #fee2e2; color: #ef4444;">PREMIUM</span>
+                                <span class="tag" style="background: #fef3c7; color: #d97706;">RM <?= number_format($note['price'], 2) ?></span>
+                            <?php else: ?>
+                                <span class="tag" style="background: #d1fae5; color: #10b981;">FREE</span>
                             <?php endif; ?>
                         </div>
                         <div class="card-title"><?= htmlspecialchars($note['title']) ?></div>
                         <div class="card-desc"><?= htmlspecialchars($note['description']) ?></div>
                         <div class="card-date">
-                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-right: 5px;">
                                 <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
                             </svg>
                             <?= $dateFormatted ?>
                         </div>
                     </div>
-
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
 
-        <!-- New Upload card (always last) -->
         <a href="upload_notes.php" class="new-upload-card">
             <div class="upload-icon">
                 <svg width="26" height="26" fill="none" stroke="#7c3aed" stroke-width="2" viewBox="0 0 24 24">
@@ -408,12 +405,10 @@ include_once("sidebar.php");
             <h3>New Upload</h3>
             <p>Upload and share your notes with your friends.</p>
         </a>
-
     </div>
 </div>
 
 <script>
-    // Close all open menus first, then open the clicked one
     function toggleMenu(event, id) {
         event.stopPropagation();
         const target = document.getElementById('menu-' + id);
@@ -421,12 +416,9 @@ include_once("sidebar.php");
         document.querySelectorAll('.card-dropdown').forEach(d => d.classList.remove('open'));
         if (!isOpen) target.classList.add('open');
     }
-
-    // Click anywhere outside to close menus
     document.addEventListener('click', () => {
         document.querySelectorAll('.card-dropdown').forEach(d => d.classList.remove('open'));
     });
 </script>
-
 </body>
 </html>
