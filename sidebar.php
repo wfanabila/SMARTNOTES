@@ -1,19 +1,263 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>User Dashboard</title>
+<?php
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'>
-    <link rel="stylesheet" href="dashboard.css">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
-</head>
-<body>
+?>
+<link rel='stylesheet' href="sidebar.css">
 
-    <nav class="topnav">
+<style>
+    *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #ffffff;
+    color: #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* header */
+.topnav {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 100 !important;
+    height: 56px !important;
+    background: #ffffff !important;
+    border-bottom: 0.5px solid #e0ddd6 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 24px !important;
+}
+
+.topnav__left {
+    display: flex;
+    align-items: center;
+}
+
+.topnav__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* logo */
+.topnav__logo-icon img {
+    height: 32px;
+    width: auto;
+    display: block;
+}
+
+/* upper nav */
+.topnav__links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.topnav__links a {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #6b6860;
+    padding: 6px 14px;
+    transition: background 0.15s, color 0.15s;
+}
+
+/* line when click upper nav */
+.topnav-link:hover {
+    border-color: #6D3BD7 !important;
+    color: #6D3BD7 !important;
+}
+
+.topnav__right {
+    display: flex;
+    align-items: center;
+}
+
+/* pfp */
+.topnav__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ebe8e2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b6860;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.topnav__avatar:hover {
+    background: #dedad2;
+}
+
+/* body */
+.layout {
+    display: flex;
+    margin-top: 40px;
+    min-height: calc(100vh - 56px);
+}
+
+/* side bar */
+.sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    z-index: 90;
+
+    width: 64px;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+    background: #F6EDFF;
+    border-right: 0.5px solid #e0ddd6;
+
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+}
+
+.sidebar:hover {
+    width: 220px;
+}
+
+
+.sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 8px;            
+    flex: 1;
+}
+
+/* overview, my notes, bookmarks */
+.sidebar__item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #000000;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.sidebar__item svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.sidebar__item span {
+    opacity: 0;
+    transition: opacity 0.15s ease 0.05s;
+}
+
+.sidebar:hover .sidebar__item span {
+    opacity: 1;
+}
+
+.sidebar__item:hover {
+    background: #d6c3ff;
+    color: #1a1a1a;
+}
+
+.sidebar__item.active {
+    background: #f3effe;
+    color: #6D3BD7;
+    border: 1.5px solid #6D3BD7;
+    opacity: 1;
+}
+
+.sidebar__item.active:hover {
+    background: #d6c3ff;
+    color: #6D3BD7;
+}
+
+/* upload new note button */
+.sidebar__upload {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 12px 8px;          
+    padding: 10px 12px;        
+    border-radius: 8px;        
+    background: #6D3BD7;
+    color: #ffffff;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 550;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.sidebar__upload svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.sidebar__upload span {
+    opacity: 0;
+    transition: opacity 0.15s ease 0.05s;
+    white-space: nowrap;
+}
+
+.sidebar:hover .sidebar__upload span {
+    opacity: 1;
+}
+
+/* setting and help center */
+.sidebar__footer {
+    border-top: 0.5px solid #e0ddd6;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+
+.main {
+    margin-left: 64px;
+    flex: 1;
+    transition: margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    min-height: calc(100vh - 56px);
+}
+
+.sidebar:hover ~ .main {
+    margin-left: 220px; /* space for open sidebar */
+}
+
+.main__container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 40px;
+}
+</style>
+
+<nav class="topnav">
         <div class="topnav__left">
             <a class="topnav__logo" href="#">
                 <span class="topnav__logo-icon">
@@ -71,7 +315,7 @@
             </nav>
 
             <!-- upload note -->
-            <a class="sidebar__upload" href="user_dashboard.html">
+            <a class="sidebar__upload" href="upload_notes.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <line x1="12" y1="5" x2="12" y2="19"/>
                     <line x1="5" y1="12" x2="19" y2="12"/>
@@ -97,111 +341,3 @@
                 </a>
             </div>
         </aside>
-
-<!----------------------------------------------------------------------------------------------------------->
-
-        <!-- user dashboard content -->
-        <main class="main">
-            
-                <div class="upload-container">
-                    <h1>Upload Details</h1>
-
-                    <form action="/action_page.php">
-
-                        <!-- Upload Area -->
-                        <div class="upload-box">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M19.5 14.25v-8.625a1.125 1.125 0 0 0-1.125-1.125H9.75L4.5 9.75v8.625A1.125 1.125 0 0 0 5.625 19.5h12.75A1.125 1.125 0 0 0 19.5 18.375Z" />
-                        </svg>
-
-                        <label for="fileUpload" class="upload-btn">Upload File</label>
-                        <input type="file" id="fileUpload" hidden>
-                    </div>
-
-                    <!-- Note Title -->
-                    <div class="form-group">
-                        <label for="notestitle">NOTE TITLE</label>
-                        <input type="text" id="notestitle" name="notestitle">
-                    </div>
-
-                    <!-- Description -->
-                    <div class="form-group">
-                        <label for="description">DESCRIPTION</label>
-                        <textarea id="description" name="description" rows="4"></textarea>
-                    </div>
-
-                    <!-- Monetization -->
-                    <label>MONETIZATION</label>
-
-                    <div class="pricing-options">
-                        <label class="pricing-card">
-                            <input type="radio" name="pricing" value="free">
-                            <div>
-                                <h4>Free</h4>
-                                <p>Help fellow students by sharing for free</p>
-                            </div>
-                        </label>
-
-                        <label class="pricing-card">
-                            <input type="radio" name="pricing" value="paid">
-                            <div>
-                                <h4>Premium</h4>
-                                <p>Set a price and earn from your hard work</p>
-                            </div>
-                        </label>
-                    </div>
-
-                    <!-- Subject -->
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>SUBJECT CODE</label>
-                            <select name="subjectcode" title="subjectcode">
-                                <option>CSC510</option>
-                                <option>CSC186</option>
-                                <option>CSC577</option>
-                                <option>CSC578</option>
-                                <option>CSC660</option>
-                                <option>CSC402</option>
-                                <option>CSC413</option>
-                                <option>CSC429</option>
-                                <option>CTU554</option>
-                                <option>CTU552</option>
-                                <option>ICT504</option>
-                                <option>ICT602</option>
-                                <option>MAT423</option>
-                                <option>STA416</option>
-                                <option>MAT406</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <!-- Price -->
-                            <label>PRICE</label>
-                            <input type="number" placeholder="RM 0.00">
-                        </div>
-                    </div>
-
-                    <!-- Submit -->
-                    <div class="btn-wrapper">
-                        <input type="submit" value="Upload Notes">
-                    </div>
-                </form>
-            </div>
-        </main>
-
-        
-<script>
-    const sidebarItems = document.querySelectorAll('.sidebar__item');
-
-    sidebarItems.forEach(item => {
-        item.addEventListener('click', function (e) {
-            sidebarItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
-</script>
-
-</body>
-</html>
