@@ -132,6 +132,18 @@ a {
     width: 220px;
 }
 
+/* keep the sidebar expanded while the account popup card is open,
+   so the popup (and its trigger) stay fully readable even if the
+   mouse moves off the sidebar onto the popup itself */
+.sidebar:has(.account-popup.show) {
+    width: 220px;
+}
+
+.sidebar:has(.account-popup.show) .sidebar__item span,
+.sidebar:has(.account-popup.show) .sidebar__upload span {
+    opacity: 1;
+}
+
 
 .sidebar__nav {
     display: flex;
@@ -230,6 +242,120 @@ a {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    position: relative; /* anchors the account popup card above the Settings button */
+}
+
+/* setting ---> account, logout */
+.account-popup {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 8px;
+    width: 200px;
+    background: #ffffff;
+    border: 1px solid #e0ddd6;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 12px;
+    z-index: 110;
+
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(6px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.account-popup.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.account-popup__label {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #a09d95;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 8px;
+}
+
+.account-popup__user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+}
+
+.account-popup__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #1a1a1a;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.account-popup__info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.account-popup__name {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.account-popup__email {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: #6b6860;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.account-popup__divider {
+    height: 1px;
+    background: #e0ddd6;
+    margin-bottom: 8px;
+}
+
+.account-popup__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.account-popup__item svg {
+    flex-shrink: 0;
+}
+
+.account-popup__item:hover {
+    background: #f3effe;
+    color: #6D3BD7;
+}
+
+.account-popup__item--logout:hover {
+    background: #fff0f0;
+    color: #df2c2c;
 }
 
 
@@ -241,7 +367,7 @@ a {
 }
 
 .sidebar:hover ~ .main {
-    margin-left: 220px; /* space for open sidebar */
+    margin-left: 220px;
 }
 
 .main__container {
