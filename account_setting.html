@@ -27,7 +27,7 @@
             <a href="#" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Home</a>
             <a href="#" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Notes</a>
             <a href="#" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Contributors</a>
-            <!-- "Dashboard" stays highlighted since Account Setting lives under the Dashboard area -->
+
             <a href="user_dashboard.html" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link topnav-link--active">Dashboard</a>
         </div>
 
@@ -124,7 +124,7 @@
                         <span>Account Setting</span>
                     </a>
 
-                    <a class="account-popup__item account-popup__item--logout" href="#">
+                    <a class="account-popup__item account-popup__item--logout" href="login.html" onclick="window.location.href='login.html';">                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3H21" />
                         </svg>
@@ -162,7 +162,30 @@
                         </div>
 
                         <div class="settings-card__actions">
-                            <button type="button" class="btn btn--primary">Change Profile Picture</button>
+                            <button type="button" class="btn btn--primary" onclick="openPfpModal()">Change Profile Picture</button>
+                            <div class="modal-overlay" id="pfp-modal-overlay" onclick="closePfpModalOutside(event)">
+                                <div class="pfp-modal">
+                                    <input type="file" id="pfp-file-input" accept="image/png, image/jpeg" style="display: none;">
+                                    
+                                    <div class="pfp-dropzone" id="pfp-dropzone">
+                                        <div class="pfp-dropzone__content">
+                                            <div class="pfp-dropzone__icon">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 13v8M12 13l4 4M12 13l-4 4"/>
+                                                    <path d="M20.88 18.04A6 6 0 0 0 6 11a5 5 0 0 0-3.5 8.5"/>
+                                                </svg>
+                                            </div>
+                                            <h3>Upload your Photo here</h3>
+                                            <p>PNG or JPG files accepted. High resolution recommended.</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- <div class="pfp-modal__actions">
+                                        <button type="button" class="btn btn--outline" onclick="closePfpModal()">Cancel</button>
+                                    </div> -->
+                                </div>
+                            </div>
+
                             <button type="button" class="btn btn--outline" id="change-password-btn" onclick="openPasswordModal()">Change Password</button>
                         </div>
                     </div>
@@ -415,6 +438,78 @@
 
         closePasswordModal();
     });
+
+    <!-- pfp -->
+        const pfpModalOverlay = document.getElementById('pfp-modal-overlay');
+        const pfpFileInput = document.getElementById('pfp-file-input');
+        const pfpDropzone = document.getElementById('pfp-dropzone');
+
+        function openPfpModal() {
+            pfpModalOverlay.classList.add('show');
+        }
+
+        function closePfpModal() {
+            pfpModalOverlay.classList.remove('show');
+            pfpDropzone.classList.remove('dragover');
+        }
+
+        function closePfpModalOutside(event) {
+            if (event.target === pfpModalOverlay) {
+                closePfpModal();
+            }
+        }
+
+        pfpDropzone.addEventListener('click', () => {
+            pfpFileInput.click();
+        });
+
+        pfpFileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                handleImageUpload(this.files[0]);
+            }
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            pfpDropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                pfpDropzone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            pfpDropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                pfpDropzone.classList.remove('dragover');
+            }, false);
+        });
+
+        pfpDropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files && files[0]) {
+                handleImageUpload(files[0]);
+            }
+        });
+
+        function handleImageUpload(file) {
+            // check if it's PNG/JPG
+            if (file.type === "image/jpeg" || file.type === "image/png") {
+                console.log("Selected file:", file.name);
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageSrc = e.target.result;
+                    
+                    // Optional: Update your topnav avatar or dashboard avatar directly with imageSrc
+                    // alert(`Success! "${file.name}" ready to update.`);
+                    // closePfpModal();
+                }
+                reader.readAsDataURL(file);
+            } else {
+                alert("Please upload only PNG or JPG files.");
+            }
+        }
+
     </script>
 
 </body>
