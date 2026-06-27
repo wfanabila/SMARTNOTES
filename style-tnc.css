@@ -1,0 +1,92 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4efff;
+    margin: 0;
+    padding: 40px 0 0 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.back-link {
+    position: absolute;
+    top: 35px;
+    left: 45px;
+    color: #000000;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #6b34d9;
+}
+
+.tos-logo {
+    height: 45px;
+    margin-bottom: 20px;
+}
+
+.tos-header {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 30px;
+}
+
+.tos-card {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 800px;
+    border-radius: 35px;
+    padding: 50px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e2e2;
+    text-align: left;
+    margin-bottom: 50px;
+}
+
+.tos-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #000000;
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+
+.tos-text {
+    font-size: 0.95rem;
+    color: #333333;
+    line-height: 1.6;
+}
+
+.tos-list {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.tos-list li {
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+    color: #333333;
+}
+
+.footer {
+    width: 100%;
+    background-color: #333333;
+    color: #ffffff;
+    text-align: left;
+    padding: 20px 45px;
+    margin-top: auto;
+    box-sizing: border-box;
+}
+
+.footer p {
+    margin: 0;
+    font-size: 0.9rem;
+}
