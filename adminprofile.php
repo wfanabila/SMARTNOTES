@@ -14,21 +14,69 @@ $role = $adminRole;
 $theme = 'light';
 $errorMessage = '';
 $successMessage = '';
+$uploadErrorMessage = '';
+$uploadSuccessMessage = '';
+$passwordErrorMessage = '';
+$passwordSuccessMessage = '';
+$adminPassword = 'Password123';
+
+$uploadDir = 'uploads/';
+$uploadFileName = 'admin_profile.png';
+$uploadedFilePath = $uploadDir . $uploadFileName;
+$profilePictureUrl = file_exists($uploadedFilePath) ? $uploadedFilePath : '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $fullName = trim($_POST['fullName'] ?? $adminName);
-    $email = trim($_POST['email'] ?? $adminEmail);
-    $phone = trim($_POST['phone'] ?? $adminPhone);
-    $role = trim($_POST['role'] ?? $adminRole);
-    $theme = $_POST['theme'] ?? 'light';
+    if (isset($_POST['action']) && $_POST['action'] === 'uploadProfilePicture') {
+        if (isset($_FILES['profileImage']) && $_FILES['profileImage']['error'] === UPLOAD_ERR_OK) {
+            $allowedTypes = ['image/jpeg' => '.jpg', 'image/png' => '.png'];
+            $fileType = mime_content_type($_FILES['profileImage']['tmp_name']);
 
-    $isEmailValid = filter_var($email, FILTER_VALIDATE_EMAIL);
-    $isPhoneValid = preg_match('/^\+60\s?\d{2}\s?\d{3}\s?\d{4}$/', $phone);
+            if (!array_key_exists($fileType, $allowedTypes)) {
+                $uploadErrorMessage = 'Please upload a JPG or PNG image.';
+            } else {
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0755, true);
+                }
+                $targetPath = $uploadDir . $uploadFileName;
+                if (move_uploaded_file($_FILES['profileImage']['tmp_name'], $targetPath)) {
+                    $uploadSuccessMessage = 'Profile picture uploaded successfully.';
+                    $profilePictureUrl = $targetPath;
+                } else {
+                    $uploadErrorMessage = 'Unable to upload image. Try again.';
+                }
+            }
+        } else {
+            $uploadErrorMessage = 'Choose a picture first to upload.';
+        }
+    } elseif (isset($_POST['action']) && $_POST['action'] === 'changePassword') {
+        $oldPassword = trim($_POST['oldPassword'] ?? '');
+        $newPassword = trim($_POST['newPassword'] ?? '');
+        $confirmPassword = trim($_POST['confirmPassword'] ?? '');
 
-    if (!$isEmailValid || $email !== $adminEmail || !$isPhoneValid) {
-        $errorMessage = '✕ Phone Number doesn\'t exist. Please insert the correct Email.';
+        if ($oldPassword !== $adminPassword) {
+            $passwordErrorMessage = 'Incorrect current password.';
+        } elseif ($newPassword === '') {
+            $passwordErrorMessage = 'New password cannot be empty.';
+        } elseif ($newPassword !== $confirmPassword) {
+            $passwordErrorMessage = 'New passwords do not match.';
+        } else {
+            $passwordSuccessMessage = 'Password changed successfully.';
+        }
     } else {
-        $successMessage = 'Profile updated successfully.';
+        $fullName = trim($_POST['fullName'] ?? $adminName);
+        $email = trim($_POST['email'] ?? $adminEmail);
+        $phone = trim($_POST['phone'] ?? $adminPhone);
+        $role = trim($_POST['role'] ?? $adminRole);
+        $theme = $_POST['theme'] ?? 'light';
+
+        $isEmailValid = filter_var($email, FILTER_VALIDATE_EMAIL);
+        $isPhoneValid = preg_match('/^\+60\s?\d{2}\s?\d{3}\s?\d{4}$/', $phone);
+
+        if (!$isEmailValid || $email !== $adminEmail || !$isPhoneValid) {
+            $errorMessage = '✕ Phone Number doesn\'t exist. Please insert the correct Email.';
+        } else {
+            $successMessage = 'Profile updated successfully.';
+        }
     }
 }
 ?>
@@ -66,6 +114,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span>Admin’s Profile</span>
                 </a>
                 <div class="menu-divider"></div>
+                <div class="sidebar-card">
+                    <div class="sidebar-card__top">
+                        <div class="sidebar-card__avatar"><?= htmlspecialchars($adminInitial) ?></div>
+                        <div>
+                            <p class="sidebar-card__name"><?= htmlspecialchars($adminName) ?></p>
+                            <p class="sidebar-card__email"><?= htmlspecialchars($adminEmail) ?></p>
+                        </div>
+                    </div>
+                    <div class="sidebar-card__links">
+                        <a href="adminprofile.php" class="sidebar-card__link active">Account Setting</a>
+                        <a href="login.php" class="sidebar-card__link logout">Log Out</a>
+                    </div>
+                </div>
                 <a href="help_center.html" class="menu-item">
                     <span class="menu-icon"><i class="far fa-question-circle"></i></span>
                     <span>Help Center</span>
@@ -117,15 +178,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <section class="profile-panel">
                 <div class="profile-card settings-card">
                     <div class="profile-card__avatar">
-                        <div class="profile-initials"><?= htmlspecialchars($adminInitial) ?></div>
+                        <?php if ($profilePictureUrl): ?>
+                            <div class="profile-picture" style="background-image: url('<?= htmlspecialchars($profilePictureUrl) ?>');"></div>
+                        <?php else: ?>
+                            <div class="profile-initials"><?= htmlspecialchars($adminInitial) ?></div>
+                        <?php endif; ?>
                         <div>
                             <h2><?= htmlspecialchars($adminName) ?></h2>
                             <p class="email">( <?= htmlspecialchars($adminRole) ?> )</p>
                         </div>
                     </div>
                     <div class="settings-card__actions">
-                        <button type="button" class="btn btn--secondary">Change Profile Picture</button>
-                        <button type="button" class="btn btn--outline">Change Password</button>
+                        <button type="button" class="btn btn--secondary" id="uploadOpenButton">Change Profile Picture</button>
+                        <button type="button" class="btn btn--outline" id="passwordOpenButton">Change Password</button>
                     </div>
                 </div>
 
@@ -173,11 +238,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <p class="form-success"><?= htmlspecialchars($successMessage) ?></p>
                         <?php endif; ?>
                     </div>
+                </form>
 
-                    <section class="appearance-section">
-                        <h2>Appearance</h2>
-                        <p class="appearance-subtitle">Personalize your workspace experience.</p>
-                        <div class="appearance-grid">
+                </form>
+
+                <div class="upload-modal-overlay" id="uploadModalOverlay">
+                    <div class="upload-modal">
+                        <div class="upload-modal__header">
+                            <h3>Upload your Photo here</h3>
+                            <button type="button" class="upload-modal__close" id="uploadCloseButton">×</button>
+                        </div>
+                        <form class="upload-form" action="adminprofile.php" method="post" enctype="multipart/form-data">
+                            <input type="hidden" name="action" value="uploadProfilePicture">
+                            <div class="upload-dropzone" id="uploadDropzone">
+                                <span class="upload-dropzone__icon"><i class="fas fa-cloud-arrow-up"></i></span>
+                                <h4>Upload your Photo here</h4>
+                                <p>PNG or JPG files accepted. High resolution recommended.</p>
+                                <input type="file" name="profileImage" id="profileImageInput" accept="image/png, image/jpeg">
+                                <button type="button" class="btn btn--outline upload-browse" id="browseButton">Browse Picture</button>
+                                <p class="upload-note">Max size 5MB.</p>
+                            </div>
+                            <?php if ($uploadErrorMessage): ?>
+                                <p class="form-error upload-error"><?= htmlspecialchars($uploadErrorMessage) ?></p>
+                            <?php endif; ?>
+                            <?php if ($uploadSuccessMessage): ?>
+                                <p class="form-success upload-success"><?= htmlspecialchars($uploadSuccessMessage) ?></p>
+                            <?php endif; ?>
+                            <div class="upload-form__actions">
+                                <button type="submit" class="btn btn--primary">Upload</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="upload-modal-overlay" id="passwordModalOverlay">
+                    <div class="upload-modal">
+                        <div class="upload-modal__header">
+                            <h3>Change Password</h3>
+                            <button type="button" class="upload-modal__close" id="passwordCloseButton">×</button>
+                        </div>
+                        <form class="upload-form" action="adminprofile.php" method="post">
+                            <input type="hidden" name="action" value="changePassword">
+                            <div class="settings-form__field">
+                                <label for="oldPassword">Current Password</label>
+                                <input type="password" id="oldPassword" name="oldPassword" required>
+                            </div>
+                            <div class="settings-form__field">
+                                <label for="newPassword">New Password</label>
+                                <input type="password" id="newPassword" name="newPassword" required>
+                            </div>
+                            <div class="settings-form__field">
+                                <label for="confirmPassword">Confirm New Password</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                            </div>
+                            <?php if ($passwordErrorMessage): ?>
+                                <p class="form-error upload-error"><?= htmlspecialchars($passwordErrorMessage) ?></p>
+                            <?php endif; ?>
+                            <?php if ($passwordSuccessMessage): ?>
+                                <p class="form-success upload-success"><?= htmlspecialchars($passwordSuccessMessage) ?></p>
+                            <?php endif; ?>
+                            <div class="upload-form__actions">
+                                <button type="submit" class="btn btn--primary">Save Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <section class="appearance-section">
+                    <h2>Appearance</h2>
+                    <p class="appearance-subtitle">Personalize your workspace experience.</p>
+                    <div class="appearance-grid">
                             <label class="appearance-card<?= $theme === 'light' ? ' selected' : '' ?>">
                                 <input type="radio" name="theme" value="light"<?= $theme === 'light' ? ' checked' : '' ?>>
                                 <img src="img/lightmode.png" alt="Light Mode" class="appearance-image">
@@ -210,6 +340,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         document.getElementById('profileToggle').addEventListener('click', function(event) {
             event.stopPropagation();
             document.getElementById('accountPopup').classList.toggle('visible');
+        });
+
+        var uploadOpenButton = document.getElementById('uploadOpenButton');
+        var uploadCloseButton = document.getElementById('uploadCloseButton');
+        var uploadModalOverlay = document.getElementById('uploadModalOverlay');
+        var uploadDropzone = document.getElementById('uploadDropzone');
+        var fileInput = document.getElementById('profileImageInput');
+        var browseButton = document.getElementById('browseButton');
+        var passwordOpenButton = document.getElementById('passwordOpenButton');
+        var passwordCloseButton = document.getElementById('passwordCloseButton');
+        var passwordModalOverlay = document.getElementById('passwordModalOverlay');
+
+        function openUploadModal() {
+            uploadModalOverlay.classList.add('visible');
+        }
+
+        function closeUploadModal() {
+            uploadModalOverlay.classList.remove('visible');
+        }
+
+        function openPasswordModal() {
+            passwordModalOverlay.classList.add('visible');
+        }
+
+        function closePasswordModal() {
+            passwordModalOverlay.classList.remove('visible');
+        }
+
+        uploadOpenButton.addEventListener('click', openUploadModal);
+        uploadCloseButton.addEventListener('click', closeUploadModal);
+        uploadModalOverlay.addEventListener('click', function(event) {
+            if (event.target === uploadModalOverlay) {
+                closeUploadModal();
+            }
+        });
+        browseButton.addEventListener('click', function() {
+            fileInput.click();
+        });
+        uploadDropzone.addEventListener('click', function() {
+            fileInput.click();
+        });
+
+        passwordOpenButton.addEventListener('click', openPasswordModal);
+        passwordCloseButton.addEventListener('click', closePasswordModal);
+        passwordModalOverlay.addEventListener('click', function(event) {
+            if (event.target === passwordModalOverlay) {
+                closePasswordModal();
+            }
         });
     </script>
 </body>
