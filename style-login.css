@@ -1,60 +1,193 @@
-.body {
+body {
     font-family: 'Poppins', sans-serif;
-    background-color: #aa81fd; 
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+    background-color: #f4efff;
     margin: 0;
-    padding: 20px;
-    box-sizing: border-box;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 
-.back-to-login{
+.back-link {
     position: absolute;
-    font-size:45px;
-    top: 20px;
-    left: 20px;
+    top: 35px;
+    left: 45px;
+    color: #000000;
+    font-size: 1.1rem;
+    font-weight: 600;
     text-decoration: none;
-    color: #fff;
-    font-size: 14px;
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
 }
 
-.back-to-login:hover {
+.back-link:hover {
     color: #6b34d9;
 }
 
-.login-container {
+.login-wrapper {
+    width: 100%;
+    padding: 25px 15px;
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    margin: auto 0;
 }
 
-.login-heading{
-    text-align:center;
-    font-size:30px;
-    color:#000000;
-    margin-bottom:20px;
-}
-
-.login-subheading{
-    text-align:center;
-    font-size:15px;
-    color:#000000;
-    margin-bottom:20px;
-}
-
-.login-form {
-    background-color: #fff;
-    padding: 40px;
-    border-radius: 40px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 500px;
-    height: 700px;
-}
-
-.login-form h2 {
+.login-card {
+    background-color: #ffffff;
+    width: 100%;
+    max-width: 375px;         
+    border-radius: 35px;      
+    padding: 35px 30px 25px 30px; 
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.12);
+    border: 1px solid #e2e2e2;
     text-align: center;
+}
+
+.login-logo {
+    height: 38px;
+    width: auto;
+}
+
+.login-title {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 2px;
+}
+
+.login-subtitle {
+    font-size: 0.85rem;
+    color: #777777;
     margin-bottom: 20px;
-    color: #333;
+}
+
+.role-toggle {
+    display: flex;
+    background-color: #f0f0f0;
+    border-radius: 12px;
+    padding: 3px;
+    gap: 4px;
+    margin-bottom: 20px !important;
+}
+
+.role-btn {
+    flex: 1;
+    padding: 8px 0;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #444444;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.role-btn.active {
+    background-color: #ffffff;
+    color: #000000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    border: 1px solid #e0e0e0;
+}
+
+.form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.custom-input {
+    border-radius: 20px;
+    padding: 8px 16px;
+    border: 1px solid #dcdcdc;
+    font-size: 0.85rem;
+}
+
+.custom-input::placeholder {
+    color: #aaaaaa;
+}
+
+.custom-input:focus {
+    border-color: #6b34d9;
+    box-shadow: 0 0 0 3px rgba(107, 52, 217, 0.1);
+    outline: none;
+}
+
+.forgot-password {
+    font-size: 0.7rem;
+    color: #6b34d9;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.btn-purple-login {
+    background-color: #6b34d9;
+    color: #ffffff;
+    border-radius: 25px;
+    padding: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 5px;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.btn-purple-login:hover {
+    background-color: #5325b3;
+    color: #ffffff;
+}
+
+.terms-text {
+    font-size: 0.75rem;
+    color: #666666;
+    margin-top: 20px !important;
+    margin-bottom: 4px;
+}
+
+.terms-text a {
+    color: #333333;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.terms-text a:hover {
+    text-decoration: underline;
+}
+
+.new-user-text {
+    font-size: 0.78rem;
+    color: #666666;
+    margin-bottom: 0;
+}
+
+.new-user-text a {
+    color: #6b34d9;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.new-user-text a:hover {
+    text-decoration: underline;
+}
+
+.footer {
+    width: 100%;
+    background-color: #333333;
+    color: #ffffff;
+    text-align: left;
+    padding: 20px 45px;
+    margin-top: auto;
+    box-sizing: border-box;
+}
+
+.footer p {
+    margin: 0;
+    font-size: 0.9rem;
 }
