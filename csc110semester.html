@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC110 Semester Notes - UiTMNoteLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/csc110notes.css">
+</head>
+<body>
+    <header class="page-header">
+        <div class="brand-group">
+            <img src="img/logo.PNG" alt="UiTMNoteLink Logo" class="brand-logo">
+        </div>
+
+        <nav class="main-nav">
+            <a href="landingpage.html" class="main-nav__link">Home</a>
+            <a href="csc110notes.html" class="main-nav__link main-nav__link--active">Notes</a>
+            <a href="help_center.html" class="main-nav__link">Contributors</a>
+            <a href="user_dashboard.html" class="main-nav__link">Dashboard</a>
+        </nav>
+    </header>
+
+    <main class="page-content">
+        <section class="hero-panel">
+            <div class="hero-title-group">
+                <h1 class="hero-title" id="semester-heading">CSC110 SEM 1 Notes</h1>
+                <p class="hero-subtitle">Interface view for CSC110 semester notes; this can later connect to backend data.</p>
+            </div>
+        </section>
+
+        <section class="recent-section">
+            <h2 id="listing-title">Available notes for SEM 1</h2>
+            <div class="recent-grid" id="notes-grid"></div>
+        </section>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const semester = params.get('semester') || '1';
+        const semLabel = semester.match(/^[1-6]$/) ? semester : '1';
+
+        const notesBySemester = {
+            '1': [
+                { id: 711, thumb: 'img/bookmark1.png', title: 'CSC110 Chapter 1', subtitle: 'Intro to Programming' },
+                { id: 712, thumb: 'img/bookmark2.png', title: 'CSC110 Chapter 2', subtitle: 'Variable Types' },
+                { id: 713, thumb: 'img/bookmark3.png', title: 'CSC110 Revision Notes', subtitle: 'Fundamental concepts' }
+            ],
+            '2': [
+                { id: 714, thumb: 'img/bookmark1.png', title: 'CSC110 Chapter 3', subtitle: 'Control Flow' },
+                { id: 715, thumb: 'img/bookmark2.png', title: 'CSC110 Lab Guide', subtitle: 'Basic exercises' },
+                { id: 716, thumb: 'img/bookmark3.png', title: 'CSC110 Exam Prep', subtitle: 'Top questions' }
+            ],
+            '3': [
+                { id: 717, thumb: 'img/bookmark1.png', title: 'CSC110 Chapter 4', subtitle: 'Functions' },
+                { id: 718, thumb: 'img/bookmark2.png', title: 'CSC110 Practical', subtitle: 'Function examples' },
+                { id: 719, thumb: 'img/bookmark3.png', title: 'CSC110 Study Pack', subtitle: 'Practice tasks' }
+            ],
+            '4': [
+                { id: 720, thumb: 'img/bookmark1.png', title: 'CSC110 Chapter 5', subtitle: 'Data Structures' },
+                { id: 721, thumb: 'img/bookmark2.png', title: 'CSC110 Notes', subtitle: 'Arrays and records' },
+                { id: 722, thumb: 'img/bookmark3.png', title: 'CSC110 Guide', subtitle: 'Exam-ready summary' }
+            ],
+            '5': [
+                { id: 723, thumb: 'img/bookmark1.png', title: 'CSC110 Chapter 6', subtitle: 'Object concepts' },
+                { id: 724, thumb: 'img/bookmark2.png', title: 'CSC110 Bonus Notes', subtitle: 'Object-oriented intro' },
+                { id: 725, thumb: 'img/bookmark3.png', title: 'CSC110 Review', subtitle: 'Key definitions' }
+            ],
+            '6': [
+                { id: 726, thumb: 'img/bookmark1.png', title: 'CSC110 Final Notes', subtitle: 'Complete course revision' },
+                { id: 727, thumb: 'img/bookmark2.png', title: 'CSC110 Cheat Sheet', subtitle: 'Important shortcuts' },
+                { id: 728, thumb: 'img/bookmark3.png', title: 'CSC110 Exam Pack', subtitle: 'Full semester review' }
+            ]
+        };
+
+        const notes = notesBySemester[semLabel] || notesBySemester['1'];
+        document.getElementById('semester-heading').textContent = `CSC110 SEM ${semLabel} Notes`;
+        document.getElementById('listing-title').textContent = `Available notes for SEM ${semLabel}`;
+
+        const grid = document.getElementById('notes-grid');
+        grid.innerHTML = notes.map(note => `
+                <article class="recent-card">
+                    <a href="display_note.php?note=${note.id}" class="recent-card__link">
+                        <img src="${note.thumb}" alt="${note.title}" class="recent-card__thumb">
+                        <div class="recent-card__meta">${note.title}</div>
+                        <div class="recent-card__meta" style="font-weight: 500; color: #475569; font-size: 0.95rem; padding-top: 0;">${note.subtitle}</div>
+                    </a>
+                </article>
+            `).join('');
+    </script>
+</body>
+</html>

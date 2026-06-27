@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC264 Semester Notes - UiTMNoteLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/csc264notes.css">
+</head>
+<body>
+    <header class="page-header">
+        <div class="brand-group">
+            <img src="img/logo.PNG" alt="UiTMNoteLink Logo" class="brand-logo">
+        </div>
+
+        <nav class="main-nav">
+            <a href="landingpage.html" class="main-nav__link">Home</a>
+            <a href="csc264notes.html" class="main-nav__link main-nav__link--active">Notes</a>
+            <a href="help_center.html" class="main-nav__link">Contributors</a>
+            <a href="user_dashboard.html" class="main-nav__link">Dashboard</a>
+        </nav>
+    </header>
+
+    <main class="page-content">
+        <section class="hero-panel">
+            <div class="hero-title-group">
+                <h1 class="hero-title" id="semester-heading">CSC264 SEM 1 Notes</h1>
+                <p class="hero-subtitle">Interface view for CSC264 semester notes; this can later connect to backend data.</p>
+            </div>
+        </section>
+
+        <section class="recent-section">
+            <h2 id="listing-title">Available notes for SEM 1</h2>
+            <div class="recent-grid" id="notes-grid"></div>
+        </section>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const semester = params.get('semester') || '1';
+        const semLabel = semester.match(/^[1-6]$/) ? semester : '1';
+
+        const notesBySemester = {
+            '1': [
+                { id: 511, thumb: 'img/bookmark1.png', title: 'CSC264 Chapter 1', subtitle: 'Programming Basics' },
+                { id: 512, thumb: 'img/bookmark2.png', title: 'CSC264 Chapter 2', subtitle: 'Control Structures' },
+                { id: 513, thumb: 'img/bookmark3.png', title: 'CSC264 Study Notes', subtitle: 'Sample code and examples' }
+            ],
+            '2': [
+                { id: 514, thumb: 'img/bookmark1.png', title: 'CSC264 Chapter 3', subtitle: 'Functions and Modular Code' },
+                { id: 515, thumb: 'img/bookmark2.png', title: 'CSC264 Lab Notes', subtitle: 'Practice assignments' },
+                { id: 516, thumb: 'img/bookmark3.png', title: 'CSC264 Exam Prep', subtitle: 'Revision topics and past questions' }
+            ],
+            '3': [
+                { id: 517, thumb: 'img/bookmark1.png', title: 'CSC264 Chapter 4', subtitle: 'Data Structures Overview' },
+                { id: 518, thumb: 'img/bookmark2.png', title: 'CSC264 Assignment', subtitle: 'Arrays and lists' },
+                { id: 519, thumb: 'img/bookmark3.png', title: 'CSC264 Practical', subtitle: 'Hands-on code samples' }
+            ],
+            '4': [
+                { id: 520, thumb: 'img/bookmark1.png', title: 'CSC264 Chapter 5', subtitle: 'Recursion and algorithms' },
+                { id: 521, thumb: 'img/bookmark2.png', title: 'CSC264 Lab Guide', subtitle: 'Algorithm tracing' },
+                { id: 522, thumb: 'img/bookmark3.png', title: 'CSC264 Notes Pack', subtitle: 'Detailed explanations' }
+            ],
+            '5': [
+                { id: 523, thumb: 'img/bookmark1.png', title: 'CSC264 Chapter 6', subtitle: 'Sorting and searching' },
+                { id: 524, thumb: 'img/bookmark2.png', title: 'CSC264 Bonus Notes', subtitle: 'Advanced programming' },
+                { id: 525, thumb: 'img/bookmark3.png', title: 'CSC264 Review Sheet', subtitle: 'Key concepts summary' }
+            ],
+            '6': [
+                { id: 526, thumb: 'img/bookmark1.png', title: 'CSC264 Final Notes', subtitle: 'Complete course review' },
+                { id: 527, thumb: 'img/bookmark2.png', title: 'CSC264 Revision Pack', subtitle: 'Exam-ready content' },
+                { id: 528, thumb: 'img/bookmark3.png', title: 'CSC264 Study Guide', subtitle: 'Full semester summary' }
+            ]
+        };
+
+        const notes = notesBySemester[semLabel] || notesBySemester['1'];
+        document.getElementById('semester-heading').textContent = `CSC264 SEM ${semLabel} Notes`;
+        document.getElementById('listing-title').textContent = `Available notes for SEM ${semLabel}`;
+
+        const grid = document.getElementById('notes-grid');
+        grid.innerHTML = notes.map(note => `
+                <article class="recent-card">
+                    <a href="display_note.php?note=${note.id}" class="recent-card__link">
+                        <img src="${note.thumb}" alt="${note.title}" class="recent-card__thumb">
+                        <div class="recent-card__meta">${note.title}</div>
+                        <div class="recent-card__meta" style="font-weight: 500; color: #475569; font-size: 0.95rem; padding-top: 0;">${note.subtitle}</div>
+                    </a>
+                </article>
+            `).join('');
+    </script>
+</body>
+</html>

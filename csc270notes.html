@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC270 Notes - UiTMNoteLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/csc270notes.css">
+</head>
+<body>
+    <header class="page-header">
+        <div class="brand-group">
+            <img src="img/logo.PNG" alt="UiTMNoteLink Logo" class="brand-logo">
+        </div>
+
+        <nav class="main-nav">
+            <a href="landingpage.html" class="main-nav__link">Home</a>
+            <a href="csc270notes.html" class="main-nav__link main-nav__link--active">Notes</a>
+            <a href="help_center.html" class="main-nav__link">Contributors</a>
+            <a href="user_dashboard.html" class="main-nav__link">Dashboard</a>
+        </nav>
+    </header>
+
+    <main class="page-content">
+        <section class="hero-panel">
+            <div class="hero-title-group">
+                <h1 class="hero-title">CSC270</h1>
+                <p class="hero-subtitle">Browse specialized archives curated for your major.</p>
+            </div>
+
+            <div class="semester-list">
+                <a href="csc270semester.html?semester=1" class="semester-chip">SEM 1</a>
+                <a href="csc270semester.html?semester=2" class="semester-chip">SEM 2</a>
+                <a href="csc270semester.html?semester=3" class="semester-chip">SEM 3</a>
+                <a href="csc270semester.html?semester=4" class="semester-chip">SEM 4</a>
+                <a href="csc270semester.html?semester=5" class="semester-chip">SEM 5</a>
+                <a href="csc270semester.html?semester=6" class="semester-chip">SEM 6</a>
+            </div>
+        </section>
+
+        <section class="recent-section">
+            <h2>Recently Added</h2>
+            <div class="recent-grid">
+                <article class="recent-card">
+                    <a href="display_note.php?note=401" class="recent-card__link">
+                        <img src="img/bookmark1.png" alt="CSC270 Chapter 1" class="recent-card__thumb">
+                        <div class="recent-card__meta">CSC270 Chapter 1</div>
+                    </a>
+                </article>
+                <article class="recent-card">
+                    <a href="display_note.php?note=402" class="recent-card__link">
+                        <img src="img/bookmark2.png" alt="CSC270 Chapter 2" class="recent-card__thumb">
+                        <div class="recent-card__meta">CSC270 Chapter 2</div>
+                    </a>
+                </article>
+                <article class="recent-card">
+                    <a href="display_note.php?note=403" class="recent-card__link">
+                        <img src="img/bookmark3.png" alt="CSC270 Chapter 3" class="recent-card__thumb">
+                        <div class="recent-card__meta">CSC270 Chapter 3</div>
+                    </a>
+                </article>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

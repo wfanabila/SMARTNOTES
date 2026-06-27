@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC270 Semester Notes - UiTMNoteLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/csc270notes.css">
+</head>
+<body>
+    <header class="page-header">
+        <div class="brand-group">
+            <img src="img/logo.PNG" alt="UiTMNoteLink Logo" class="brand-logo">
+        </div>
+
+        <nav class="main-nav">
+            <a href="landingpage.html" class="main-nav__link">Home</a>
+            <a href="csc270notes.html" class="main-nav__link main-nav__link--active">Notes</a>
+            <a href="help_center.html" class="main-nav__link">Contributors</a>
+            <a href="user_dashboard.html" class="main-nav__link">Dashboard</a>
+        </nav>
+    </header>
+
+    <main class="page-content">
+        <section class="hero-panel">
+            <div class="hero-title-group">
+                <h1 class="hero-title" id="semester-heading">CSC270 SEM 1 Notes</h1>
+                <p class="hero-subtitle">Interface view for CSC270 semester notes; this can later connect to backend data.</p>
+            </div>
+        </section>
+
+        <section class="recent-section">
+            <h2 id="listing-title">Available notes for SEM 1</h2>
+            <div class="recent-grid" id="notes-grid"></div>
+        </section>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const semester = params.get('semester') || '1';
+        const semLabel = semester.match(/^[1-6]$/) ? semester : '1';
+
+        const notesBySemester = {
+            '1': [
+                { id: 411, thumb: 'img/bookmark1.png', title: 'CSC270 Chapter 1', subtitle: 'Networking Fundamentals' },
+                { id: 412, thumb: 'img/bookmark2.png', title: 'CSC270 Chapter 2', subtitle: 'OSI Model & IP Basics' },
+                { id: 413, thumb: 'img/bookmark3.png', title: 'CSC270 Lab Notes', subtitle: 'Packet analysis and tools' }
+            ],
+            '2': [
+                { id: 414, thumb: 'img/bookmark1.png', title: 'CSC270 Chapter 3', subtitle: 'Network Protocols' },
+                { id: 415, thumb: 'img/bookmark2.png', title: 'CSC270 Assignment', subtitle: 'Routing and switching' },
+                { id: 416, thumb: 'img/bookmark3.png', title: 'CSC270 Exam Prep', subtitle: 'Revision notes and questions' }
+            ],
+            '3': [
+                { id: 417, thumb: 'img/bookmark1.png', title: 'CSC270 Chapter 4', subtitle: 'Wireless Networks' },
+                { id: 418, thumb: 'img/bookmark2.png', title: 'CSC270 Lab Guide', subtitle: 'Configuration exercises' },
+                { id: 419, thumb: 'img/bookmark3.png', title: 'CSC270 Case Study', subtitle: 'Design and evaluation' }
+            ],
+            '4': [
+                { id: 420, thumb: 'img/bookmark1.png', title: 'CSC270 Chapter 5', subtitle: 'Network Security' },
+                { id: 421, thumb: 'img/bookmark2.png', title: 'CSC270 Project Notes', subtitle: 'Firewall and VPN basics' },
+                { id: 422, thumb: 'img/bookmark3.png', title: 'CSC270 Practice Sheet', subtitle: 'Sample network tasks' }
+            ],
+            '5': [
+                { id: 423, thumb: 'img/bookmark1.png', title: 'CSC270 Chapter 6', subtitle: 'Cloud networking concepts' },
+                { id: 424, thumb: 'img/bookmark2.png', title: 'CSC270 Bonus Notes', subtitle: 'Advanced connectivity topics' },
+                { id: 425, thumb: 'img/bookmark3.png', title: 'CSC270 Review Guide', subtitle: 'Tips and key ideas' }
+            ],
+            '6': [
+                { id: 426, thumb: 'img/bookmark1.png', title: 'CSC270 Final Notes', subtitle: 'Complete course summary' },
+                { id: 427, thumb: 'img/bookmark2.png', title: 'CSC270 Revision Pack', subtitle: 'All chapters in one file' },
+                { id: 428, thumb: 'img/bookmark3.png', title: 'CSC270 Study Notes', subtitle: 'Exam-ready material' }
+            ]
+        };
+
+        const notes = notesBySemester[semLabel] || notesBySemester['1'];
+        document.getElementById('semester-heading').textContent = `CSC270 SEM ${semLabel} Notes`;
+        document.getElementById('listing-title').textContent = `Available notes for SEM ${semLabel}`;
+
+        const grid = document.getElementById('notes-grid');
+        grid.innerHTML = notes.map(note => `
+                <article class="recent-card">
+                    <a href="display_note.php?note=${note.id}" class="recent-card__link">
+                        <img src="${note.thumb}" alt="${note.title}" class="recent-card__thumb">
+                        <div class="recent-card__meta">${note.title}</div>
+                        <div class="recent-card__meta" style="font-weight: 500; color: #475569; font-size: 0.95rem; padding-top: 0;">${note.subtitle}</div>
+                    </a>
+                </article>
+            `).join('');
+    </script>
+</body>
+</html>
