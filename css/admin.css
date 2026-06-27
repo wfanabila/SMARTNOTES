@@ -1,0 +1,347 @@
+/* --- Base Reset & Layout --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f7f8fc; /* Latar belakang content yang lebih bersih */
+    color: #1f2937;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+}
+
+/* --- Sidebar Styles --- */
+.sidebar {
+    background-color: #f3e8ff; /* Warna lavender pucat untuk sidebar */
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.brand-logo-img {
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.brand h1 {
+    font-size: 1.4rem;
+    color: #4c1d95; /* Warna ungu gelap */
+    font-weight: 700;
+}
+
+.brand-icon {
+    font-size: 1.6rem;
+}
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    color: #4b5563;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.menu-item:hover {
+    background-color: rgba(233, 213, 255, 0.5); /* Hover effect */
+    color: #4c1d95;
+}
+
+/* State Aktif - Butang Ungu Pekat */
+.menu-item.active {
+    background-color: #c4b5fd; /* Ungu pekat untuk dashboard aktif */
+    color: #4c1d95;
+    font-weight: 600;
+}
+
+.menu-icon {
+    width: 20px;
+    text-align: center;
+    color: inherit; /* Ikon ikut warna teks */
+}
+
+.menu-divider {
+    height: 1px;
+    background-color: #e5e7eb;
+    margin: 20px 0;
+}
+
+.sign-out {
+    margin-top: auto; /* Push sign out button to bottom */
+}
+
+/* --- Content & Topbar --- */
+.content {
+    padding: 30px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 20px;
+}
+
+.top-nav {
+    display: flex;
+    gap: 30px;
+    margin: 0 auto;
+}
+
+.top-nav a {
+    text-decoration: none;
+    color: #6b7280;
+    font-weight: 500;
+    font-size: 0.95rem;
+    position: relative;
+}
+
+.top-nav a.active {
+    color: #4c1d95;
+}
+
+.top-nav a.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -15px;
+    width: 100%;
+    height: 3px;
+    background-color: #4c1d95;
+    border-radius: 2px;
+}
+
+.profile-area {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #6b7280;
+    cursor: pointer;
+}
+
+.profile-circle {
+    width: 42px;
+    height: 42px;
+    background-color: #2563eb; /* Biru seperti dalam imej */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.welcome-header {
+    margin-bottom: 30px;
+}
+
+.welcome-header h2 {
+    font-size: 1.8rem;
+    color: #111827;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #6b7280;
+    margin-top: 5px;
+}
+
+/* --- Stats Grid --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.stat-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    position: relative;
+    overflow: hidden;
+}
+
+.highlight-card {
+    border: 1px solid #d97706; /* Bingkai amaran kuning */
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+}
+
+.stat-card h3 {
+    font-size: 2.2rem;
+    color: #111827;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.stat-change {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
+}
+
+.stat-change.positive .value {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.stat-change .time {
+    color: #6b7280;
+}
+
+.stat-alertNeeds {
+    color: #d97706;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.stat-graph {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30px; /* Saiz graf garis */
+    padding: 0 10px;
+}
+
+.stat-graph svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* --- Table Section --- */
+.table-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.table-card {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+
+.table-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.table-card-header h3 {
+    font-size: 1.2rem;
+    color: #111827;
+}
+
+.view-all {
+    font-size: 0.9rem;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+th {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+tbody td {
+    font-size: 0.95rem;
+}
+
+/* Detail Views dalam Jadual */
+.student-name, .note-title {
+    font-weight: 600;
+    color: #111827;
+}
+
+.student-email, .note-subject {
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+/* --- Badges --- */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge.suspended {
+    background: #fee2e2; /* Lebih merah sikit untuk amaran */
+    color: #991b1b;
+}
+
+.badge.pending {
+    background: #fef3c7;
+    color: #b45309;
+}

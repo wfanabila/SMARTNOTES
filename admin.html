@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UiTM NoteLink Admin Dashboard</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <!-- Menggunakan CDN untuk ikon, atau anda boleh gunakan fail local -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="layout">
+        <!-- Sidebar Ungu Cair -->
+        <aside class="sidebar">
+            <div class="brand">
+                <img src="img/logo.PNG" alt="Logo" class="brand-logo-img">
+            </div>
+            <nav class="menu">
+                <a href="admin.html" class="menu-item active">
+                    <span class="menu-icon"><i class="fas fa-th-large"></i></span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    <span>Manage Students</span>
+                </a>
+                <a href="#" class="menu-item">
+                    <span class="menu-icon"><i class="far fa-file-alt"></i></span>
+                    <span>Manage Notes</span>
+                </a>
+                <a href="account_setting.html" class="menu-item">
+                    <span class="menu-icon"><i class="fas fa-id-card"></i></span>
+                    <span>Admin Profile</span>
+                </a>
+               
+                <a href="#" class="menu-item">
+                    <span class="menu-icon"><i class="fas fa-cog"></i></span>
+                    <span>Settings</span>
+                </a>
+                
+                
+                <div class="menu-divider"></div>
+                
+                <a href="help_center.html" class="menu-item">
+                    <span class="menu-icon"><i class="far fa-question-circle"></i></span>
+                    <span>Help Center</span>
+                </a>
+                
+                <a href="login.html" class="menu-item sign-out">
+                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
+                    <span>Sign Out</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="top-nav">
+                    <a href="#">Contributors</a>
+                    <a href="#" class="active">Dashboard</a>
+                </div>
+                <div class="profile-area">
+                    <div class="profile-circle">P</div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </header>
+
+            <div class="welcome-header">
+                <h2>Welcome back, Putri 👋</h2>
+                <p class="subtitle">Here’s what is happening on NoteShare today.</p>
+            </div>
+
+            <!-- Stats Grid with Sparkline-style Graphs -->
+            <section class="stats-grid">
+                <article class="stat-card">
+                    <p class="stat-label">TOTAL STUDENTS</p>
+                    <h3>1,248</h3>
+                    <div class="stat-change positive">
+                        <span class="arrow">↑</span>
+                        <span class="value">+12%</span>
+                        <span class="time">this month</span>
+                    </div>
+                    <div class="stat-graph">
+                        <svg viewBox="0 0 100 20" preserveAspectRatio="none">
+                            <polyline points="0,20 10,18 20,19 30,15 40,17 50,12 60,14 70,8 80,10 90,5 100,0" fill="none" stroke="#2563eb" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </article>
+                <article class="stat-card">
+                    <p class="stat-label">TOTAL NOTES</p>
+                    <h3>364</h3>
+                    <div class="stat-change positive">
+                        <span class="arrow">↑</span>
+                        <span class="value">+8%</span>
+                        <span class="time">this month</span>
+                    </div>
+                    <div class="stat-graph">
+                        <svg viewBox="0 0 100 20" preserveAspectRatio="none">
+                            <polyline points="0,20 10,19 20,17 30,18 40,16 50,17 60,15 70,14 80,12 90,10 100,8" fill="none" stroke="#10b981" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </article>
+                <article class="stat-card highlight-card">
+                    <p class="stat-label">PENDING APPROVAL</p>
+                    <h3>5</h3>
+                    <p class="stat-alertNeeds"><i class="fas fa-exclamation-triangle"></i> Needs attention</p>
+                    <div class="stat-graph">
+                        <svg viewBox="0 0 100 20" preserveAspectRatio="none">
+                            <polyline points="0,20 10,20 20,20 30,20 40,20 50,20 60,20 70,20 80,20 90,20 100,20" fill="none" stroke="#d97706" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </article>
+                <article class="stat-card">
+                    <p class="stat-label">REVENUE</p>
+                    <h3>RM 482</h3>
+                    <div class="stat-change positive">
+                        <span class="arrow">↑</span>
+                        <span class="value">+5%</span>
+                        <span class="time">this month</span>
+                    </div>
+                    <div class="stat-graph">
+                        <svg viewBox="0 0 100 20" preserveAspectRatio="none">
+                            <polyline points="0,20 10,18 20,19 30,17 40,16 50,15 60,14 70,12 80,10 90,8 100,6" fill="none" stroke="#8b5cf6" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </article>
+            </section>
+
+            <!-- Table Section with Detail Views -->
+            <section class="table-section">
+                <div class="table-card recent-students">
+                    <div class="table-card-header">
+                        <h3>Recent Students</h3>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>NAME</th>
+                                <th>JOINED</th>
+                                <th>STATUS</th>
+                                <th>STUDENT ID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span class="student-name">Ahmad Rizal</span><br>
+                                    <span class="student-email">ahmad@student.uitm.edu.my</span>
+                                </td>
+                                <td>12 Jan 2025</td>
+                                <td><span class="badge active">Active</span></td>
+                                <td>D123456</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="student-name">Nurul Aina</span><br>
+                                    <span class="student-email">nurul@student.uitm.edu.my</span>
+                                </td>
+                                <td>15 Jan 2025</td>
+                                <td><span class="badge active">Active</span></td>
+                                <td>D123456</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="student-name">Hafiz Azri</span><br>
+                                    <span class="student-email">hafiz@student.uitm.edu.my</span>
+                                </td>
+                                <td>20 Jan 2025</td>
+                                <td><span class="badge suspended">Suspended</span></td>
+                                <td>D123456</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="student-name">Siti Hajar</span><br>
+                                    <span class="student-email">siti@student.uitm.edu.my</span>
+                                </td>
+                                <td>22 Jan 2025</td>
+                                <td><span class="badge active">Active</span></td>
+                                <td>D123456</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-card pending-notes">
+                    <div class="table-card-header">
+                        <h3>Notes Pending Approval</h3>
+                        <a href="#" class="view-all">View All</a>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>TITLE</th>
+                                <th>BY</th>
+                                <th>STATUS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <span class="note-title">Network Security Fundamentals</span><br>
+                                    <span class="note-subject">CSC578</span>
+                                </td>
+                                <td>Wafa Zulaikha</td>
+                                <td><span class="badge pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="note-title">Web Technology Summary</span><br>
+                                    <span class="note-subject">CSC578</span>
+                                </td>
+                                <td>Qistina Raz</td>
+                                <td><span class="badge pending">Pending</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="note-title">Web Technology Summary</span><br>
+                                    <span class="note-subject">CSC578</span>
+                                </td>
+                                <td>Qistina Raz</td>
+                                <td><span class="badge pending">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
