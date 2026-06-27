@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UiTMNoteLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/landingpage.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-brand">
+            <img src="img/logo.PNG" alt="UiTMNoteLink Logo" class="brand-logo">
+            <span class="brand-text">UiTMNoteLink</span>
+        </div>
+
+        <nav class="nav-links">
+            <a href="landingpage.html" class="nav-link active">Home</a>
+            <a href="all_notes.php" class="nav-link">Notes</a>
+            <a href="help_center.html" class="nav-link">Contributors</a>
+            <a href="user_dashboard.html" class="nav-link">Dashboard</a>
+        </nav>
+
+        <a href="user_dashboard.html" class="profile-link" aria-label="Open dashboard">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"></path>
+            </svg>
+        </a>
+    </header>
+
+    <main class="page-shell">
+        <section class="hero-section">
+            <div class="hero-copy">
+                <h1 class="hero-title">
+                    Exchange knowledge.
+                    <span>Elevate your <span class="hero-highlight">academic journey.</span></span>
+                </h1>
+
+                <div class="search-block">
+                    <label class="sr-only" for="hero-search">Search notes and courses</label>
+                    <input id="hero-search" type="search" placeholder="Search for courses, notes" autocomplete="off">
+                </div>
+            </div>
+        </section>
+
+        <section class="explore-section">
+            <div class="section-heading">
+                <div>
+                    <h2>Explore Programme</h2>
+                    <p>Browse specialized archives curated for your major</p>
+                </div>
+                <span class="premium-badge">PREMIUM</span>
+            </div>
+
+            <div class="tag-grid">
+                <a href="all_notes.php?course=CSC270" class="tag-item">CSC270</a>
+                <a href="all_notes.php?course=CSC264" class="tag-item">CSC264</a>
+                <a href="all_notes.php?course=CSC267" class="tag-item">CSC267</a>
+                <a href="all_notes.php?course=CSC230" class="tag-item">CSC230</a>
+                <a href="all_notes.php?course=CSC110" class="tag-item">CSC110</a>
+            </div>
+        </section>
+
+        <section class="recent-section">
+            <h2>Recently Added</h2>
+            <div class="recent-grid">
+                <article class="note-card">
+                    <a href="display_note.php?note=101">
+                        <img src="img/bookmark1.png" alt="CSC577 Chapter 1" class="note-thumb">
+                        <div class="note-label">CSC577 Chapter 1</div>
+                    </a>
+                </article>
+
+                <article class="note-card">
+                    <a href="display_note.php?note=102">
+                        <img src="img/bookmark2.png" alt="CSC577 Chapter 1" class="note-thumb">
+                        <div class="note-label">CSC577 Chapter 1</div>
+                    </a>
+                </article>
+
+                <article class="note-card">
+                    <a href="display_note.php?note=103">
+                        <img src="img/bookmark3.png" alt="CSC402 Chapter 3" class="note-thumb">
+                        <div class="note-label">CSC402 Chapter 3</div>
+                    </a>
+                </article>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
