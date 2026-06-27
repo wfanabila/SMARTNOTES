@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSC267 Semester Notes - UiTMNoteLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/csc267notes.css">
+</head>
+<body>
+    <header class="page-header">
+        <div class="brand-group">
+            <img src="img/logo.PNG" alt="UiTMNoteLink Logo" class="brand-logo">
+        </div>
+
+        <nav class="main-nav">
+            <a href="landingpage.html" class="main-nav__link">Home</a>
+            <a href="all_notes.php" class="main-nav__link main-nav__link--active">Notes</a>
+            <a href="help_center.html" class="main-nav__link">Contributors</a>
+            <a href="user_dashboard.html" class="main-nav__link">Dashboard</a>
+        </nav>
+    </header>
+
+    <main class="page-content">
+        <section class="hero-panel">
+            <div class="hero-title-group">
+                <h1 class="hero-title" id="semester-heading">CSC267 SEM 1 Notes</h1>
+                <p class="hero-subtitle">Interface view for CSC267 semester notes; this can later connect to PHP / database content.</p>
+            </div>
+        </section>
+
+        <section class="recent-section">
+            <h2 id="listing-title">Available notes for SEM 1</h2>
+            <div class="recent-grid" id="notes-grid"></div>
+        </section>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const semester = params.get('semester') || '1';
+        const semLabel = semester.match(/^[1-6]$/) ? semester : '1';
+
+        const notesBySemester = {
+            '1': [
+                { id: 301, thumb: 'img/bookmark1.png', title: 'CSC267 Chapter 1', subtitle: 'Introduction to Data Representation' },
+                { id: 302, thumb: 'img/bookmark2.png', title: 'CSC267 Chapter 2', subtitle: 'Boolean Algebra & Logic Gates' },
+                { id: 303, thumb: 'img/bookmark3.png', title: 'CSC267 Tutorial Notes', subtitle: 'Practice Questions and Sample Answers' }
+            ],
+            '2': [
+                { id: 304, thumb: 'img/bookmark1.png', title: 'CSC267 Chapter 3', subtitle: 'Sequential Logic Circuits' },
+                { id: 305, thumb: 'img/bookmark2.png', title: 'CSC267 Lab Notes', subtitle: 'Flip-Flops and Counters' },
+                { id: 306, thumb: 'img/bookmark3.png', title: 'CSC267 Quiz Review', subtitle: 'Semester 2 revision materials' }
+            ],
+            '3': [
+                { id: 307, thumb: 'img/bookmark1.png', title: 'CSC267 Chapter 4', subtitle: 'Memory Systems Overview' },
+                { id: 308, thumb: 'img/bookmark2.png', title: 'CSC267 Assignment', subtitle: 'Cache Memory and Virtual Memory' },
+                { id: 309, thumb: 'img/bookmark3.png', title: 'CSC267 Exam Notes', subtitle: 'Past year questions and summaries' }
+            ],
+            '4': [
+                { id: 310, thumb: 'img/bookmark1.png', title: 'CSC267 Chapter 5', subtitle: 'Processor Design Basics' },
+                { id: 311, thumb: 'img/bookmark2.png', title: 'CSC267 Practice Sheet', subtitle: 'CPU pipelining explained' },
+                { id: 312, thumb: 'img/bookmark3.png', title: 'CSC267 Review Guide', subtitle: 'Key formulas and definitions' }
+            ],
+            '5': [
+                { id: 313, thumb: 'img/bookmark1.png', title: 'CSC267 Chapter 6', subtitle: 'Microarchitecture case studies' },
+                { id: 314, thumb: 'img/bookmark2.png', title: 'CSC267 Lab Report', subtitle: 'Hardware simulation notes' },
+                { id: 315, thumb: 'img/bookmark3.png', title: 'CSC267 Exam Prep', subtitle: 'Top 10 questions to practice' }
+            ],
+            '6': [
+                { id: 316, thumb: 'img/bookmark1.png', title: 'CSC267 Final Notes', subtitle: 'Project and revision summary' },
+                { id: 317, thumb: 'img/bookmark2.png', title: 'CSC267 Bonus Material', subtitle: 'Advanced topics overview' },
+                { id: 318, thumb: 'img/bookmark3.png', title: 'CSC267 Complete Set', subtitle: 'Full semester dependency map' }
+            ]
+        };
+
+        const notes = notesBySemester[semLabel] || notesBySemester['1'];
+        document.getElementById('semester-heading').textContent = `CSC267 SEM ${semLabel} Notes`;
+        document.getElementById('listing-title').textContent = `Available notes for SEM ${semLabel}`;
+
+        const grid = document.getElementById('notes-grid');
+        grid.innerHTML = notes.map(note => {
+            return `
+                <article class="recent-card">
+                    <a href="display_note.php?note=${note.id}" class="recent-card__link">
+                        <img src="${note.thumb}" alt="${note.title}" class="recent-card__thumb">
+                        <div class="recent-card__meta">${note.title}</div>
+                        <div class="recent-card__meta" style="font-weight: 500; color: #475569; font-size: 0.95rem; padding-top: 0;">${note.subtitle}</div>
+                    </a>
+                </article>
+            `;
+        }).join('');
+    </script>
+</body>
+</html>
