@@ -117,10 +117,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <div class="footer">
-        <p>&copy; 2026 UiTMNoteLink. All rights reserved.</p>
-    </div>
-
     <script>
         const btnAdmin = document.getElementById('btnAdmin');
         const btnStudent = document.getElementById('btnStudent');
