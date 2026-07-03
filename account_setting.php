@@ -290,31 +290,6 @@ if (!$user) {
                     </form>
                 </section>
 
-                <section class="appearance">
-                    <h2 class="appearance__title">Appearance</h2>
-                    <p class="appearance__sub">Personalize your workspace experience.</p>
-
-                    <div class="theme-grid">
-                        <label class="theme-option">
-                            <input type="radio" name="theme" value="light">
-                            <img class="theme-preview" src="img/lightmode.png" alt="Light Mode preview">
-                            <span class="theme-option__label">Light Mode</span>
-                        </label>
-
-                        <label class="theme-option">
-                            <input type="radio" name="theme" value="dark" checked>
-                            <img class="theme-preview" src="img/darkmode.png" alt="Dark Mode preview">
-                            <span class="theme-option__label">Dark Mode</span>
-                        </label>
-
-                        <label class="theme-option">
-                            <input type="radio" name="theme" value="system">
-                            <img class="theme-preview" src="img/system.png" alt="System preview">
-                            <span class="theme-option__label">System</span>
-                        </label>
-                    </div>
-                </section>
-
             </div>
         </main>
     </div>
