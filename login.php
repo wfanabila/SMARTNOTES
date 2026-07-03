@@ -54,6 +54,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">  
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style-login.css">
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+    <style>
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #e0ddd6;
+            border-radius: 10px;
+            background: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .google-btn:hover {
+            background: #f9f9f9;
+            border-color: #c4b5fd;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 18px 0;
+            color: #9a9690;
+            font-size: 13px;
+        }
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e0ddd6;
+        }
+    </style>
 </head>
 <body>
     
@@ -74,6 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h1 class="login-title">Welcome back</h1>
             <p class="login-subtitle">Sign in to your account</p>
 
+
             <?php if(!empty($error_msg)): ?>
                 <div class="alert alert-danger py-2" style="font-size: 0.85rem; font-weight: 500;">
                     <?php echo $error_msg; ?>
@@ -84,6 +128,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <button type="button" class="role-btn" id="btnAdmin">Admin</button>
                 <button type="button" class="role-btn active" id="btnStudent">Student</button>
             </div>
+
+            <button type="button" id="googleSignInBtn" class="google-btn">
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" width="18" height="18" alt="Google">
+                Continue with Google
+            </button>
+
+            <div class="divider"><span>or</span></div>
 
             <form action="login.php" method="post">
                 
@@ -111,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </p>
             
             <p class="new-user-text">
-                New user? <a href="register.html">Create an account</a>
+                New user? <a href="register.php">Create an account</a>
             </p>
 
         </div>
@@ -140,5 +191,67 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             passwordInput.placeholder = 'Student Password';
         });
     </script>
+
+    <script>
+        // Firebase Google Sign-In — dibungkus dalam DOMContentLoaded supaya
+        // button dah wujud dalam page dulu sebelum kita "wire" click event
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyAk11evif-LvDAnj_DHgrjGMVwbe-2S4QI",
+                authDomain: "uitmnotelink.firebaseapp.com",
+                projectId: "uitmnotelink",
+                storageBucket: "uitmnotelink.firebasestorage.app",
+                messagingSenderId: "445462119384",
+                appId: "1:445462119384:web:01cbc4795b381f474728ad",
+            };
+
+            firebase.initializeApp(firebaseConfig);
+
+            let isSigningIn = false; // guard against double-click / duplicate popup requests
+
+            document.getElementById('googleSignInBtn').addEventListener('click', function () {
+                if (isSigningIn) return;
+                isSigningIn = true;
+
+                const provider = new firebase.auth.GoogleAuthProvider();
+
+                firebase.auth().signInWithPopup(provider)
+                    .then((result) => {
+                        const user = result.user;
+                        return fetch('google_login.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                email: user.email,
+                                name: user.displayName,
+                                uid: user.uid
+                            })
+                        });
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            window.location.href = data.redirect;
+                        } else {
+                            alert(data.message || 'Google sign-in failed. Please try again.');
+                        }
+                    })
+                    .catch((error) => {
+                        // Benign errors from double-clicks / closing the popup - stay silent
+                        const harmless = ['auth/cancelled-popup-request', 'auth/popup-closed-by-user'];
+                        if (!harmless.includes(error.code)) {
+                            console.error(error);
+                            alert('Google sign-in failed: ' + error.message);
+                        }
+                    })
+                    .finally(() => {
+                        isSigningIn = false;
+                    });
+            });
+
+        });
+    </script>
+
 </body>
 </html>
