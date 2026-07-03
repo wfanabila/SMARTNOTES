@@ -27,6 +27,8 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$user) {
     die("User data could not be retrieved.");
 }
+
+$current_page = 'dashboard';
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +44,6 @@ if (!$user) {
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
 </head>
 <body>
-    
 
     <nav class="topnav">
         <div class="topnav__left">
@@ -58,7 +59,7 @@ if (!$user) {
             <a href="#" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Home</a>
             <a href="#" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Notes</a>
             <a href="#" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Contributors</a>
-            <a href="user_dashboard.html" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Dashboard</a> 
+            <a href="user_dashboard.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Dashboard</a>
         </div>
 
         <!-- pfp avatar -->
@@ -78,7 +79,7 @@ if (!$user) {
     </nav>
 
     <?php include 'sidebar.php'; ?>
-    
+
         <!-- user dashboard -->
         <main class="main">
             <div class="main__container">
@@ -94,7 +95,7 @@ if (!$user) {
                     <div class="stat-card stat-card--points">
                         <span class="stat-card__label">Points Earned:</span>
                         <div class="stat-card__amount">
-                            RM50.00 
+                            RM50.00
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                                 <line x1="5" y1="12" x2="19" y2="12"></line>
                                 <polyline points="12 5 19 12 12 19"></polyline>
@@ -126,9 +127,9 @@ if (!$user) {
                         <article class="note-card">
                             <div class="note-card__thumb">
                                 <img src="img/mynotes1.png" alt="CSC660 Cover" style="width: 100%; height: 100%; object-fit: cover;">
-                                
+
                                 <button class="note-card__menu">⋮</button>
-                                
+
                                 <div class="note-card__dropdown">
                                     <button class="dropdown-item btn-edit">Edit</button>
                                     <button class="dropdown-item btn-delete">Delete</button>
@@ -151,9 +152,9 @@ if (!$user) {
                         <article class="note-card">
                             <div class="note-card__thumb">
                                 <img src="img/mynotes2.png" alt="CSC577 Cover" style="width: 100%; height: 100%; object-fit: cover;">
-                                
+
                                 <button class="note-card__menu">⋮</button>
-                                
+
                                 <div class="note-card__dropdown">
                                     <button class="dropdown-item btn-edit">Edit</button>
                                     <button class="dropdown-item btn-delete">Delete</button>
@@ -197,7 +198,6 @@ if (!$user) {
 
                                 <div class="note-card__dropdown">
                                     <button class="dropdown-item btn-unbookmark">Remove</button>
-                                    <!-- <button class="dropdown-item">Download</button> -->
                                 </div>
                             </div>
                             <div class="note-card__body">
@@ -218,7 +218,6 @@ if (!$user) {
 
                                 <div class="note-card__dropdown">
                                     <button class="dropdown-item btn-unbookmark">Remove</button>
-                                    <!-- <button class="dropdown-item">Download</button> -->
                                 </div>
                             </div>
                             <div class="note-card__body">
@@ -239,7 +238,6 @@ if (!$user) {
 
                                 <div class="note-card__dropdown">
                                     <button class="dropdown-item btn-unbookmark">Remove</button>
-                                    <!-- <button class="dropdown-item">Download</button> -->
                                 </div>
                             </div>
                             <div class="note-card__body">
@@ -259,15 +257,6 @@ if (!$user) {
     </div>
 
     <script>
-    
-
-    const sidebarItems = document.querySelectorAll('.sidebar__item');
-    sidebarItems.forEach(item => {
-        item.addEventListener('click', function (e) {
-            sidebarItems.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
 
     // menu dropdown for delete or edit note
     const menuButtons = document.querySelectorAll('.note-card__menu');
@@ -275,16 +264,16 @@ if (!$user) {
     menuButtons.forEach(button => {
         button.addEventListener('click', function (event) {
             event.stopPropagation();
-            
+
             const parentThumb = this.parentElement;
             const currentDropdown = parentThumb.querySelector('.note-card__dropdown');
-            
+
             document.querySelectorAll('.note-card__dropdown').forEach(dropdown => {
                 if (dropdown !== currentDropdown) {
                     dropdown.classList.remove('show');
                 }
             });
-            
+
             currentDropdown.classList.toggle('show');
         });
     });
@@ -296,7 +285,6 @@ if (!$user) {
     });
 
     function switchTab(tabName) {
-
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         document.getElementById('tab-' + tabName).classList.add('active');
 
@@ -317,11 +305,11 @@ if (!$user) {
         if (section === 'overview') {
             setSidebarActive('nav-overview');
 
-            document.getElementById('section-overview').scrollIntoView({ behavior: 'smooth', block: 'start' });
-
             const el = document.getElementById('section-overview');
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
             el.classList.remove('section-highlight');
-            void el.offsetWidth; 
+            void el.offsetWidth;
             el.classList.add('section-highlight');
             setTimeout(() => el.classList.remove('section-highlight'), 1000);
 
@@ -335,25 +323,10 @@ if (!$user) {
         }
     }
 
-
-    const settingsBtn = document.getElementById('nav-settings');
-    const accountPopup = document.getElementById('account-popup');
-
-    function toggleSettingsPopup(event) {
-        event.preventDefault();
-        event.stopPropagation();
-        accountPopup.classList.toggle('show');
-    }
-
-    window.addEventListener('click', function (event) {
-        if (accountPopup.classList.contains('show') &&
-            !accountPopup.contains(event.target) &&
-            event.target !== settingsBtn) {
-            accountPopup.classList.remove('show');
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        setSidebarActive('nav-overview');
     });
 
-    
     </script>
 
 </body>
