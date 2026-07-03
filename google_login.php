@@ -58,7 +58,7 @@ if ($found) {
     $_SESSION['user_name'] = $existingName;
     $_SESSION['role']      = 'student';
 
-    echo json_encode(["status" => "success", "redirect" => "user_dashboard.html"]);
+    echo json_encode(["status" => "success", "redirect" => "user_dashboard.php"]);
     exit;
 }
 
@@ -85,7 +85,7 @@ if ($stmt->execute()) {
     $_SESSION['user_name'] = $name;
     $_SESSION['role']      = 'student';
 
-    echo json_encode(["status" => "success", "redirect" => "user_dashboard.html"]);
+    echo json_encode(["status" => "success", "redirect" => "user_dashboard.php"]);
 } else {
     echo json_encode(["status" => "error", "message" => "Failed to create account: " . $stmt->error]);
 }
