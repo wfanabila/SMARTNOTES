@@ -97,11 +97,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <img src="img/logo.PNG" alt="UiTMNoteLink Logo" class="brand-logo-img">
             </div>
             <nav class="menu">
-                <a href="admin.html" class="menu-item">
+                <a href="admin.php" class="menu-item">
                     <span class="menu-icon"><i class="fas fa-th-large"></i></span>
                     <span>Dashboard</span>
                 </a>
-                <a href="manage_students.html" class="menu-item">
+                <a href="manage_students.php" class="menu-item">
                     <span class="menu-icon"><i class="fas fa-users"></i></span>
                     <span>Manage Students</span>
                 </a>
@@ -141,8 +141,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <main class="content">
             <header class="topbar">
                 <div class="top-nav">
-                    <a href="help_center.html">Contributors</a>
-                    <a href="admin.html" class="active">Dashboard</a>
+                    <a href="contributors.php">Contributors</a>
+                    <a href="admin.php" class="active">Dashboard</a>
                 </div>
                 <div class="profile-area" id="profileToggle">
                     <div class="profile-circle"><?= htmlspecialchars($adminInitial) ?></div>
@@ -238,8 +238,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <p class="form-success"><?= htmlspecialchars($successMessage) ?></p>
                         <?php endif; ?>
                     </div>
-                </form>
-
                 </form>
 
                 <div class="upload-modal-overlay" id="uploadModalOverlay">
@@ -389,6 +387,89 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 closePasswordModal();
             }
         });
+
+        // Theme sync logic: light, dark, or system preference + localStorage persistence.
+        (function() {
+            var themeRadios = document.querySelectorAll('input[name="theme"]');
+            var storageKey = 'adminprofileTheme';
+            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+            var currentUserTheme = 'light';
+            var systemListenerAdded = false;
+
+            function getSystemTheme() {
+                return prefersDark.matches ? 'dark' : 'light';
+            }
+
+            function applyTheme(theme) {
+                currentUserTheme = theme;
+                var resolvedTheme = theme === 'system' ? getSystemTheme() : theme;
+                document.documentElement.dataset.theme = resolvedTheme;
+                document.documentElement.dataset.userTheme = theme;
+
+                if (theme === 'system' && !systemListenerAdded) {
+                    var systemListener = function() {
+                        if (document.documentElement.dataset.userTheme === 'system') {
+                            document.documentElement.dataset.theme = getSystemTheme();
+                        }
+                    };
+                    if (typeof prefersDark.addEventListener === 'function') {
+                        prefersDark.addEventListener('change', systemListener);
+                    } else if (typeof prefersDark.addListener === 'function') {
+                        prefersDark.addListener(systemListener);
+                    }
+                    systemListenerAdded = true;
+                }
+            }
+
+            function saveTheme(theme) {
+                try {
+                    localStorage.setItem(storageKey, theme);
+                } catch (err) {
+                    // ignore localStorage write failures
+                }
+            }
+
+            function loadTheme() {
+                try {
+                    return localStorage.getItem(storageKey);
+                } catch (err) {
+                    return null;
+                }
+            }
+
+            function setRadioSelection(theme) {
+                themeRadios.forEach(function(radio) {
+                    var isSelected = radio.value === theme;
+                    radio.checked = isSelected;
+                    var label = radio.closest('label');
+                    if (label) {
+                        label.classList.toggle('selected', isSelected);
+                    }
+                });
+            }
+
+            function initTheme() {
+                var stored = loadTheme();
+                var initialTheme = stored || 'light';
+                if (['light', 'dark', 'system'].indexOf(initialTheme) === -1) {
+                    initialTheme = 'light';
+                }
+                setRadioSelection(initialTheme);
+                applyTheme(initialTheme);
+            }
+
+            themeRadios.forEach(function(radio) {
+                radio.addEventListener('change', function() {
+                    if (!this.checked) {
+                        return;
+                    }
+                    saveTheme(this.value);
+                    applyTheme(this.value);
+                });
+            });
+
+            initTheme();
+        })();
     </script>
 </body>
 </html>

@@ -12,7 +12,7 @@ if ($conn->connect_error) { die("Database link configuration failed."); }
 
 session_start();
 $current_user_id = $_SESSION['studentID'] ?? 2;
-$noteID = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+$noteID = isset($_GET['id']) ? (int)$_GET['id'] : (isset($_GET['note']) ? (int)$_GET['note'] : 0);
 
 // Gather structural data targets from data system
 $stmt = $conn->prepare("SELECT * FROM Notes WHERE noteID = ?");

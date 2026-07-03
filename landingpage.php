@@ -15,7 +15,7 @@
         </div>
 
         <nav class="nav-links">
-            <a href="landingpage.html" class="nav-link active">Home</a>
+            <a href="landingpage.php" class="nav-link active">Home</a>
             <a href="all_notes.php" class="nav-link">Notes</a>
             <a href="help_center.html" class="nav-link">Contributors</a>
             <a href="user_dashboard.html" class="nav-link">Dashboard</a>
@@ -47,11 +47,11 @@
             </div>
 
             <div class="tag-grid">
-                <a href="csc270notes.html" class="tag-item">CSC270</a>
-                <a href="csc264notes.html" class="tag-item">CSC264</a>
-                <a href="csc267notes.html" class="tag-item">CSC267</a>
-                <a href="csc230notes.html" class="tag-item">CSC230</a>
-                <a href="csc110notes.html" class="tag-item">CSC110</a>
+                <a href="csc270notes.php" class="tag-item">CSC270</a>
+                <a href="csc264notes.php" class="tag-item">CSC264</a>
+                <a href="csc267notes.php" class="tag-item">CSC267</a>
+                <a href="csc230notes.php" class="tag-item">CSC230</a>
+                <a href="csc110notes.php" class="tag-item">CSC110</a>
             </div>
         </section>
 
