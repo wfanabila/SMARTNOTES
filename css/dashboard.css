@@ -108,7 +108,7 @@ a {
 }
 
 /* side bar */
-/* .sidebar {
+.sidebar {
     position: fixed;
     top: 56px;
     left: 0;
@@ -132,6 +132,9 @@ a {
     width: 220px;
 }
 
+/* keep the sidebar expanded while the account popup card is open,
+   so the popup (and its trigger) stay fully readable even if the
+   mouse moves off the sidebar onto the popup itself */
 .sidebar:has(.account-popup.show) {
     width: 220px;
 }
@@ -151,7 +154,7 @@ a {
 }
 
 /* overview, my notes, bookmarks */
-/* .sidebar__item {
+.sidebar__item {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -196,10 +199,10 @@ a {
 .sidebar__item.active:hover {
     background: #d6c3ff;
     color: #6D3BD7;
-} */
+}
 
 /* upload new note button */
-/* .sidebar__upload {
+.sidebar__upload {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -230,18 +233,19 @@ a {
 
 .sidebar:hover .sidebar__upload span {
     opacity: 1;
-} */
+}
 
 /* setting and help center */
-/* .sidebar__footer {
+.sidebar__footer {
     border-top: 0.5px solid #e0ddd6;
     padding: 8px;
     display: flex;
     flex-direction: column;
     gap: 2px;
-    position: relative;
+    position: relative; /* anchors the account popup card above the Settings button */
 }
 
+/* setting ---> account, logout */
 .account-popup {
     position: absolute;
     bottom: calc(100% + 8px);
@@ -352,7 +356,7 @@ a {
 .account-popup__item--logout:hover {
     background: #fff0f0;
     color: #df2c2c;
-}  */
+}
 
 
 .main {
@@ -372,6 +376,7 @@ a {
     padding: 48px 40px;
 }
 
+/* space line between bio and main content card */
 .profile {
     margin-bottom: 40px;
 }
