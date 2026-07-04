@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $_SESSION['user_name'] = $user['studentName'];
                 $_SESSION['role'] = 'student';
                 
-                header("Location: user_dashboard.html"); 
+                header("Location: user_dashboard.html");
                 exit();
             } else {
                 $error_msg = "Incorrect password!";
