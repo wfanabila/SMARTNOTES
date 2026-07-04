@@ -26,7 +26,7 @@ function sendOTPEmail($toEmail, $toName, $otp, $role = 'student') {
     // ===== ADJUST THESE 3 LINES with your own Gmail + App Password =====
     $smtpUsername = "rahafizuddin90@gmail.com";    
     $smtpPassword = "bfch upoh zxkl yypw";        
-    $fromName     = "UiTMNoteLink Official Headquarters";
+    $fromName     = "UiTMNoteLink HQ";
     // =====================================================================
 
     $mail = new PHPMailer(true);
