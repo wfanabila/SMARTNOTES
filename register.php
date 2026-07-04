@@ -22,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $result = mysqli_query($conn, $check_user);
 
     if (mysqli_num_rows($result) > 0) {
-        echo "<script>alert('Student ID or Email already exists!'); window.location.href='register.html';</script>";
+        echo "<script>alert('Student ID or Email already exists!'); window.location.href='register.php';</script>";
     } else {
         $query = "INSERT INTO student (studentID, studentName, studentEmail, studentPassword, programme, semester) 
                   VALUES ('$id', '$name', '$email', '$password', '$programme', '$semester')";
