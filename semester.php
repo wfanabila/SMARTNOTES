@@ -32,7 +32,6 @@ if ($conn->connect_error) {
     die('Database connection failed: ' . $conn->connect_error);
 }
 
-// Match subject prefix and course.
 $subjectPrefix = $course . '%';
 $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
           FROM notes n
@@ -73,7 +72,7 @@ function escape_html(string $value): string {
             <a href="landingpage.php" class="main-nav__link">Home</a>
             <a href="<?= escape_html($filePrefix) ?>notes.php" class="main-nav__link">Notes</a>
             <a href="help_center.html" class="main-nav__link">Contributors</a>
-            <a href="user_dashboard.html" class="main-nav__link">Dashboard</a>
+            <a href="user_dashboard.php" class="main-nav__link">Dashboard</a>
         </nav>
     </header>
 

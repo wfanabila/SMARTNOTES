@@ -18,7 +18,7 @@
             <a href="landingpage.php" class="nav-link active">Home</a>
             <a href="all_notes.php" class="nav-link">Notes</a>
             <a href="help_center.html" class="nav-link">Contributors</a>
-            <a href="user_dashboard.html" class="nav-link">Dashboard</a>
+            <a href="user_dashboard.php" class="nav-link">Dashboard</a>
         </nav>
     </header>
 
