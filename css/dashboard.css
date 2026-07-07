@@ -71,7 +71,6 @@ a {
     transition: background 0.15s, color 0.15s;
 }
 
-/* line when click upper nav */
 .topnav-link:hover {
     border-color: #6D3BD7 !important;
     color: #6D3BD7 !important;
@@ -132,9 +131,6 @@ a {
     width: 220px;
 }
 
-/* keep the sidebar expanded while the account popup card is open,
-   so the popup (and its trigger) stay fully readable even if the
-   mouse moves off the sidebar onto the popup itself */
 .sidebar:has(.account-popup.show) {
     width: 220px;
 }
@@ -242,7 +238,7 @@ a {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    position: relative; /* anchors the account popup card above the Settings button */
+    position: relative;
 }
 
 /* setting ---> account, logout */
@@ -376,7 +372,6 @@ a {
     padding: 48px 40px;
 }
 
-/* space line between bio and main content card */
 .profile {
     margin-bottom: 40px;
 }
@@ -550,7 +545,7 @@ a {
     background: #ffffff;
     border: 1px solid #e0ddd6; 
     border-radius: 16px;
-    overflow: hidden;
+    overflow: visible;
     transition: box-shadow 0.15s, transform 0.15s;
     cursor: pointer;
 
@@ -567,7 +562,7 @@ a {
     height: 140px;
     position: relative;
     background: #ebe8e2; 
-    overflow: hidden;
+    overflow: visible;
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
 }
@@ -586,6 +581,7 @@ a {
     flex-direction: column;
     gap: 8px;
     flex: 1;
+    border-radius: 0 0 16px 16px;
 }
 
 .note-card__tags {
@@ -639,7 +635,7 @@ a {
     flex-shrink: 0;
 }
 
-/* dropdown for edit note or delete */
+/* dropdown for view, edit note or delete */
 .note-card__menu {
     position: absolute;
     top: 10px;
@@ -656,6 +652,7 @@ a {
     cursor: pointer;
     color: #1a1a1a;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    z-index: 11;
 }
 
 .note-card__dropdown {
@@ -666,8 +663,8 @@ a {
     border: 1px solid #e0ddd6;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-    width: 100px;
+    z-index: 20;
+    width: 168px;
     display: flex;
     flex-direction: column;
     padding: 4px 0;
@@ -688,18 +685,23 @@ a {
     background: none;
     border: none;
     text-align: left;
-    padding: 8px 14px;
+    padding: 9px 14px;
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     font-weight: 500;
     color: #1a1a1a;
     cursor: pointer;
     width: 100%;
+    white-space: nowrap;
     transition: background 0.1s;
 }
 
 .dropdown-item:hover {
     background: #f5f3ef;
+}
+
+.note-card__dropdown form {
+    width: 100%;
 }
 
 .dropdown-item.btn-delete {

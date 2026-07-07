@@ -27,13 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $email        = trim($_POST['email']);
     $programme    = trim($_POST['programme']);
     $semester     = trim($_POST['semester']);
+    $bio          = trim($_POST['bio']);
 
     if (empty($student_name) || empty($email)) {
         $error_message = "Full Name and Email fields are required.";
     } else {
         try {
-            $stmt = $pdo->prepare("UPDATE student SET studentName = ?, studentEmail = ?, programme = ?, semester = ? WHERE studentID = ?");
-            $stmt->execute([$student_name, $email, $programme, $semester, $user_id]);
+            $stmt = $pdo->prepare("UPDATE student SET studentName = ?, studentEmail = ?, programme = ?, semester = ?, bio = ? WHERE studentID = ?");
+            $stmt->execute([$student_name, $email, $programme, $semester, $bio, $user_id]);
             $message = "Profile updated successfully!";
         } catch (PDOException $e) {
             $error_message = "Error updating profile: " . $e->getMessage();
@@ -116,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-$stmt = $pdo->prepare("SELECT studentName, studentEmail, programme, semester, profilePicture FROM student WHERE studentID = ?");
+$stmt = $pdo->prepare("SELECT studentName, studentEmail, programme, semester, profilePicture, bio FROM student WHERE studentID = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -141,6 +142,51 @@ if (!$user) {
         .alert-banner { padding: 12px; margin-bottom: 20px; border-radius: 6px; font-size: 14px; }
         .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
         .alert-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        .settings-form__row--full {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 25px;
+        }
+        
+        .settings-form__row--full .settings-form__field {
+            width: 100%;
+            max-width: 900px; 
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .settings-form__row--full label {
+            text-align: left;
+            width: 100%;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        
+        .settings-form__row--full .settings-form__input-wrap {
+            width: 100%;
+            position: relative;
+        }
+
+        .settings-form__row--full textarea {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .settings-form__row--full .settings-form__edit-icon--textarea {
+            right: 12px;
+            top: 12px;
+        }
+
+        .settings-form__actions-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -286,35 +332,23 @@ if (!$user) {
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn--primary btn--save">Save Changes</button>
+                        <div class="settings-form__row settings-form__row--full">
+                            <div class="settings-form__field">
+                                <label for="bio">Bio</label>
+                                <div class="settings-form__input-wrap">
+                                    <textarea id="bio" name="bio" rows="4" placeholder="Tell us about yourself..."><?php echo htmlspecialchars($user['bio'] ?? ''); ?></textarea>
+                                    <svg class="settings-form__edit-icon settings-form__edit-icon--textarea" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-form__actions-center">
+                            <button type="submit" class="btn btn--primary btn--save">Save Changes</button>
+                        </div>
                     </form>
                 </section>
-
-                <section class="appearance">
-                    <h2 class="appearance__title">Appearance</h2>
-                    <p class="appearance__sub">Personalize your workspace experience.</p>
-
-                    <div class="theme-grid">
-                        <label class="theme-option">
-                            <input type="radio" name="theme" value="light">
-                            <img class="theme-preview" src="img/lightmode.png" alt="Light Mode preview">
-                            <span class="theme-option__label">Light Mode</span>
-                        </label>
-
-                        <label class="theme-option">
-                            <input type="radio" name="theme" value="dark" checked>
-                            <img class="theme-preview" src="img/darkmode.png" alt="Dark Mode preview">
-                            <span class="theme-option__label">Dark Mode</span>
-                        </label>
-
-                        <label class="theme-option">
-                            <input type="radio" name="theme" value="system">
-                            <img class="theme-preview" src="img/system.png" alt="System preview">
-                            <span class="theme-option__label">System</span>
-                        </label>
-                    </div>
-                </section>
-
             </div>
         </main>
     </div>
@@ -399,7 +433,7 @@ if (!$user) {
     }
 
     window.addEventListener('click', function (event) {
-        if (accountPopup.classList.contains('show') &&
+        if (accountPopup && accountPopup.classList.contains('show') &&
             !accountPopup.contains(event.target) &&
             event.target !== settingsBtn) {
             accountPopup.classList.remove('show');
@@ -479,7 +513,7 @@ if (!$user) {
     const pfpFileInput = document.getElementById('pfp-file-input');
     const pfpDropzone = document.getElementById('pfp-dropzone');
     const pfpForm = document.getElementById('pfp-form');
-    const maxPfpSize = 5 * 1024 * 1024; // 5MB, must match the server-side limit
+    const maxPfpSize = 5 * 1024 * 1024; // 5MB
 
     function openPfpModal() {
         pfpModalOverlay.classList.add('show');

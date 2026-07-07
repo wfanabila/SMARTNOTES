@@ -18,11 +18,10 @@ $targetID = isset($_SESSION['studentID']) ? (int)$_SESSION['studentID'] : 1;
 $checkUser = $conn->query("SELECT studentID FROM student WHERE studentID = " . $targetID);
 
 if ($checkUser && $checkUser->num_rows > 0) {
-    // Perfect! The ID exists in the database. Use it.
     $studentID = $targetID;
 } else {
     $checkFallback = $conn->query("SELECT studentID FROM student WHERE studentID = 1");
-    
+
     if ($checkFallback && $checkFallback->num_rows > 0) {
         $studentID = 1;
     } else {
@@ -31,7 +30,6 @@ if ($checkUser && $checkUser->num_rows > 0) {
             $row = $anyUser->fetch_assoc();
             $studentID = (int)$row['studentID'];
         } else {
-            // If the table is completely clean/empty, insert ID 1 on the fly
             $conn->query("INSERT IGNORE INTO student (studentID, studentName, studentEmail, studentPassword, programme, semester) 
                           VALUES (1, 'Test Student', 'test@test.com', '123', 'Computer Science', 1)");
             $studentID = 1;
@@ -39,15 +37,30 @@ if ($checkUser && $checkUser->num_rows > 0) {
     }
 }
 
+$noteID = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+if ($noteID <= 0) {
+    die("No note specified to edit.");
+}
+
+$stmt = $conn->prepare("SELECT * FROM notes WHERE noteID = ? AND studentID = ?");
+$stmt->bind_param("ii", $noteID, $studentID);
+$stmt->execute();
+$note = $stmt->get_result()->fetch_assoc();
+$stmt->close();
+
+if (!$note) {
+    die("Note not found, or you don't have permission to edit it.");
+}
+
 $message = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // ---- Get text fields from the form ----
     $title       = trim($_POST['notestitle']);
     $description = trim($_POST['description']);
-    $pricing     = strtolower(trim($_POST['pricing'])); 
-    $subjectID   = (int) $_POST['subjectid'];           
+    $pricing     = strtolower(trim($_POST['pricing']));
+    $subjectID   = (int) $_POST['subjectid'];
     $price       = ($pricing === 'paid') ? (float) $_POST['price'] : 0.00;
 
     $errors = [];
@@ -68,11 +81,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Please enter a valid price for paid notes.";
     }
 
-    if (!isset($_FILES['fileUpload']) || $_FILES['fileUpload']['error'] === UPLOAD_ERR_NO_FILE) {
-        $errors[] = "Please choose a file to upload.";
-    }
+    $relativePath = $note['filePath'];
 
-    if (empty($errors)) {
+    if (isset($_FILES['fileUpload']) && $_FILES['fileUpload']['error'] !== UPLOAD_ERR_NO_FILE) {
 
         $file = $_FILES['fileUpload'];
 
@@ -95,38 +106,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $safeName = uniqid('note_', true) . '.' . $ext;
                 $destination = $uploadDir . $safeName;
-                $relativePath = 'uploads/' . $safeName; 
+                $newRelativePath = 'uploads/' . $safeName;
 
                 if (move_uploaded_file($file['tmp_name'], $destination)) {
 
-                    $stmt = $conn->prepare(
-                        "INSERT INTO notes (title, description, filePath, noteType, price, studentID, subjectID)
-                         VALUES (?, ?, ?, ?, ?, ?, ?)"
-                    );
-
-                    if ($stmt === false) {
-                        $errors[] = "Prepare statement failed: " . $conn->error;
-                    } else {
-                        // Forcing $studentID explicitly to integer type ('i')
-                        $stmt->bind_param(
-                            "ssssdii",
-                            $title,
-                            $description,
-                            $relativePath,
-                            $pricing,
-                            $price,
-                            $studentID,
-                            $subjectID
-                        );
-
-                        if ($stmt->execute()) {
-                            header("Location: user_dashboard.php#section-notes");
-                            exit;
-                        } else {
-                            $message = "Database error: " . $stmt->error;
-                        }
-                        $stmt->close();
+                    // remove the old file now that the new one is safely saved
+                    $oldFullPath = __DIR__ . '/' . $note['filePath'];
+                    if (file_exists($oldFullPath)) {
+                        unlink($oldFullPath);
                     }
+
+                    $relativePath = $newRelativePath;
 
                 } else {
                     $errors[] = "Failed to move uploaded file. Check folder permissions.";
@@ -135,9 +125,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if (empty($errors)) {
+
+        $stmt = $conn->prepare(
+            "UPDATE notes
+             SET title = ?, description = ?, filePath = ?, noteType = ?, price = ?, subjectID = ?
+             WHERE noteID = ? AND studentID = ?"
+        );
+
+        if ($stmt === false) {
+            $errors[] = "Prepare statement failed: " . $conn->error;
+        } else {
+            $stmt->bind_param(
+                "ssssdiii",
+                $title,
+                $description,
+                $relativePath,
+                $pricing,
+                $price,
+                $subjectID,
+                $noteID,
+                $studentID
+            );
+
+            if ($stmt->execute()) {
+                header("Location: user_dashboard.php#section-notes");
+                exit;
+            } else {
+                $message = "Database error: " . $stmt->error;
+            }
+            $stmt->close();
+        }
+    }
+
     if (!empty($errors)) {
         $message = implode("<br>", $errors);
     }
+
+    $note['title']       = $title;
+    $note['description']  = $description;
+    $note['noteType']    = $pricing;
+    $note['subjectID']   = $subjectID;
+    $note['price']       = $price;
 }
 
 $subjects = [];
@@ -148,6 +177,14 @@ if ($result) {
     }
 }
 
+$userStmt = $conn->prepare("SELECT studentName, studentEmail, profilePicture FROM student WHERE studentID = ?");
+$userStmt->bind_param("i", $studentID);
+$userStmt->execute();
+$user = $userStmt->get_result()->fetch_assoc();
+$userStmt->close();
+
+$current_page = 'mynotes';
+
 $conn->close();
 
 include_once("sidebar.php");
@@ -156,7 +193,7 @@ include_once("sidebar.php");
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Upload Notes</title>
+    <title>Edit Note</title>
     <link href='https://fonts.googleapis.com/css?family=Inter' rel='stylesheet'>
     <link rel='stylesheet' href="sidebar.css">
     <style>
@@ -222,6 +259,22 @@ include_once("sidebar.php");
             min-height: 110px;
         }
 
+        .current-file {
+            font-size: 13px;
+            color: #6b6860;
+            margin-top: 10px;
+        }
+
+        .current-file a {
+            color: #6D3BD7;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .current-file a:hover {
+            text-decoration: underline;
+        }
+
         .upload-box {
             border: 2px dashed #c4b5fd;
             background: #fdfbff;
@@ -253,7 +306,10 @@ include_once("sidebar.php");
         }
 
         .btn-wrapper {
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
             margin-top: 40px;
         }
 
@@ -262,7 +318,7 @@ include_once("sidebar.php");
             color: #ffffff;
             border: none;
             border-radius: 10px;
-            padding: 15px 64px;
+            padding: 15px 48px;
             font-size: 16px;
             font-weight: 600;
             font-family: 'Inter', sans-serif;
@@ -272,6 +328,23 @@ include_once("sidebar.php");
 
         input[type="submit"]:hover {
             background: #5a2cc2;
+        }
+
+        .btn-discard-page {
+            background: #ffffff;
+            color: #dc2626;
+            border: 1.5px solid #dc2626;
+            border-radius: 10px;
+            padding: 14px 48px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .btn-discard-page:hover {
+            background: #fef2f2;
         }
 
         .monetization-container {
@@ -391,6 +464,88 @@ include_once("sidebar.php");
             .upload-container {
                 padding: 24px 20px;
             }
+            .btn-wrapper {
+                flex-direction: column;
+                width: 100%;
+            }
+            input[type="submit"], .btn-discard-page {
+                width: 100%;
+            }
+        }
+
+        /* Discard changes confirmation modal */
+        .discard-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 26, 26, 0.45);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .discard-overlay.show {
+            display: flex;
+        }
+
+        .discard-modal {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 28px 28px 24px;
+            max-width: 380px;
+            width: 100%;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .discard-modal h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .discard-modal p {
+            font-size: 14px;
+            color: #6b6860;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        .discard-modal__actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .discard-btn {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .discard-btn--keep {
+            background: #f3effe;
+            color: #6D3BD7;
+        }
+
+        .discard-btn--keep:hover {
+            background: #e5d9fb;
+        }
+
+        .discard-btn--discard {
+            background: #dc2626;
+            color: #ffffff;
+        }
+
+        .discard-btn--discard:hover {
+            background: #b91c1c;
         }
     </style>
 </head>
@@ -398,7 +553,7 @@ include_once("sidebar.php");
 
 <div class="main">
 <div class="upload-container">
-    <h1>Upload Details</h1>
+    <h1>Edit Note</h1>
 
     <?php if (!empty($message)): ?>
         <div class="form-message" style="color: #dc2626; margin-bottom: 20px; font-weight: 500;">
@@ -406,22 +561,29 @@ include_once("sidebar.php");
         </div>
     <?php endif; ?>
 
-    <form action="" method="POST" enctype="multipart/form-data">
+    <form action="" method="POST" enctype="multipart/form-data" id="editNoteForm">
 
         <div class="upload-box">
-            <label>Upload File</label><br>
-            <input type="file" name="fileUpload" required>
+            <label>Replace File (optional)</label><br>
+            <input type="file" name="fileUpload">
+            <p class="current-file">
+                Current file:
+                <a href="<?= htmlspecialchars($note['filePath']) ?>" target="_blank">
+                    <?= htmlspecialchars(basename($note['filePath'])) ?>
+                </a>
+                — leave this empty to keep it.
+            </p>
         </div>
 
         <div class="form-group">
             <label>NOTE TITLE</label>
             <input type="text" name="notestitle" required
-                   value="<?= isset($_POST['notestitle']) ? htmlspecialchars($_POST['notestitle']) : '' ?>">
+                   value="<?= htmlspecialchars($note['title']) ?>">
         </div>
 
         <div class="form-group">
             <label>DESCRIPTION</label>
-            <textarea name="description" required><?= isset($_POST['description']) ? htmlspecialchars($_POST['description']) : '' ?></textarea>
+            <textarea name="description" required><?= htmlspecialchars($note['description']) ?></textarea>
         </div>
 
         <div class="monetization-container">
@@ -429,7 +591,7 @@ include_once("sidebar.php");
             <div class="card-group">
                 <label class="monetization-card">
                     <input type="radio" name="pricing" value="free"
-                    <?= (!isset($_POST['pricing']) || $_POST['pricing'] === 'free') ? 'checked' : '' ?>
+                    <?= (strtolower($note['noteType']) === 'free') ? 'checked' : '' ?>
                     onchange="togglePrice(this)">
                     <span class="custom-radio"></span>
                     <div class="card-content">
@@ -440,7 +602,7 @@ include_once("sidebar.php");
 
                 <label class="monetization-card">
                     <input type="radio" name="pricing" value="paid"
-                           <?= (isset($_POST['pricing']) && $_POST['pricing'] === 'paid') ? 'checked' : '' ?>
+                           <?= (strtolower($note['noteType']) === 'paid') ? 'checked' : '' ?>
                            onchange="togglePrice(this)">
                     <span class="custom-radio"></span>
                     <div class="card-content">
@@ -456,7 +618,7 @@ include_once("sidebar.php");
             <option value="">-- Select Subject --</option>
             <?php foreach ($subjects as $subject): ?>
                 <option value="<?= $subject['subjectID'] ?>"
-                    <?= (isset($_POST['subjectid']) && $_POST['subjectid'] == $subject['subjectID']) ? 'selected' : '' ?>>
+                    <?= ($note['subjectID'] == $subject['subjectID']) ? 'selected' : '' ?>>
                     <?= htmlspecialchars($subject['subjectCode'] . ' - ' . $subject['subjectName']) ?>
                 </option>
             <?php endforeach; ?>
@@ -464,18 +626,30 @@ include_once("sidebar.php");
 
         <br><br>
 
-        <div id="priceField" style="display: <?= (isset($_POST['pricing']) && $_POST['pricing'] === 'paid') ? 'block' : 'none' ?>;">
+        <div id="priceField" style="display: <?= (strtolower($note['noteType']) === 'paid') ? 'block' : 'none' ?>;">
             <label>PRICE</label>
             <input type="number" name="price" step="0.01" placeholder="RM 0.00"
-                   value="<?= isset($_POST['price']) ? htmlspecialchars($_POST['price']) : '' ?>">
+                   value="<?= htmlspecialchars($note['price']) ?>">
         </div>
 
         <div class="btn-wrapper">
-            <input type="submit" value="Upload Notes">
+            <button type="button" class="btn-discard-page" id="pageDiscardBtn">Discard</button>
+            <input type="submit" value="Save Changes">
         </div>
 
     </form>
 </div>
+</div>
+
+<div class="discard-overlay" id="discardOverlay">
+    <div class="discard-modal">
+        <h3>Discard changes?</h3>
+        <p>You've made changes to this note that haven't been saved yet. If you leave now, those changes will be lost.</p>
+        <div class="discard-modal__actions">
+            <button type="button" class="discard-btn discard-btn--keep" id="discardKeepBtn">Keep Editing</button>
+            <button type="button" class="discard-btn discard-btn--discard" id="discardConfirmBtn">Discard Changes</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -483,6 +657,77 @@ include_once("sidebar.php");
         const priceField = document.getElementById('priceField');
         priceField.style.display = (radio.value === 'paid') ? 'block' : 'none';
     }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('editNoteForm');
+    const overlay = document.getElementById('discardOverlay');
+    const keepBtn = document.getElementById('discardKeepBtn');
+    const confirmBtn = document.getElementById('discardConfirmBtn');
+    const pageDiscardBtn = document.getElementById('pageDiscardBtn');
+
+    let formChanged = false;
+    let isSubmitting = false;
+    let pendingHref = null;
+
+    if (form) {
+        form.addEventListener('input', () => { formChanged = true; });
+        form.addEventListener('change', () => { formChanged = true; });
+        form.addEventListener('submit', () => { isSubmitting = true; });
+    }
+
+    function openDiscardModal(href) {
+        pendingHref = href || "user_dashboard.php#section-notes";
+        overlay.classList.add('show');
+    }
+
+    function closeDiscardModal() {
+        overlay.classList.remove('show');
+        pendingHref = null;
+    }
+
+    keepBtn.addEventListener('click', closeDiscardModal);
+
+    confirmBtn.addEventListener('click', () => {
+        formChanged = false; 
+        const href = pendingHref;
+        closeDiscardModal();
+        if (href) window.location.href = href;
+    });
+
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeDiscardModal();
+    });
+
+    pageDiscardBtn.addEventListener('click', () => {
+        if (formChanged) {
+            openDiscardModal("user_dashboard.php#section-notes");
+        } else {
+            window.location.href = "user_dashboard.php#section-notes";
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        const link = e.target.closest('a[href]');
+        if (!link) return;
+
+        const href = link.getAttribute('href');
+        if (!href || href === '#' || href.startsWith('#') || link.target === '_blank') return;
+
+        if (!formChanged) return;
+
+        e.preventDefault();
+        openDiscardModal(href);
+    }, true);
+
+    window.addEventListener('beforeunload', function (e) {
+        if (formChanged && !isSubmitting) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+});
 </script>
 
 </body>
