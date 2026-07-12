@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_bookmarkID']))
     $removeBM_ID = (int)$_POST['remove_bookmarkID'];
     $stmtRemove = $pdo->prepare("DELETE FROM bookmark WHERE bookmarkID = ? AND studentID = ?");
     $stmtRemove->execute([$removeBM_ID, $user_id]);
-    
+
     header("Location: user_dashboard.php#section-notes");
     exit;
 }
@@ -75,10 +75,14 @@ function subjectGradient(string $code): string {
 
 $stmt = $pdo->prepare(
     "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate,
-            s.subjectCode, s.subjectName
+            s.subjectCode, s.subjectName,
+            COALESCE(AVG(c.rating), 0) AS avgRating,
+            COUNT(c.rating) AS reviewCount
      FROM notes n
      JOIN subject s ON n.subjectID = s.subjectID
+     LEFT JOIN comment c ON c.noteID = n.noteID
      WHERE n.studentID = ?
+     GROUP BY n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
      ORDER BY n.uploadDate DESC"
 );
 $stmt->execute([$user_id]);
@@ -95,6 +99,37 @@ $stmtBookmarks = $pdo->prepare(
 );
 $stmtBookmarks->execute([$user_id]);
 $myBookmarks = $stmtBookmarks->fetchAll(PDO::FETCH_ASSOC);
+
+$stmtEarnings = $pdo->prepare(
+    "SELECT COALESCE(SUM(p.paymentAmount), 0) AS totalEarned,
+            COUNT(p.paymentID) AS totalSales
+     FROM payment p
+     JOIN notes n ON p.noteID = n.noteID
+     WHERE n.studentID = ?
+       AND n.noteType = 'paid'
+       AND p.paymentStatus = 'Completed'"
+);
+$stmtEarnings->execute([$user_id]);
+$earningsRow = $stmtEarnings->fetch(PDO::FETCH_ASSOC);
+
+$pointsEarned = (float) $earningsRow['totalEarned'];
+$totalSales   = (int) $earningsRow['totalSales'];
+
+$stmtEarningsWeek = $pdo->prepare(
+    "SELECT COALESCE(SUM(p.paymentAmount), 0) AS weekEarned,
+            COUNT(p.paymentID) AS weekSales
+     FROM payment p
+     JOIN notes n ON p.noteID = n.noteID
+     WHERE n.studentID = ?
+       AND n.noteType = 'paid'
+       AND p.paymentStatus = 'Completed'
+       AND p.paymentDate >= (NOW() - INTERVAL 7 DAY)"
+);
+$stmtEarningsWeek->execute([$user_id]);
+$earningsWeekRow = $stmtEarningsWeek->fetch(PDO::FETCH_ASSOC);
+
+$weekEarned = (float) $earningsWeekRow['weekEarned'];
+$weekSales  = (int) $earningsWeekRow['weekSales'];
 ?>
 
 <!DOCTYPE html>
@@ -149,9 +184,9 @@ $myBookmarks = $stmtBookmarks->fetchAll(PDO::FETCH_ASSOC);
 
             <header class="profile" id="section-overview">
                 <h1 class="profile__name"><?php echo htmlspecialchars($user['studentName']); ?>'s Dashboard</h1>
-                
+
                 <p class="profile__bio">
-                    <?php 
+                    <?php
                     if (!empty($user['bio'])) {
                         echo nl2br(htmlspecialchars($user['bio']));
                     } else {
@@ -165,13 +200,21 @@ $myBookmarks = $stmtBookmarks->fetchAll(PDO::FETCH_ASSOC);
                 <div class="stat-card stat-card--points">
                     <span class="stat-card__label">Points Earned:</span>
                     <div class="stat-card__amount">
-                        RM50.00
+                        RM<?php echo number_format($pointsEarned, 2); ?>
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
                     </div>
-                    <p class="stat-card__note">You've earned 10 points this week. Keep sharing high-quality resources to climb the ranks.</p>
+                    <p class="stat-card__note">
+                        <?php if ($weekSales > 0): ?>
+                            You've earned RM<?php echo number_format($weekEarned, 2); ?> from <?php echo $weekSales; ?> sale<?php echo $weekSales === 1 ? '' : 's'; ?> this week. Keep sharing high-quality resources to climb the ranks.
+                        <?php elseif ($totalSales > 0): ?>
+                            <?php echo $totalSales; ?> total premium note sale<?php echo $totalSales === 1 ? '' : 's'; ?> so far. Keep sharing high-quality resources to climb the ranks.
+                        <?php else: ?>
+                            No premium note sales yet. Upload and price your notes to start earning.
+                        <?php endif; ?>
+                    </p>
                 </div>
 
                 <div class="stat-card stat-card--uploads">
@@ -215,7 +258,7 @@ $myBookmarks = $stmtBookmarks->fetchAll(PDO::FETCH_ASSOC);
                                 $imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
                                 $isImage = in_array($ext, $imageExts);
                             ?>
-                            <article class="note-card" data-note-id="<?php echo (int) $note['noteID']; ?>">
+                            <article class="note-card" data-note-id="<?php echo (int) $note['noteID']; ?>" onclick="window.location.href='view_note.php?id=<?php echo (int) $note['noteID']; ?>';" style="cursor: pointer;">
                                 <div class="note-card__thumb" <?php echo $isImage ? '' : 'style="' . subjectGradient($note['subjectCode']) . ' display:flex; align-items:center; justify-content:center;"'; ?>>
                                     <?php if ($isImage): ?>
                                         <img src="<?php echo htmlspecialchars($note['filePath']); ?>" alt="<?php echo htmlspecialchars($note['title']); ?>" style="width:100%;height:100%;object-fit:cover;">
@@ -223,9 +266,10 @@ $myBookmarks = $stmtBookmarks->fetchAll(PDO::FETCH_ASSOC);
                                         <span style="color:#fff; font-weight:700; font-size:18px; text-shadow:0 1px 4px rgba(0,0,0,.3);"><?php echo htmlspecialchars($note['subjectCode']); ?></span>
                                     <?php endif; ?>
 
-                                    <button class="note-card__menu">⋮</button>
+                                    <button class="note-card__menu" onclick="event.stopPropagation();">⋮</button>
 
-                                    <div class="note-card__dropdown">
+                                    <div class="note-card__dropdown" onclick="event.stopPropagation();">
+                                        <a class="dropdown-item" href="view_note.php?id=<?php echo (int) $note['noteID']; ?>">View Details</a>
                                         <a class="dropdown-item" href="<?php echo htmlspecialchars($note['filePath']); ?>" target="_blank">View / Download</a>
                                         <a class="dropdown-item" href="edit_note.php?id=<?php echo (int) $note['noteID']; ?>">Edit</a>
                                         <form method="POST" onsubmit="return confirm('This will permanently delete this note. Are you sure you want to continue?');">
@@ -246,6 +290,20 @@ $myBookmarks = $stmtBookmarks->fetchAll(PDO::FETCH_ASSOC);
                                     </div>
                                     <h4 class="note-card__title"><?php echo htmlspecialchars($note['title']); ?></h4>
                                     <p class="note-card__sub"><?php echo htmlspecialchars($note['description']); ?></p>
+                                    <div class="note-card__rating" style="display:flex; align-items:center; gap:4px; margin-top:6px;">
+                                        <?php
+                                            $noteFloorRating = floor((float) $note['avgRating']);
+                                            for ($i = 1; $i <= 5; $i++) {
+                                                if ($i <= $noteFloorRating) {
+                                                    echo '<span style="color:#f59e0b; font-size:14px;">★</span>';
+                                                } else {
+                                                    echo '<span style="color:#d1d5db; font-size:14px;">★</span>';
+                                                }
+                                            }
+                                        ?>
+                                        <span style="font-size:12px; color:#4b5563; font-weight:600;"><?php echo number_format((float) $note['avgRating'], 1); ?></span>
+                                        <span style="font-size:12px; color:#9ca3af;">(<?php echo (int) $note['reviewCount']; ?> review<?php echo ((int) $note['reviewCount']) === 1 ? '' : 's'; ?>)</span>
+                                    </div>
                                     <div class="note-card__date">
                                         <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
                                         <?php echo date('M j, Y', strtotime($note['uploadDate'])); ?>
@@ -293,7 +351,7 @@ $myBookmarks = $stmtBookmarks->fetchAll(PDO::FETCH_ASSOC);
                                     <?php endif; ?>
 
                                     <button class="note-card__menu" onclick="event.stopPropagation();">⋮</button>
-                                    
+
                                     <div class="note-card__dropdown" onclick="event.stopPropagation();">
                                         <a class="dropdown-item" href="view_note.php?id=<?php echo (int)$bm['noteID']; ?>">View Details</a>
                                         <form method="POST" onsubmit="return confirm('Are you sure you want to remove this note from your bookmarks?');">
