@@ -1,7 +1,4 @@
 <?php
-// ====================================================================
-// DATABASE CONNECTION
-// ====================================================================
 $db_host = "localhost";
 $db_user = "root";
 $db_pass = "";
@@ -15,6 +12,26 @@ if ($conn->connect_error) {
 session_start();
 
 // ====================================================================
+// LOGGED-IN USER (needed by sidebar.php for the top-nav avatar /
+// account popup — profile picture, name, email)
+// ====================================================================
+$user = ['studentName' => '', 'studentEmail' => '', 'profilePicture' => ''];
+
+if (isset($_SESSION['user_id'])) {
+    $session_user_id = (int) $_SESSION['user_id'];
+    $stmtUser = $conn->prepare("SELECT studentName, studentEmail, profilePicture FROM student WHERE studentID = ?");
+    $stmtUser->bind_param("i", $session_user_id);
+    $stmtUser->execute();
+    $userResult = $stmtUser->get_result();
+    if ($userResult->num_rows > 0) {
+        $user = $userResult->fetch_assoc();
+    }
+    $stmtUser->close();
+}
+
+$current_page = 'notes';
+
+// ====================================================================
 // CAPTURE FILTER & SEARCH INPUTS
 // ====================================================================
 $search      = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -25,7 +42,7 @@ $types       = isset($_GET['types']) ? $_GET['types'] : []; // Array: ['free', '
 // DYNAMIC SQL QUERY BUILDING
 // ====================================================================
 $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType,
-                 n.price, n.uploadDate, s.subjectCode, st.studentName
+                 n.price, n.uploadDate, s.subjectCode, st.studentName, st.profilePicture AS authorPicture
           FROM Notes n
           JOIN Subject s ON n.subjectID = s.subjectID
           JOIN Student st ON n.studentID = st.studentID
@@ -320,6 +337,13 @@ include_once("sidebar.php");
             justify-content: center;
             font-size: 11px;
             font-weight: 600;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .author-name {
             font-size: 13px;
@@ -431,7 +455,11 @@ include_once("sidebar.php");
                                 
                                 <div class="card-footer">
                                     <div class="avatar">
-                                        <?= strtoupper(substr($note['studentName'], 0, 1)) ?>
+                                        <?php if (!empty($note['authorPicture'])): ?>
+                                            <img src="<?= htmlspecialchars($note['authorPicture']) ?>" alt="<?= htmlspecialchars($note['studentName']) ?>">
+                                        <?php else: ?>
+                                            <?= strtoupper(substr($note['studentName'], 0, 1)) ?>
+                                        <?php endif; ?>
                                     </div>
                                     <span class="author-name"><?= htmlspecialchars($note['studentName']) ?></span>
                                 </div>

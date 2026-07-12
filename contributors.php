@@ -10,34 +10,50 @@ if ($conn->connect_error) {
 }
 
 session_start();
-$currentStudentID = isset($_SESSION['studentID']) ? (int)$_SESSION['studentID'] : 0;
 
-// Fetch current logged-in student's info for the account popup
+$currentStudentID = isset($_SESSION['user_id'])
+    ? (int) $_SESSION['user_id']
+    : (isset($_SESSION['studentID']) ? (int) $_SESSION['studentID'] : 0);
+
 $currentName = "Guest";
 $currentEmail = "";
+$currentPicture = "";
+
+$user = ['studentName' => '', 'studentEmail' => '', 'profilePicture' => ''];
+
 if ($currentStudentID > 0) {
-    $stmtMe = $conn->prepare("SELECT studentName, studentEmail FROM student WHERE studentID = ?");
+    $stmtMe = $conn->prepare("SELECT studentName, studentEmail, profilePicture FROM student WHERE studentID = ?");
     $stmtMe->bind_param("i", $currentStudentID);
     $stmtMe->execute();
-    $stmtMe->bind_result($meName, $meEmail);
+    $stmtMe->bind_result($meName, $meEmail, $mePicture);
     if ($stmtMe->fetch()) {
         $currentName = $meName;
         $currentEmail = $meEmail;
+        $currentPicture = $mePicture ?? '';
+
+        $user = [
+            'studentName'    => $meName,
+            'studentEmail'   => $meEmail,
+            'profilePicture' => $mePicture ?? '',
+        ];
     }
     $stmtMe->close();
 }
+
+$current_page = 'contributors';
 
 $sql = "
     SELECT 
         s.studentID,
         s.studentName,
         s.programme,
+        s.profilePicture,
         COUNT(DISTINCT n.noteID) AS totalUploads,
         ROUND(AVG(r.ratingValue), 1) AS avgRating
     FROM student s
     INNER JOIN notes n ON n.studentID = s.studentID
     LEFT JOIN rating r ON r.noteID = n.noteID
-    GROUP BY s.studentID, s.studentName, s.programme
+    GROUP BY s.studentID, s.studentName, s.programme, s.profilePicture
     ORDER BY avgRating DESC, totalUploads DESC
 ";
 
@@ -54,7 +70,10 @@ $conn->close();
 $podium = array_slice($contributors, 0, 3);
 $restRanking = array_slice($contributors, 3);
 
-function avatarUrl($name) {
+function avatarUrl($name, $profilePicture = '') {
+    if (!empty($profilePicture)) {
+        return htmlspecialchars($profilePicture);
+    }
     return "https://ui-avatars.com/api/?name=" . urlencode($name) . "&background=F6EDFF&color=6D3BD7&size=128";
 }
 
@@ -68,7 +87,6 @@ include_once("sidebar.php");
     <title>Top Contributors – UiTMNoteLink</title>
     <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700&display=swap" rel="stylesheet">
     <style>
-        /* ── Fix: nav hover underline + active page highlight (thicker, per request) ── */
         .topnav__links a.topnav-link {
             border-bottom: 3px solid transparent;
             padding-bottom: 6px;
@@ -278,7 +296,9 @@ include_once("sidebar.php");
             width: 34px; height: 34px; border-radius: 50%;
             background: #1a1a1a; color: #fff;
             display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
         }
+        .account-popup__avatar img { width: 100%; height: 100%; object-fit: cover; }
         .account-popup__name { font-size: 14px; font-weight: 700; color: #1a1a1a; }
         .account-popup__email { font-size: 12px; color: #6b6860; }
         .account-popup__divider { height: 1px; background: #e0ddd6; margin: 10px 0; }
@@ -328,7 +348,7 @@ include_once("sidebar.php");
                             <div class="badge_rank">#<?= $rank ?></div>
                         <?php endif; ?>
 
-                        <img class="avatar <?= $isFirst ? 'avatar_large' : '' ?>" src="<?= avatarUrl($p['studentName']) ?>" alt="<?= htmlspecialchars($p['studentName']) ?>">
+                        <img class="avatar <?= $isFirst ? 'avatar_large' : '' ?>" src="<?= avatarUrl($p['studentName'], $p['profilePicture']) ?>" alt="<?= htmlspecialchars($p['studentName']) ?>">
                         <div class="contributor_name <?= $isFirst ? 'name_light' : '' ?>"><?= htmlspecialchars($p['studentName']) ?></div>
                         <div class="contributor_role <?= $isFirst ? 'role_light' : '' ?>"><?= htmlspecialchars($p['programme']) ?></div>
 
@@ -364,7 +384,7 @@ include_once("sidebar.php");
                     <div class="ranking_row <?= $isYou ? 'current_user_row' : '' ?>">
                         <div>#<?= $rank ?></div>
                         <div class="col_contributor">
-                            <img class="row_avatar" src="<?= avatarUrl($r['studentName']) ?>" alt="<?= htmlspecialchars($r['studentName']) ?>">
+                            <img class="row_avatar" src="<?= avatarUrl($r['studentName'], $r['profilePicture']) ?>" alt="<?= htmlspecialchars($r['studentName']) ?>">
                             <?= htmlspecialchars($r['studentName']) ?>
                             <?php if ($isYou): ?><span class="you_badge">You</span><?php endif; ?>
                         </div>
@@ -380,15 +400,18 @@ include_once("sidebar.php");
     </div>
 </div>
 
-<!-- Account popup, triggered by the Settings gear icon in sidebar.php -->
 <div class="account-popup" id="account-popup">
     <p class="account-popup__label">Account</p>
     <div class="account-popup__user">
         <div class="account-popup__avatar">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="8" r="4"/>
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
-            </svg>
+            <?php if (!empty($currentPicture)): ?>
+                <img src="<?= htmlspecialchars($currentPicture) ?>" alt="Profile picture">
+            <?php else: ?>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                </svg>
+            <?php endif; ?>
         </div>
         <div>
             <p class="account-popup__name"><?= htmlspecialchars($currentName) ?></p>
@@ -396,7 +419,7 @@ include_once("sidebar.php");
         </div>
     </div>
     <div class="account-popup__divider"></div>
-    <a class="account-popup__item" href="account_setting.html">Account Setting</a>
+    <a class="account-popup__item" href="account_setting.php">Account Setting</a>
     <a class="account-popup__item account-popup__item--logout" href="logout.php">Log Out</a>
 </div>
 
@@ -412,8 +435,6 @@ include_once("sidebar.php");
                 popup.classList.toggle('show');
             });
 
-            // Close on a single click anywhere outside — uses .contains() instead of
-            // strict equality so clicks on icons/child elements are handled correctly
             document.addEventListener('click', function (e) {
                 if (!popup.classList.contains('show')) return;
                 if (popup.contains(e.target)) return;
@@ -422,7 +443,6 @@ include_once("sidebar.php");
             });
         }
 
-        // Highlight "Contributors" as the active nav link
         document.querySelectorAll('.topnav__links a.topnav-link').forEach(function (link) {
             if (link.getAttribute('href') === 'contributors.php') {
                 link.classList.add('nav-active');
