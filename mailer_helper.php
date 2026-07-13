@@ -23,11 +23,11 @@ use PHPMailer\PHPMailer\Exception;
  */
 function sendOTPEmail($toEmail, $toName, $otp, $role = 'student') {
 
-    // ===== ADJUST THESE 3 LINES with your own Gmail + App Password =====
-    $smtpUsername = "rahafizuddin90@gmail.com";    
-    $smtpPassword = "bfch upoh zxkl yypw";        
-    $fromName     = "UiTMNoteLink HQ";
-    // =====================================================================
+    // Credentials are loaded from mailer_config.php (NOT committed to git - see .gitignore)
+    require_once __DIR__ . '/mailer_config.php';
+    $smtpUsername = SMTP_USERNAME;
+    $smtpPassword = SMTP_APP_PASSWORD;
+    $fromName     = "UiTMNoteLink Official HQ";
 
     $mail = new PHPMailer(true);
 

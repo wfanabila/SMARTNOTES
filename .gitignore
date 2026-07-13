@@ -1,0 +1,6 @@
+# Never commit real credentials
+mailer_config.php
+
+# Common local/dev clutter (optional but recommended)
+.vscode/
+*.log
