@@ -11,14 +11,14 @@
 <body>
 
     <nav class="navbar">
-            <div class="logo_uitmnotelink">
-                <img class="logo_uitmnotelink" src="https://u.pone.rs/nylrmwij.png" alt="UiTMNoteLink Logo">
-            </div>
+        <div class="logo_uitmnotelink">
+            <img class="logo_uitmnotelink" src="https://u.pone.rs/nylrmwij.png" alt="UiTMNoteLink Logo">
+        </div>
 
-            <div class="menu_auth">
-                <a href="login.php" class="nav_link_login">Log In</a>
-                <a href="register.php" class="btn btn_purple_primary">Register &rarr;</a>
-            </div>
+        <div class="menu_auth">
+            <a href="login.php" class="nav_link_login">Log In</a>
+            <a href="register.php?from=frontpage" class="btn btn_purple_primary">Register &rarr;</a>
+        </div>
     </nav>
 
     <section class="text_and_image_container">
@@ -36,12 +36,145 @@
             <img src="https://u.pone.rs/nfowljah.gif" alt="report" class="report_image">
         </div>
     </section>
-    
-        <div class="btn_container">
-            <a href="register.php" class="btn btn_purple_primary">Register &rarr;</a>
+
+    <div class="btn_container">
+        <a href="register.php?from=frontpage" class="btn btn_purple_primary">Register &rarr;</a>
+    </div>
+
+    <section class="benefits_section">
+        <h2 class="section_heading fade_reveal">Benefits</h2>
+        <div class="benefits_container">
+            <div class="benefit_card fade_reveal">
+                <div class="benefit_icon">
+                    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#6b34d9" stroke-width="1.8">
+                        <path d="M6 3h9l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
+                        <path d="M14 3v5h5"/>
+                        <path d="M8 12h8M8 16h8M8 8h3"/>
+                    </svg>
+                </div>
+                <h3 class="benefit_title">Centralized Notes</h3>
+                <p class="benefit_desc">Access lecture notes and past-year materials from every course, all kept in one organized place.</p>
+            </div>
+
+            <div class="benefit_card fade_reveal fade_delay_1">
+                <div class="benefit_icon">
+                    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#6b34d9" stroke-width="1.8">
+                        <circle cx="8" cy="8" r="3.2"/>
+                        <circle cx="17" cy="9" r="2.6"/>
+                        <path d="M3 20c0-3.3 2.2-5.5 5-5.5s5 2.2 5 5.5"/>
+                        <path d="M14.5 20c0-2.6 1.6-4.4 3.7-4.4S21.5 17.4 21.5 20"/>
+                    </svg>
+                </div>
+                <h3 class="benefit_title">Collaborate with Peers</h3>
+                <p class="benefit_desc">Discuss, comment, and contribute alongside classmates working through the same subjects.</p>
+            </div>
+
+            <div class="benefit_card fade_reveal fade_delay_2">
+                <div class="benefit_icon">
+                    <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#6b34d9" stroke-width="1.8">
+                        <path d="M8 21h8"/>
+                        <path d="M12 17v4"/>
+                        <path d="M7 4h10v5a5 5 0 0 1-10 0V4z"/>
+                        <path d="M7 6H4a3 3 0 0 0 3 4.5"/>
+                        <path d="M17 6h3a3 3 0 0 1-3 4.5"/>
+                    </svg>
+                </div>
+                <h3 class="benefit_title">Climb the Leaderboard</h3>
+                <p class="benefit_desc">Earn recognition for every note you share and see your ranking rise on the contributors board.</p>
+            </div>
         </div>
-    
+    </section>
+
+    <section class="how_it_works_section">
+        <h2 class="section_heading fade_reveal">How It Works</h2>
+
+        <div class="zigzag_row fade_reveal">
+            <div class="zigzag_text">
+                <span class="zigzag_eyebrow">Upload</span>
+                <h3 class="zigzag_title">Share Your Notes in Seconds</h3>
+                <p class="zigzag_desc">Pick a course, attach your file, and publish it to the whole cohort. No formatting hassle, no waiting around.</p>
+            </div>
+            <div class="zigzag_visual">
+                <svg viewBox="0 0 200 160" width="200" height="160">
+                    <rect x="30" y="20" width="140" height="120" rx="10" fill="#ffffff" stroke="#6b34d9" stroke-width="2"/>
+                    <rect x="50" y="45" width="100" height="8" rx="4" fill="#c7b3f2"/>
+                    <rect x="50" y="65" width="100" height="8" rx="4" fill="#c7b3f2"/>
+                    <rect x="50" y="85" width="60" height="8" rx="4" fill="#c7b3f2"/>
+                    <circle cx="150" cy="115" r="18" fill="#6b34d9"/>
+                    <path d="M143 115l5 5 10-10" stroke="#ffffff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="zigzag_row zigzag_reverse fade_reveal">
+            <div class="zigzag_text">
+                <span class="zigzag_eyebrow">Earn</span>
+                <h3 class="zigzag_title">Get Recognized for Contributing</h3>
+                <p class="zigzag_desc">Every upload, comment, and download adds to your standing, so consistent contributors get seen first.</p>
+            </div>
+            <div class="zigzag_visual">
+                <svg viewBox="0 0 200 160" width="200" height="160">
+                    <path d="M100 25l16 33 36 5-26 25 6 36-32-17-32 17 6-36-26-25 36-5z" fill="#6b34d9"/>
+                    <rect x="70" y="130" width="60" height="10" rx="5" fill="#c7b3f2"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <section class="mission_section">
+        <div class="mission_box fade_reveal">
+            <span class="mission_eyebrow">Our Mission</span>
+            <h2 class="mission_title">Built for Students, by Students</h2>
+            <p class="mission_text">UiTMNoteLink exists to close the gap between scattered study materials and the students who need them. We believe every note shared saves someone else hours of searching, and every contribution deserves to be recognized.</p>
+            <div class="mission_objectives">
+                <div class="objective_item">
+                    <span class="objective_dot"></span>
+                    Make quality notes accessible to every student, regardless of course or intake.
+                </div>
+                <div class="objective_item">
+                    <span class="objective_dot"></span>
+                    Encourage a culture of sharing through visible recognition and rankings.
+                </div>
+                <div class="objective_item">
+                    <span class="objective_dot"></span>
+                    Keep the academic exchange simple, fast, and free for the whole campus.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="final_cta_section">
+        <h2 class="final_cta_title fade_reveal">Ready to Unlock Your Academic Potential?</h2>
+        <p class="final_cta_sub fade_reveal fade_delay_1">Join your coursemates and start sharing notes today.</p>
+        <a href="register.php?from=frontpage" class="btn btn_purple_primary final_cta_btn fade_reveal fade_delay_2">Register &rarr;</a>
+    </section>
+
+    <footer class="footer">
+        <div class="footer_content">
+            <img src="https://u.pone.rs/nylrmwij.png" alt="UiTMNoteLink Logo" class="footer_logo">
+            <span class="footer_copyright">&copy; 2026 UiTMNoteLink. All rights reserved.</span>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const fadeElements = document.querySelectorAll('.fade_reveal');
+
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade_active');
+                } else {
+                    entry.target.classList.remove('fade_active');
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -60px 0px'
+        });
+
+        fadeElements.forEach((el) => fadeObserver.observe(el));
+    </script>
+
 </body>
 </html>
