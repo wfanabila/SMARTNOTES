@@ -19,7 +19,7 @@ $user = ['studentName' => '', 'studentEmail' => '', 'profilePicture' => ''];
 
 if (isset($_SESSION['user_id'])) {
     $session_user_id = (int) $_SESSION['user_id'];
-    $stmtUser = $conn->prepare("SELECT studentName, studentEmail, profilePicture FROM student WHERE studentID = ?");
+    $stmtUser = $conn->prepare("SELECT studentName, studentEmail FROM student WHERE studentID = ?");
     $stmtUser->bind_param("i", $session_user_id);
     $stmtUser->execute();
     $userResult = $stmtUser->get_result();

@@ -20,7 +20,7 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-$stmt = $pdo->prepare("SELECT studentName, studentEmail, profilePicture, bio FROM student WHERE studentID = ?");
+$stmt = $pdo->prepare("SELECT studentName, studentEmail FROM student WHERE studentID = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 

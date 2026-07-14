@@ -97,17 +97,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $destination = $uploadDir . $newFileName;
 
             if (move_uploaded_file($fileTmp, $destination)) {
-                $stmtOld = $pdo->prepare("SELECT profilePicture FROM student WHERE studentID = ?");
-                $stmtOld->execute([$user_id]);
-                $oldPic = $stmtOld->fetchColumn();
-                if ($oldPic && file_exists(__DIR__ . '/' . $oldPic)) {
-                    @unlink(__DIR__ . '/' . $oldPic);
-                }
+                // TODO: Add profilePicture column to student table to enable this feature
+                // $stmtOld = $pdo->prepare("SELECT profilePicture FROM student WHERE studentID = ?");
+                // $stmtOld->execute([$user_id]);
+                // $oldPic = $stmtOld->fetchColumn();
+                // if ($oldPic && file_exists(__DIR__ . '/' . $oldPic)) {
+                //     @unlink(__DIR__ . '/' . $oldPic);
+                // }
 
-                $relativePath = 'uploads/profile_pics/' . $newFileName;
-                $updateStmt = $pdo->prepare("UPDATE student SET profilePicture = ? WHERE studentID = ?");
-                $updateStmt->execute([$relativePath, $user_id]);
-                $message = "Profile picture updated successfully!";
+                // $relativePath = 'uploads/profile_pics/' . $newFileName;
+                // $updateStmt = $pdo->prepare("UPDATE student SET profilePicture = ? WHERE studentID = ?");
+                // $updateStmt->execute([$relativePath, $user_id]);
+                $message = "Profile picture uploaded successfully! (Feature disabled - column needs to be added to database)";
             } else {
                 $error_message = "Failed to upload the image. Check folder permissions.";
             }
@@ -117,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-$stmt = $pdo->prepare("SELECT studentName, studentEmail, programme, semester, profilePicture, bio FROM student WHERE studentID = ?");
+$stmt = $pdo->prepare("SELECT studentName, studentEmail, programme, semester FROM student WHERE studentID = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
