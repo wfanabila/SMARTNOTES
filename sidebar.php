@@ -382,7 +382,7 @@ a {
 
         <!-- top bar -->
         <div class="topnav__links">
-            <a href="<?php echo !empty($isAdminHelp) ? 'landingpage.php' : '#'; ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Home</a>
+            <a href="landingpage.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Home</a>
             <a href="<?php echo !empty($isAdminHelp) ? 'admin_notes.php' : 'all_notes.php'; ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Notes</a>
             <a href="contributors.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Contributors</a>
             <a href="<?php echo !empty($isAdminHelp) ? 'admin.php' : 'user_dashboard.php'; ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Dashboard</a>

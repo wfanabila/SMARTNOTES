@@ -42,7 +42,7 @@ $types       = isset($_GET['types']) ? $_GET['types'] : []; // Array: ['free', '
 // DYNAMIC SQL QUERY BUILDING
 // ====================================================================
 $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType,
-                 n.price, n.uploadDate, s.subjectCode, st.studentName, st.profilePicture AS authorPicture
+                 n.price, n.uploadDate, s.subjectCode, st.studentName
           FROM Notes n
           JOIN Subject s ON n.subjectID = s.subjectID
           JOIN Student st ON n.studentID = st.studentID
@@ -130,16 +130,20 @@ include_once("sidebar.php");
 
         .browse-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
             margin-bottom: 30px;
             gap: 20px;
             flex-wrap: wrap;
+            width: 100%;
         }
         .browse-header h1 {
             font-size: 28px;
             font-weight: 700;
             color: #111827;
+            width: fit-content;
+            margin: 0;
         }
         .search-container {
             position: relative;
