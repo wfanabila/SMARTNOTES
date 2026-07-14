@@ -7,7 +7,6 @@ if (!isset($current_page)) {
     $current_page = '';
 }
 ?>
-<link rel='stylesheet' href="sidebar.css">
 
 <style>
     *, *::before, *::after {
@@ -257,12 +256,11 @@ a {
 }
 
 .account-popup {
-    position: absolute;
-    left: 8px;
-    right: 8px;
-    bottom: calc(100% + 8px);
+    position: fixed;
+    left: 76px;
+    bottom: 70px;
+    width: 240px;
     z-index: 200;
-    width: auto;
     background: #ffffff;
     border: 0.5px solid #e0ddd6;
     border-radius: 14px;
@@ -358,17 +356,6 @@ a {
     background: #fdeaea;
     color: #c0392b;
 }
-
-.account-popup__item:hover,
-.account-popup__item--active {
-    background: #f3effe;
-    color: #6D3BD7;
-}
-
-.account-popup__item--logout:hover {
-    background: #fdeaea;
-    color: #c0392b;
-}
 </style>
 
 <nav class="topnav">
@@ -390,7 +377,7 @@ a {
 
     <!-- pfp avatar -->
     <div class="topnav__right">
-        <div class="topnav__avatar">
+        <a class="topnav__avatar" href="account_setting.php" title="Account Setting">
             <?php if (!empty($user['profilePicture'])): ?>
                 <img src="<?php echo htmlspecialchars($user['profilePicture']); ?>" alt="Profile picture" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
             <?php else: ?>
@@ -400,7 +387,7 @@ a {
                     <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
                 </svg>
             <?php endif; ?>
-        </div>
+        </a>
     </div>
 </nav>
 
