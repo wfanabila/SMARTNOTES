@@ -1,9 +1,25 @@
 <?php
 session_start();
 $isAdminLanding = (($_SESSION['role'] ?? '') === 'admin');
-$landingNotesLink = $isAdminLanding ? 'manage_notes.php' : 'all_notes.php';
+$landingNotesLink = $isAdminLanding ? 'admin_notes.php' : 'all_notes.php';
 $landingContributorsLink = 'contributors.php';
 $landingDashboardLink = $isAdminLanding ? 'admin.php' : 'user_dashboard.php';
+$recentAdminNotes = [];
+$landingSubjects = [];
+if ($isAdminLanding) {
+    require_once __DIR__ . '/db_config.php';
+    $recentResult = $conn->query("SELECT n.noteID, n.title, s.subjectCode FROM notes n LEFT JOIN subject s ON s.subjectID = n.subjectID ORDER BY n.uploadDate DESC, n.noteID DESC LIMIT 3");
+    if ($recentResult) {
+        while ($note = $recentResult->fetch_assoc()) { $recentAdminNotes[] = $note; }
+        $recentResult->close();
+    }
+    $subjectResult = $conn->query('SELECT subjectCode, subjectName FROM subject ORDER BY subjectCode');
+    if ($subjectResult) {
+        while ($subject = $subjectResult->fetch_assoc()) { $landingSubjects[] = $subject; }
+        $subjectResult->close();
+    }
+    $conn->close();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,6 +57,14 @@ $landingDashboardLink = $isAdminLanding ? 'admin.php' : 'user_dashboard.php';
                     <label class="sr-only" for="hero-search">Search notes and courses</label>
                     <input id="hero-search" type="search" placeholder="Search for courses, notes" autocomplete="off">
                 </div>
+                <?php if ($isAdminLanding): ?>
+                <div class="landing-search-results" id="landing-search-results" hidden>
+                    <?php foreach ($landingSubjects as $subject): ?>
+                        <a data-subject-result href="admin_notes.php?subject=<?= urlencode($subject['subjectCode']) ?>" data-search="<?= htmlspecialchars(strtolower($subject['subjectCode'] . ' ' . $subject['subjectName']), ENT_QUOTES, 'UTF-8') ?>"><strong><?= htmlspecialchars($subject['subjectCode'], ENT_QUOTES, 'UTF-8') ?></strong> — <?= htmlspecialchars($subject['subjectName'], ENT_QUOTES, 'UTF-8') ?></a>
+                    <?php endforeach; ?>
+                    <p id="landing-search-empty" hidden>No matching course or subject found.</p>
+                </div>
+                <?php endif; ?>
             </div>
         </section>
 
@@ -65,6 +89,19 @@ $landingDashboardLink = $isAdminLanding ? 'admin.php' : 'user_dashboard.php';
         <section class="recent-section">
             <h2>Recently Added</h2>
             <div class="recent-grid">
+                <?php if ($isAdminLanding): ?>
+                    <?php if (empty($recentAdminNotes)): ?>
+                        <p>No notes have been uploaded yet.</p>
+                    <?php endif; ?>
+                    <?php foreach ($recentAdminNotes as $index => $note): ?>
+                        <article class="note-card">
+                            <a href="manage_notes.php">
+                                <img src="img/bookmark<?= ($index % 3) + 1 ?>.png" alt="<?= htmlspecialchars($note['title'], ENT_QUOTES, 'UTF-8') ?>" class="note-thumb">
+                                <div class="note-label"><?= htmlspecialchars($note['title'], ENT_QUOTES, 'UTF-8') ?></div>
+                            </a>
+                        </article>
+                    <?php endforeach; ?>
+                <?php else: ?>
                 <article class="note-card">
                     <a href="display_note.php?note=101">
                         <img src="img/bookmark1.png" alt="CSC577 Chapter 1" class="note-thumb">
@@ -85,8 +122,28 @@ $landingDashboardLink = $isAdminLanding ? 'admin.php' : 'user_dashboard.php';
                         <div class="note-label">CSC402 Chapter 3</div>
                     </a>
                 </article>
+                <?php endif; ?>
             </div>
         </section>
     </main>
 </body>
+<?php if ($isAdminLanding): ?>
+<script>
+const landingSearch = document.getElementById('hero-search');
+const results = document.getElementById('landing-search-results');
+const emptyResult = document.getElementById('landing-search-empty');
+landingSearch.addEventListener('input', function () {
+    const query = this.value.trim().toLowerCase();
+    if (!query) { results.hidden = true; return; }
+    let matches = 0;
+    document.querySelectorAll('[data-subject-result]').forEach(item => {
+        const visible = item.dataset.search.includes(query);
+        item.hidden = !visible;
+        if (visible) matches++;
+    });
+    results.hidden = false;
+    emptyResult.hidden = matches !== 0;
+});
+</script>
+<?php endif; ?>
 </html>

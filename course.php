@@ -26,14 +26,14 @@ if ($conn->connect_error) {
     die('Database connection failed: ' . $conn->connect_error);
 }
 
-$coursePattern = $course . '%';
 $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
           FROM notes n
           JOIN subject s ON n.subjectID = s.subjectID
-          WHERE s.subjectCode LIKE ?
+          JOIN programme_subject ps ON ps.subjectID = s.subjectID
+          WHERE ps.programmeCode = ?
           ORDER BY n.uploadDate DESC";
 $stmt = $conn->prepare($query);
-$stmt->bind_param('s', $coursePattern);
+$stmt->bind_param('s', $course);
 $stmt->execute();
 $result = $stmt->get_result();
 $notes = [];

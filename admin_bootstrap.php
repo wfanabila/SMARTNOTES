@@ -19,6 +19,22 @@ if ($noteStatusCheck && $noteStatusCheck->num_rows === 0) {
 }
 if ($noteStatusCheck) { $noteStatusCheck->close(); }
 
+// Optional profile fields keep the admin profile data in MySQL instead of in
+// hard-coded page variables. Existing installations receive these fields once.
+$adminProfileColumns = [
+    'adminPhone' => "VARCHAR(30) NULL",
+    'adminRole' => "VARCHAR(100) NULL",
+    'adminDepartment' => "VARCHAR(100) NULL",
+    'memberSince' => "DATE NULL",
+    'profilePicture' => "VARCHAR(255) NULL",
+];
+foreach ($adminProfileColumns as $column => $definition) {
+    $columnCheck = $conn->query("SHOW COLUMNS FROM admin LIKE '$column'");
+    $missingColumn = $columnCheck && $columnCheck->num_rows === 0;
+    if ($columnCheck) { $columnCheck->close(); }
+    if ($missingColumn) { $conn->query("ALTER TABLE admin ADD COLUMN `$column` $definition"); }
+}
+
 function admin_escape($value): string {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }

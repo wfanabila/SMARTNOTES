@@ -11,7 +11,7 @@ if (!isset($activeAdminPage)) { $activeAdminPage = ''; }
         <div class="menu-divider"></div>
         <a href="contributors.php" class="menu-item <?= $activeAdminPage === 'contributors' ? 'active' : '' ?>"><span class="menu-icon"><i class="fas fa-trophy"></i></span><span>Contributors</span></a>
         <a href="help_center.php" class="menu-item <?= $activeAdminPage === 'help' ? 'active' : '' ?>"><span class="menu-icon"><i class="far fa-question-circle"></i></span><span>Help Center</span></a>
-        <a href="adminprofile.php" class="menu-item"><span class="menu-icon"><i class="fas fa-cog"></i></span><span>Settings</span></a>
+        <a href="admin_account_setting.php" class="menu-item"><span class="menu-icon"><i class="fas fa-cog"></i></span><span>Settings</span></a>
         <a href="logout.php" class="menu-item sign-out"><span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span><span>Sign Out</span></a>
     </nav>
 </aside>
