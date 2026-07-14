@@ -19,6 +19,19 @@ if ($noteStatusCheck && $noteStatusCheck->num_rows === 0) {
 }
 if ($noteStatusCheck) { $noteStatusCheck->close(); }
 
+// Add course and semester columns to notes table for better filtering and organization
+$courseCheck = $conn->query("SHOW COLUMNS FROM notes LIKE 'course'");
+if ($courseCheck && $courseCheck->num_rows === 0) {
+    $conn->query("ALTER TABLE notes ADD COLUMN course VARCHAR(50) NULL");
+}
+if ($courseCheck) { $courseCheck->close(); }
+
+$semesterCheck = $conn->query("SHOW COLUMNS FROM notes LIKE 'semester'");
+if ($semesterCheck && $semesterCheck->num_rows === 0) {
+    $conn->query("ALTER TABLE notes ADD COLUMN semester INT NULL DEFAULT 1");
+}
+if ($semesterCheck) { $semesterCheck->close(); }
+
 // Optional profile fields keep the admin profile data in MySQL instead of in
 // hard-coded page variables. Existing installations receive these fields once.
 $adminProfileColumns = [

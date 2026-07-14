@@ -2,7 +2,7 @@
 $semester = isset($_GET['semester']) ? (int)$_GET['semester'] : 1;
 $course = isset($_GET['course']) ? strtoupper(trim($_GET['course'])) : '';
 
-if ($semester < 1 || $semester > 6) {
+if ($semester < 1 || $semester > 7) {
     $semester = 1;
 }
 

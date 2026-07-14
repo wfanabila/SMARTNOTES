@@ -76,7 +76,7 @@ function escape_html(string $value): string {
                 <p class="hero-subtitle">Browse specialized archives curated for your major.</p>
             </div>
             <div class="semester-list">
-                <?php for ($semester = 1; $semester <= 6; $semester++): ?>
+                <?php for ($semester = 1; $semester <= 7; $semester++): ?>
                     <a href="<?= escape_html($filePrefix) ?>semester.php?semester=<?= $semester ?>" class="semester-chip">SEM <?= $semester ?></a>
                 <?php endfor; ?>
             </div>
