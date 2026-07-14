@@ -177,7 +177,7 @@ if ($result) {
     }
 }
 
-$userStmt = $conn->prepare("SELECT studentName, studentEmail, profilePicture FROM student WHERE studentID = ?");
+$userStmt = $conn->prepare("SELECT studentName, studentEmail FROM student WHERE studentID = ?");
 $userStmt->bind_param("i", $studentID);
 $userStmt->execute();
 $user = $userStmt->get_result()->fetch_assoc();

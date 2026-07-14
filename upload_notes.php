@@ -47,7 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title       = trim($_POST['notestitle']);
     $description = trim($_POST['description']);
     $pricing     = strtolower(trim($_POST['pricing'])); 
-    $subjectID   = (int) $_POST['subjectid'];           
+    $subjectID   = (int) $_POST['subjectid'];
+    $course      = trim($_POST['course']);
+    $semester    = (int) $_POST['semester'];
     $price       = ($pricing === 'paid') ? (float) $_POST['price'] : 0.00;
 
     $errors = [];
@@ -62,6 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($subjectID <= 0) {
         $errors[] = "Please select a subject.";
+    }
+
+    if (empty($course)) {
+        $errors[] = "Please select a course.";
+    }
+
+    if ($semester < 1 || $semester > 7) {
+        $errors[] = "Please select a valid semester (1-7).";
     }
 
     if ($pricing === 'paid' && $price <= 0) {
@@ -100,23 +110,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (move_uploaded_file($file['tmp_name'], $destination)) {
 
                     $stmt = $conn->prepare(
-                        "INSERT INTO notes (title, description, filePath, noteType, price, studentID, subjectID)
-                         VALUES (?, ?, ?, ?, ?, ?, ?)"
+                        "INSERT INTO notes (title, description, filePath, noteType, price, studentID, subjectID, course, semester, noteStatus)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')"
                     );
 
                     if ($stmt === false) {
                         $errors[] = "Prepare statement failed: " . $conn->error;
                     } else {
-                        // Forcing $studentID explicitly to integer type ('i')
+                        // Forcing variables to correct types
                         $stmt->bind_param(
-                            "ssssdii",
+                            "ssssdiiss",
                             $title,
                             $description,
                             $relativePath,
                             $pricing,
                             $price,
                             $studentID,
-                            $subjectID
+                            $subjectID,
+                            $course,
+                            $semester
                         );
 
                         if ($stmt->execute()) {
@@ -450,6 +462,24 @@ include_once("sidebar.php");
                 </label>
             </div>
         </div>
+
+        <label>COURSE</label>
+        <select name="course" required>
+            <option value="">-- Select Course --</option>
+            <option value="CSC110" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC110') ? 'selected' : '' ?>>CSC110</option>
+            <option value="CSC230" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC230') ? 'selected' : '' ?>>CSC230</option>
+            <option value="CSC264" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC264') ? 'selected' : '' ?>>CSC264</option>
+            <option value="CSC267" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC267') ? 'selected' : '' ?>>CSC267</option>
+            <option value="CSC270" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC270') ? 'selected' : '' ?>>CSC270</option>
+        </select>
+
+        <label>SEMESTER</label>
+        <select name="semester" required>
+            <option value="">-- Select Semester --</option>
+            <?php for ($sem = 1; $sem <= 7; $sem++): ?>
+                <option value="<?= $sem ?>" <?= (isset($_POST['semester']) && $_POST['semester'] == $sem) ? 'selected' : '' ?>>Semester <?= $sem ?></option>
+            <?php endfor; ?>
+        </select>
 
         <label>SUBJECT CODE</label>
         <select name="subjectid" required>

@@ -2,7 +2,7 @@
 $semester = isset($_GET['semester']) ? (int)$_GET['semester'] : 1;
 $course = isset($_GET['course']) ? strtoupper(trim($_GET['course'])) : '';
 
-if ($semester < 1 || $semester > 6) {
+if ($semester < 1 || $semester > 7) {
     $semester = 1;
 }
 
@@ -32,14 +32,14 @@ if ($conn->connect_error) {
     die('Database connection failed: ' . $conn->connect_error);
 }
 
-$subjectPrefix = $course . '%';
 $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
           FROM notes n
           JOIN subject s ON n.subjectID = s.subjectID
-          WHERE s.subjectCode LIKE ?
+          JOIN programme_subject ps ON ps.subjectID = s.subjectID
+          WHERE ps.programmeCode = ? AND ps.semester = ?
           ORDER BY n.uploadDate DESC";
 $stmt = $conn->prepare($query);
-$stmt->bind_param('s', $subjectPrefix);
+$stmt->bind_param('si', $course, $semester);
 $stmt->execute();
 $result = $stmt->get_result();
 $notes = [];
@@ -47,6 +47,11 @@ while ($row = $result->fetch_assoc()) {
     $notes[] = $row;
 }
 $stmt->close();
+$subjectStmt = $conn->prepare('SELECT s.subjectCode, s.subjectName FROM programme_subject ps JOIN subject s ON s.subjectID = ps.subjectID WHERE ps.programmeCode = ? AND ps.semester = ? ORDER BY s.subjectCode');
+$subjectStmt->bind_param('si', $course, $semester);
+$subjectStmt->execute();
+$semesterSubjects = $subjectStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+$subjectStmt->close();
 $conn->close();
 
 function escape_html(string $value): string {
@@ -85,6 +90,16 @@ function escape_html(string $value): string {
         </section>
 
         <section class="recent-section">
+            <h2>Subjects for SEM <?= $semester ?></h2>
+            <div class="recent-grid" style="margin-bottom: 36px;">
+                <?php if (empty($semesterSubjects)): ?>
+                    <div class="empty-message">No subjects have been assigned to this semester yet.</div>
+                <?php else: ?>
+                    <?php foreach ($semesterSubjects as $subject): ?>
+                        <article class="recent-card"><div class="recent-card__meta"><?= escape_html($subject['subjectCode']) ?></div><div class="recent-card__meta" style="font-weight:500;color:#475569"><?= escape_html($subject['subjectName']) ?></div></article>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
             <h2>Available notes for SEM <?= $semester ?></h2>
             <div class="recent-grid">
                 <?php if (empty($notes)): ?>

@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/admin_bootstrap.php';
+$activeAdminPage = 'students';
 $db_host = "localhost";
 $db_user = "root";
 $db_pass = "";
@@ -131,57 +133,22 @@ function escape(string $text): string {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UiTM NoteLink Admin - Manage Students</title>
     <link rel="stylesheet" href="css/manage_students.css">
+    <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="layout">
-        <aside class="sidebar">
-            <div class="brand">
-                <img src="img/logo.PNG" alt="Logo" class="brand-logo-img">
-            </div>
-            <nav class="menu">
-                <a href="admin.php" class="menu-item">
-                    <span class="menu-icon"><i class="fas fa-th-large"></i></span>
-                    <span>Dashboard</span>
-                </a>
-                <a href="manage_students.php" class="menu-item active">
-                    <span class="menu-icon"><i class="fas fa-users"></i></span>
-                    <span>Manage Students</span>
-                </a>
-                <a href="manage_notes.html" class="menu-item">
-                    <span class="menu-icon"><i class="far fa-file-alt"></i></span>
-                    <span>Manage Notes</span>
-                </a>
-                <a href="adminprofile.php" class="menu-item">
-                    <span class="menu-icon"><i class="fas fa-id-card"></i></span>
-                    <span>Admin Profile</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <span class="menu-icon"><i class="fas fa-cog"></i></span>
-                    <span>Settings</span>
-                </a>
-                <div class="menu-divider"></div>
-                <a href="help_center.html" class="menu-item">
-                    <span class="menu-icon"><i class="far fa-question-circle"></i></span>
-                    <span>Help Center</span>
-                </a>
-                <a href="login.html" class="menu-item sign-out">
-                    <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
-                    <span>Sign Out</span>
-                </a>
-            </nav>
-        </aside>
-
+        <?php include __DIR__ . '/admin_nav.php'; ?>
         <main class="content">
             <header class="topbar">
                 <div class="top-nav">
-                    <a href="contributors.php">Contributors</a>
+                    <a href="admin_contributors.php">Contributors</a>
                     <a href="admin.php">Dashboard</a>
                 </div>
-                <div class="profile-area">
-                    <div class="profile-circle">P</div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
+                <a class="profile-area" href="adminprofile.php" aria-label="Open profile">
+                    <div class="profile-circle"><?= admin_escape($adminInitial) ?></div>
+                    <span><?= admin_escape($adminName) ?></span>
+                </a>
             </header>
 
             <div class="section-header">
@@ -211,7 +178,7 @@ function escape(string $text): string {
                 <div class="feedback-message"><?= escape($feedback) ?></div>
             <?php endif; ?>
 
-            <div class="table-card">
+            <div class="table-card table-scroll">
                 <table>
                     <thead>
                         <tr>
