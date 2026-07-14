@@ -1,6 +1,15 @@
 <?php
 session_start();
 
+$isAdminHelp = (($_SESSION['role'] ?? '') === 'admin');
+if ($isAdminHelp) {
+    require_once __DIR__ . '/admin_bootstrap.php';
+    // sidebar.php expects these keys; map the signed-in admin to the same view data.
+    $user = ['studentName' => $adminName, 'studentEmail' => $adminEmail, 'profilePicture' => ''];
+    $current_page = 'help_center';
+    $activePage = 'help';
+} else {
+
 $host = "localhost";
 $username = "root";
 $password = "";
@@ -29,6 +38,8 @@ if (!$user) {
 }
 
 $activePage = 'help';
+$current_page = 'help_center';
+}
 ?>
 
 <!DOCTYPE html>

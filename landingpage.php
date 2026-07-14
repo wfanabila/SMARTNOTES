@@ -1,3 +1,10 @@
+<?php
+session_start();
+$isAdminLanding = (($_SESSION['role'] ?? '') === 'admin');
+$landingNotesLink = $isAdminLanding ? 'manage_notes.php' : 'all_notes.php';
+$landingContributorsLink = 'contributors.php';
+$landingDashboardLink = $isAdminLanding ? 'admin.php' : 'user_dashboard.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,9 +23,9 @@
 
         <nav class="nav-links">
             <a href="landingpage.php" class="nav-link active">Home</a>
-            <a href="all_notes.php" class="nav-link">Notes</a>
-            <a href="help_center.html" class="nav-link">Contributors</a>
-            <a href="user_dashboard.php" class="nav-link">Dashboard</a>
+            <a href="<?= $landingNotesLink ?>" class="nav-link">Notes</a>
+            <a href="<?= $landingContributorsLink ?>" class="nav-link">Contributors</a>
+            <a href="<?= $landingDashboardLink ?>" class="nav-link">Dashboard</a>
         </nav>
     </header>
 

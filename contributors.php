@@ -11,15 +11,22 @@ if ($conn->connect_error) {
 
 session_start();
 
-$currentStudentID = isset($_SESSION['user_id'])
-    ? (int) $_SESSION['user_id']
-    : (isset($_SESSION['studentID']) ? (int) $_SESSION['studentID'] : 0);
+$isAdminHelp = (($_SESSION['role'] ?? '') === 'admin');
+if ($isAdminHelp) {
+    require_once __DIR__ . '/admin_bootstrap.php';
+}
 
-$currentName = "Guest";
-$currentEmail = "";
+$currentStudentID = !$isAdminHelp && isset($_SESSION['user_id'])
+    ? (int) $_SESSION['user_id']
+    : (!$isAdminHelp && isset($_SESSION['studentID']) ? (int) $_SESSION['studentID'] : 0);
+
+$currentName = $isAdminHelp ? $adminName : "Guest";
+$currentEmail = $isAdminHelp ? $adminEmail : "";
 $currentPicture = "";
 
-$user = ['studentName' => '', 'studentEmail' => '', 'profilePicture' => ''];
+$user = $isAdminHelp
+    ? ['studentName' => $adminName, 'studentEmail' => $adminEmail, 'profilePicture' => '']
+    : ['studentName' => '', 'studentEmail' => '', 'profilePicture' => ''];
 
 if ($currentStudentID > 0) {
     $stmtMe = $conn->prepare("SELECT studentName, studentEmail, profilePicture FROM student WHERE studentID = ?");

@@ -100,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (move_uploaded_file($file['tmp_name'], $destination)) {
 
                     $stmt = $conn->prepare(
-                        "INSERT INTO notes (title, description, filePath, noteType, price, studentID, subjectID)
-                         VALUES (?, ?, ?, ?, ?, ?, ?)"
+                        "INSERT INTO notes (title, description, filePath, noteType, price, studentID, subjectID, noteStatus)
+                         VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')"
                     );
 
                     if ($stmt === false) {
