@@ -450,6 +450,7 @@ a {
     align-items: flex-start;
     justify-content: space-between;
     text-align: left;
+    position: relative;
 }
 
 .stat-card--uploads .stat-up-icon {
