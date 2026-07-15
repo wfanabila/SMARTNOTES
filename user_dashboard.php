@@ -270,7 +270,7 @@ $weekSales  = (int) $earningsWeekRow['weekSales'];
 
                                     <div class="note-card__dropdown" onclick="event.stopPropagation();">
                                         <a class="dropdown-item" href="view_note.php?id=<?php echo (int) $note['noteID']; ?>">View Details</a>
-                                        <a class="dropdown-item" href="<?php echo htmlspecialchars($note['filePath']); ?>" target="_blank">View / Download</a>
+                                        <!-- <a class="dropdown-item" href="<?php echo htmlspecialchars($note['filePath']); ?>" target="_blank">View / Download</a> -->
                                         <a class="dropdown-item" href="edit_note.php?id=<?php echo (int) $note['noteID']; ?>">Edit</a>
                                         <form method="POST" onsubmit="return confirm('This will permanently delete this note. Are you sure you want to continue?');">
                                             <input type="hidden" name="delete_noteID" value="<?php echo (int) $note['noteID']; ?>">
