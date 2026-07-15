@@ -1,16 +1,7 @@
 <?php
 // mailer_helper.php
-// Sends the OTP email using PHPMailer + Gmail SMTP.
-// Setup instructions are in SETUP_GUIDE.md (step 2).
-
-// Manual include (no Composer needed) - PHPMailer files must sit in ./PHPMailer/
-require 'PHPMailer/Exception.php';
-require 'PHPMailer/PHPMailer.php';
-require 'PHPMailer/SMTP.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
+// Sends the OTP email using Brevo HTTP API (works on InfinityFree, unlike SMTP sockets).
+// No PHPMailer / Composer needed anymore - this uses PHP's built-in cURL.
 
 /**
  * Sends a 6-digit OTP code to the given email.
@@ -25,45 +16,51 @@ function sendOTPEmail($toEmail, $toName, $otp, $role = 'student') {
 
     // Credentials are loaded from mailer_config.php (NOT committed to git - see .gitignore)
     require_once __DIR__ . '/mailer_config.php';
-    $smtpUsername = SMTP_USERNAME;
-    $smtpPassword = SMTP_APP_PASSWORD;
-    $fromName     = "UiTMNoteLink Official HQ";
 
-    $mail = new PHPMailer(true);
+    $roleLabel = ($role === 'admin') ? 'admin' : 'student';
 
-    try {
-        // Server settings
-        $mail->isSMTP();
-        $mail->Host       = 'smtp.gmail.com';
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $smtpUsername;
-        $mail->Password   = $smtpPassword;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = 587;
+    $htmlBody = "
+        <div style='font-family: Poppins, Arial, sans-serif;'>
+            <h2 style='color:#6b34d9;'>UiTMNoteLink</h2>
+            <p>Hi " . htmlspecialchars($toName) . ",</p>
+            <p>Here is your OTP code to reset your $roleLabel password:</p>
+            <p style='font-size:28px; font-weight:bold; letter-spacing:6px;'>$otp</p>
+            <p>This code will expire in 5 minutes. If you did not request this, please ignore this email.</p>
+        </div>
+    ";
 
-        // Recipients
-        $mail->setFrom($smtpUsername, $fromName);
-        $mail->addAddress($toEmail, $toName);
+    $payload = [
+        "sender"      => ["name" => SENDER_NAME, "email" => SENDER_EMAIL],
+        "to"          => [["email" => $toEmail, "name" => $toName]],
+        "subject"     => "UiTMNoteLink - Your Password Reset OTP",
+        "htmlContent" => $htmlBody
+    ];
 
-        // Content
-        $mail->isHTML(true);
-        $roleLabel = ($role === 'admin') ? 'admin' : 'student';
-        $mail->Subject = "UiTMNoteLink - Your Password Reset OTP";
-        $mail->Body    = "
-            <div style='font-family: Poppins, Arial, sans-serif;'>
-                <h2 style='color:#6b34d9;'>UiTMNoteLink</h2>
-                <p>Hi " . htmlspecialchars($toName) . ",</p>
-                <p>Here is your OTP code to reset your $roleLabel password:</p>
-                <p style='font-size:28px; font-weight:bold; letter-spacing:6px;'>$otp</p>
-                <p>This code will expire in 5 minutes. If you did not request this, please ignore this email.</p>
-            </div>
-        ";
-        $mail->AltBody = "Your UiTMNoteLink OTP code is: $otp (expires in 5 minutes)";
+    $ch = curl_init("https://api.brevo.com/v3/smtp/email");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "accept: application/json",
+        "api-key: " . BREVO_API_KEY,
+        "content-type: application/json"
+    ]);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
 
-        $mail->send();
-        return ['success' => true, 'error' => null];
+    $response = curl_exec($ch);
+    $curlErr  = curl_error($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
 
-    } catch (Exception $e) {
-        return ['success' => false, 'error' => $mail->ErrorInfo];
+    if ($curlErr) {
+        return ['success' => false, 'error' => "cURL error: $curlErr"];
     }
+
+    if ($httpCode == 201) {
+        return ['success' => true, 'error' => null];
+    }
+
+    // httpCode 400/401 etc - log the raw response so you can see WHY Brevo rejected it
+    error_log("Brevo API error ($httpCode): " . $response);
+    return ['success' => false, 'error' => "Brevo API returned HTTP $httpCode: $response"];
 }
