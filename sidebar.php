@@ -50,6 +50,108 @@ a {
     align-items: center;
 }
 
+.topnav__hamburger {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    margin-right: 8px;
+    color: #1a1a1a;
+    border-radius: 8px;
+}
+
+.topnav__hamburger:hover {
+    background: #f3effe;
+}
+
+.topnav__hamburger svg {
+    width: 22px;
+    height: 22px;
+    display: block;
+}
+
+.sidebar__backdrop {
+    display: none;
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 85;
+}
+
+.sidebar__backdrop.show {
+    display: block;
+}
+
+@media (max-width: 860px) {
+    .topnav__hamburger {
+        display: inline-flex;
+    }
+
+    .topnav__links {
+        position: static;
+        left: auto;
+        transform: none;
+        gap: 0;
+        max-width: 44vw;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .topnav__links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .topnav__links a {
+        font-size: 13px;
+        padding: 6px 8px;
+        white-space: nowrap;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+        width: 220px !important;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .sidebar.sidebar--open {
+        transform: translateX(0);
+    }
+
+    .sidebar .sidebar__item span,
+    .sidebar .sidebar__upload span {
+        opacity: 1;
+    }
+
+    .main,
+    .sidebar:hover ~ .main {
+        margin-left: 0 !important;
+    }
+
+    .main__container {
+        padding: 32px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .topnav {
+        padding: 0 14px !important;
+    }
+
+    .topnav__links {
+        max-width: 38vw;
+    }
+
+    .topnav__links a {
+        padding: 6px 6px;
+    }
+}
+
 .topnav__logo {
     display: flex;
     align-items: center;
@@ -127,7 +229,7 @@ a {
     width: 64px;
     overflow: hidden;
     white-space: nowrap;
-    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
     background: #F6EDFF;
     border-right: 0.5px solid #e0ddd6;
@@ -360,7 +462,12 @@ a {
 
 <nav class="topnav">
     <div class="topnav__left">
-        <a class="topnav__logo" href="<?php echo !empty($isAdminHelp) ? 'admin.php' : 'user_dashboard.php'; ?>">
+        <button type="button" class="topnav__hamburger" id="sidebarToggle" aria-label="Toggle menu">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+            </svg>
+        </button>
+        <a class="topnav__logo" href="user_dashboard.php">
             <span class="topnav__logo-icon">
                 <img src="img/logo.PNG" alt="UiTMNoteLink Logo">
             </span>
@@ -369,15 +476,15 @@ a {
 
         <!-- top bar -->
         <div class="topnav__links">
-            <a href="landingpage.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Home</a>
-            <a href="<?php echo !empty($isAdminHelp) ? 'admin_notes.php' : 'all_notes.php'; ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Notes</a>
-            <a href="<?php echo !empty($isAdminHelp) ? 'admin_contributors.php' : 'contributors.php'; ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Contributors</a>
-            <a href="<?php echo !empty($isAdminHelp) ? 'admin.php' : 'user_dashboard.php'; ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Dashboard</a>
+            <a href="#" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Home</a>
+            <a href="all_notes.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Notes</a>
+            <a href="contributors.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Contributors</a>
+            <a href="user_dashboard.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Dashboard</a> 
         </div>
 
     <!-- pfp avatar -->
     <div class="topnav__right">
-        <a class="topnav__avatar" href="<?php echo !empty($isAdminHelp) ? 'adminprofile.php' : 'account_setting.php'; ?>" title="Account Setting" aria-label="Open profile">
+        <a class="topnav__avatar" href="account_setting.php" title="Account Setting">
             <?php if (!empty($user['profilePicture'])): ?>
                 <img src="<?php echo htmlspecialchars($user['profilePicture']); ?>" alt="Profile picture" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
             <?php else: ?>
@@ -394,48 +501,50 @@ a {
 <!-- side bar -->
 <div class="layout">
 
+    <div class="sidebar__backdrop" id="sidebarBackdrop"></div>
+
     <aside class="sidebar">
         <nav class="sidebar__nav">
 
             <a class="sidebar__item <?php echo ($current_page === 'overview') ? 'active' : ''; ?>"
-               href="<?php echo !empty($isAdminHelp) ? 'admin.php' : 'user_dashboard.php'; ?>"
+               href="user_dashboard.php"
                id="nav-overview"
                <?php if ($current_page === 'dashboard'): ?>onclick="navigateTo('overview'); return false;"<?php endif; ?>>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
                 </svg>
-                <span><?php echo !empty($isAdminHelp) ? 'Dashboard' : 'Overview'; ?></span>
+                <span>Overview</span>
             </a>
 
             <a class="sidebar__item <?php echo ($current_page === 'mynotes') ? 'active' : ''; ?>"
-               href="<?php echo !empty($isAdminHelp) ? 'manage_students.php' : 'user_dashboard.php'; ?>"
+               href="user_dashboard.php"
                id="nav-mynotes"
                <?php if ($current_page === 'dashboard'): ?>onclick="navigateTo('mynotes'); return false;"<?php endif; ?>>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                 </svg>
-                <span><?php echo !empty($isAdminHelp) ? 'Manage Students' : 'My Notes'; ?></span>
+                <span>My Notes</span>
             </a>
 
             <a class="sidebar__item <?php echo ($current_page === 'bookmarks') ? 'active' : ''; ?>"
-               href="<?php echo !empty($isAdminHelp) ? 'manage_notes.php' : 'user_dashboard.php'; ?>"
+               href="user_dashboard.php"
                id="nav-bookmarks"
                <?php if ($current_page === 'dashboard'): ?>onclick="navigateTo('bookmarks'); return false;"<?php endif; ?>>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
                 </svg>
-                <span><?php echo !empty($isAdminHelp) ? 'Manage Notes' : 'Bookmarks'; ?></span>
+                <span>Bookmarks</span>
             </a>
         </nav>
 
         <!-- upload note -->
-        <?php if (empty($isAdminHelp)): ?><a class="sidebar__upload" href="upload_notes.php">
+        <a class="sidebar__upload" href="upload_notes.php">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
             <span>Upload New Note</span>
-        </a><?php endif; ?>
+        </a>
 
         <div class="sidebar__footer">
             <a class="sidebar__item <?php echo ($current_page === 'help_center') ? 'active' : ''; ?>" href="help_center.php">
@@ -446,7 +555,7 @@ a {
             </a>
 
             <!-- settings popup trigger -->
-            <a class="sidebar__item <?php echo ($current_page === 'settings') ? 'active' : ''; ?>" href="<?php echo !empty($isAdminHelp) ? 'admin_account_setting.php' : '#'; ?>" id="nav-settings" <?php if (empty($isAdminHelp)): ?>onclick="toggleSettingsPopup(event)"<?php endif; ?>>
+            <a class="sidebar__item <?php echo ($current_page === 'settings') ? 'active' : ''; ?>" href="#" id="nav-settings" onclick="toggleSettingsPopup(event)">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -476,7 +585,7 @@ a {
 
                 <div class="account-popup__divider"></div>
 
-                <a class="account-popup__item <?php echo ($current_page === 'settings') ? 'account-popup__item--active' : ''; ?>" href="<?php echo !empty($isAdminHelp) ? 'admin_account_setting.php' : 'account_setting.php'; ?>">
+                <a class="account-popup__item <?php echo ($current_page === 'settings') ? 'account-popup__item--active' : ''; ?>" href="account_setting.php">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="16" height="16">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -512,6 +621,40 @@ a {
             event.target !== settingsBtn) {
             accountPopup.classList.remove('show');
         }
+    });
+})();
+
+(function () {
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const sidebarEl = document.querySelector('.sidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    if (!toggleBtn || !sidebarEl) return;
+
+    function openSidebar() {
+        sidebarEl.classList.add('sidebar--open');
+        if (backdrop) backdrop.classList.add('show');
+    }
+    function closeSidebar() {
+        sidebarEl.classList.remove('sidebar--open');
+        if (backdrop) backdrop.classList.remove('show');
+    }
+
+    toggleBtn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (sidebarEl.classList.contains('sidebar--open')) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+
+    if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+    sidebarEl.querySelectorAll('.sidebar__item, .sidebar__upload').forEach(function (el) {
+        el.addEventListener('click', function () {
+            if (window.innerWidth <= 860) closeSidebar();
+        });
     });
 })();
 </script>

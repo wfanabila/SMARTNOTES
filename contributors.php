@@ -11,39 +11,30 @@ if ($conn->connect_error) {
 
 session_start();
 
-$isAdminHelp = (($_SESSION['role'] ?? '') === 'admin');
-if ($isAdminHelp) {
-    require_once __DIR__ . '/admin_bootstrap.php';
-}
-
-$currentStudentID = !$isAdminHelp && isset($_SESSION['user_id'])
+$currentStudentID = isset($_SESSION['user_id'])
     ? (int) $_SESSION['user_id']
-    : (!$isAdminHelp && isset($_SESSION['studentID']) ? (int) $_SESSION['studentID'] : 0);
+    : (isset($_SESSION['studentID']) ? (int) $_SESSION['studentID'] : 0);
 
-$currentName = $isAdminHelp ? $adminName : "Guest";
-$currentEmail = $isAdminHelp ? $adminEmail : "";
+$currentName = "Guest";
+$currentEmail = "";
 $currentPicture = "";
 
-$user = $isAdminHelp
-    ? ['studentName' => $adminName, 'studentEmail' => $adminEmail, 'profilePicture' => '']
-    : ['studentName' => '', 'studentEmail' => '', 'profilePicture' => ''];
+$user = ['studentName' => '', 'studentEmail' => '', 'profilePicture' => ''];
 
 if ($currentStudentID > 0) {
-    // profilePicture is optional in older SmartNotes databases, so do not
-    // request it here. avatarUrl() supplies a generated avatar when needed.
-    $stmtMe = $conn->prepare("SELECT studentName, studentEmail FROM student WHERE studentID = ?");
+    $stmtMe = $conn->prepare("SELECT studentName, studentEmail, profilePicture FROM student WHERE studentID = ?");
     $stmtMe->bind_param("i", $currentStudentID);
     $stmtMe->execute();
-    $stmtMe->bind_result($meName, $meEmail);
+    $stmtMe->bind_result($meName, $meEmail, $mePicture);
     if ($stmtMe->fetch()) {
         $currentName = $meName;
         $currentEmail = $meEmail;
-        $currentPicture = '';
+        $currentPicture = $mePicture ?? '';
 
         $user = [
             'studentName'    => $meName,
             'studentEmail'   => $meEmail,
-            'profilePicture' => '',
+            'profilePicture' => $mePicture ?? '',
         ];
     }
     $stmtMe->close();
@@ -56,14 +47,14 @@ $sql = "
         s.studentID,
         s.studentName,
         s.programme,
-        '' AS profilePicture,
+        s.profilePicture,
         COUNT(DISTINCT n.noteID) AS totalUploads,
-        ROUND(AVG(c.rating), 1) AS avgRating
+        ROUND(AVG(r.ratingValue), 1) AS avgRating
     FROM student s
     INNER JOIN notes n ON n.studentID = s.studentID
-    LEFT JOIN comment c ON c.noteID = n.noteID
-    GROUP BY s.studentID, s.studentName, s.programme
-    ORDER BY avgRating DESC, totalUploads DESC
+    LEFT JOIN rating r ON r.noteID = n.noteID
+    GROUP BY s.studentID, s.studentName, s.programme, s.profilePicture
+    ORDER BY totalUploads DESC, avgRating DESC
 ";
 
 $result = $conn->query($sql);
