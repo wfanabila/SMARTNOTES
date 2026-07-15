@@ -428,7 +428,7 @@ include_once("sidebar.php");
                 <h2>Filters</h2>
 
                 <div class="filter-section">
-                    <h3>Programme</h3>
+                    <h3>Subjects</h3>
                     <?php if (empty($availableSubjects)): ?>
                         <p class="filter-empty">No subjects available.</p>
                     <?php else: ?>

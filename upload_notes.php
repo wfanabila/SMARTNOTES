@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = trim($_POST['description']);
     $pricing     = strtolower(trim($_POST['pricing'])); 
     $subjectID   = (int) $_POST['subjectid'];
-    $course      = trim($_POST['course']);
+    $programme      = trim($_POST['programme']);
     $semester    = (int) $_POST['semester'];
     $price       = ($pricing === 'paid') ? (float) $_POST['price'] : 0.00;
 
@@ -66,8 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Please select a subject.";
     }
 
-    if (empty($course)) {
-        $errors[] = "Please select a course.";
+    if (empty($programme)) {
+        $errors[] = "Please select a programme.";
     }
 
     if ($semester < 1 || $semester > 7) {
@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (move_uploaded_file($file['tmp_name'], $destination)) {
 
                     $stmt = $conn->prepare(
-                        "INSERT INTO notes (title, description, filePath, noteType, price, studentID, subjectID, course, semester, noteStatus)
+                        "INSERT INTO notes (title, description, filePath, noteType, price, studentID, subjectID, programme, semester, noteStatus)
                          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')"
                     );
 
@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $price,
                             $studentID,
                             $subjectID,
-                            $course,
+                            $programme,
                             $semester
                         );
 
@@ -463,14 +463,14 @@ include_once("sidebar.php");
             </div>
         </div>
 
-        <label>COURSE</label>
-        <select name="course" required>
-            <option value="">-- Select Course --</option>
-            <option value="CSC110" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC110') ? 'selected' : '' ?>>CSC110</option>
-            <option value="CSC230" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC230') ? 'selected' : '' ?>>CSC230</option>
-            <option value="CSC264" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC264') ? 'selected' : '' ?>>CSC264</option>
-            <option value="CSC267" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC267') ? 'selected' : '' ?>>CSC267</option>
-            <option value="CSC270" <?= (isset($_POST['course']) && $_POST['course'] === 'CSC270') ? 'selected' : '' ?>>CSC270</option>
+        <label>PROGRAMME</label>
+        <select name="programme" required>
+            <option value="">-- Select Programme --</option>
+            <option value="CSC110" <?= (isset($_POST['programme']) && $_POST['programme'] === 'CS110') ? 'selected' : '' ?>>CS110</option>
+            <option value="CSC230" <?= (isset($_POST['programme']) && $_POST['programme'] === 'CS230') ? 'selected' : '' ?>>CS230</option>
+            <option value="CSC264" <?= (isset($_POST['programme']) && $_POST['programme'] === 'CS264') ? 'selected' : '' ?>>CS264</option>
+            <option value="CSC267" <?= (isset($_POST['programme']) && $_POST['programme'] === 'CS267') ? 'selected' : '' ?>>CS267</option>
+            <option value="CSC270" <?= (isset($_POST['programme']) && $_POST['programme'] === 'CS270') ? 'selected' : '' ?>>CS270</option>
         </select>
 
         <label>SEMESTER</label>
@@ -513,9 +513,9 @@ include_once("sidebar.php");
         priceField.style.display = (radio.value === 'paid') ? 'block' : 'none';
     }
 
-    // Load subjects for selected course+semester via AJAX
+    // Load subjects for selected programme+semester via AJAX
     (function () {
-        const courseSelect = document.querySelector('select[name="course"]');
+        const programmeSelect = document.querySelector('select[name="programme"]');
         const semesterSelect = document.querySelector('select[name="semester"]');
         const subjectSelect = document.getElementById('subjectSelect');
 
@@ -551,14 +551,14 @@ include_once("sidebar.php");
         }
 
         async function fetchSubjects() {
-            const c = courseSelect.value || '';
+            const c = programmeSelect.value || '';
             const sem = semesterSelect.value || '';
             if (!c) {
-                // if no course selected, leave initial server-populated list
+                // if no programme selected, leave initial server-populated list
                 return;
             }
             try {
-                const url = `sql/fetch_subjects.php?course=${encodeURIComponent(c)}&semester=${encodeURIComponent(sem)}`;
+                const url = `sql/fetch_subjects.php?programme=${encodeURIComponent(c)}&semester=${encodeURIComponent(sem)}`;
                 const res = await fetch(url);
                 if (!res.ok) throw new Error('Network error');
                 const data = await res.json();
@@ -571,9 +571,9 @@ include_once("sidebar.php");
             }
         }
 
-        courseSelect.addEventListener('change', fetchSubjects);
+        programmeSelect.addEventListener('change', fetchSubjects);
         semesterSelect.addEventListener('change', fetchSubjects);
-        // initial fetch after page load to ensure filtering matches selected course/semester
+        // initial fetch after page load to ensure filtering matches selected programme/semester
         document.addEventListener('DOMContentLoaded', fetchSubjects);
     })();
 </script>
