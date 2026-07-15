@@ -13,7 +13,6 @@ try {
     die("Database connection failed: " . $e->getMessage());
 }
 
-// Run database migrations to ensure all required columns exist
 require_once 'migration_helper.php';
 runAllMigrations($pdo);
 

@@ -3,12 +3,42 @@
 if (!isset($user)) {
     $user = ['studentName' => '', 'studentEmail' => '', 'profilePicture' => ''];
 }
+
+if (!empty($_SESSION['user_id']) && (($_SESSION['role'] ?? '') !== 'admin')) {
+
+    if (!isset($pdo) || !($pdo instanceof PDO)) {
+        try {
+            $pdo = new PDO(
+                "mysql:host=localhost;dbname=smartnotes;charset=utf8",
+                "root",
+                "",
+                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+            );
+        } catch (PDOException $e) {
+            $pdo = null;
+        }
+    }
+
+    if ($pdo instanceof PDO) {
+        try {
+            $stmtSidebarUser = $pdo->prepare(
+                "SELECT studentName, studentEmail, profilePicture FROM student WHERE studentID = ?"
+            );
+            $stmtSidebarUser->execute([$_SESSION['user_id']]);
+            $freshUser = $stmtSidebarUser->fetch(PDO::FETCH_ASSOC);
+
+            if ($freshUser) {
+                $user = array_merge($user, $freshUser);
+            }
+        } catch (PDOException $e) {
+        }
+    }
+}
+
 if (!isset($current_page)) {
     $current_page = '';
 }
 
-// This sidebar is also used by the Help Center for administrators. Keep the
-// profile shortcut within the correct account area for each signed-in role.
 $profilePage = (($_SESSION['role'] ?? '') === 'admin')
     ? 'adminprofile.php'
     : 'account_setting.php';
