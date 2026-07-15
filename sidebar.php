@@ -6,6 +6,15 @@ if (!isset($user)) {
 if (!isset($current_page)) {
     $current_page = '';
 }
+
+// This sidebar is also used by the Help Center for administrators. Keep the
+// profile shortcut within the correct account area for each signed-in role.
+$profilePage = (($_SESSION['role'] ?? '') === 'admin')
+    ? 'adminprofile.php'
+    : 'account_setting.php';
+$profileTitle = (($_SESSION['role'] ?? '') === 'admin')
+    ? 'Admin Profile'
+    : 'Account Setting';
 ?>
 
 <style>
@@ -484,7 +493,7 @@ a {
 
     <!-- pfp avatar -->
     <div class="topnav__right">
-        <a class="topnav__avatar" href="account_setting.php" title="Account Setting">
+        <a class="topnav__avatar" href="<?php echo htmlspecialchars($profilePage, ENT_QUOTES, 'UTF-8'); ?>" title="<?php echo htmlspecialchars($profileTitle, ENT_QUOTES, 'UTF-8'); ?>" aria-label="<?php echo htmlspecialchars($profileTitle, ENT_QUOTES, 'UTF-8'); ?>">
             <?php if (!empty($user['profilePicture'])): ?>
                 <img src="<?php echo htmlspecialchars($user['profilePicture']); ?>" alt="Profile picture" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
             <?php else: ?>
