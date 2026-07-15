@@ -163,9 +163,86 @@ img {
     overflow: hidden;
     box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
 }
+
 .landing-search-results a,
-.landing-search-results p { display:block; padding:12px 18px; margin:0; color:var(--text); text-decoration:none; font-size:.92rem; }
-.landing-search-results a:hover { background:#f6f0ff; color:var(--purple); }
+.landing-search-results p { 
+    display: block; 
+    padding: 12px 18px; 
+    margin: 0; 
+    color: var(--text); 
+    text-decoration: none; 
+    font-size: .92rem; 
+}
+
+.landing-search-results a:hover { 
+    background: #f6f0ff; 
+    color: var(--purple); 
+}
+
+/* New search result item styles for student search */
+#search-results-container a.search-result-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid #f0f1f5;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#search-results-container a.search-result-item:last-child {
+    border-bottom: none;
+}
+
+#search-results-container a.search-result-item:hover {
+    background-color: #f6f0ff;
+    color: var(--purple);
+}
+
+.result-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.result-info strong {
+    font-weight: 600;
+    color: inherit;
+    line-height: 1.4;
+}
+
+.result-info small {
+    font-size: 0.85rem;
+    color: var(--muted);
+    opacity: 0.8;
+}
+
+#search-results-container a.search-result-item:hover .result-info small {
+    color: var(--purple);
+}
+
+.result-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-left: 12px;
+    white-space: nowrap;
+}
+
+.result-badge.premium {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+
+.result-badge.free {
+    background-color: #d1fae5;
+    color: #10b981;
+}
 
 .explore-section,
 .recent-section {

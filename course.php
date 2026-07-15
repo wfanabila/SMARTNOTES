@@ -53,7 +53,99 @@ $conn->close();
 function escape_html(string $value): string {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
+
+/**
+ * Get thumbnail for note
+ * - If file is image, use it directly
+ * - If file is PDF, check for cover image
+ * - Otherwise generate unique gradient
+ */
+function getNoteThumb($filePath, $noteID, $title) {
+    $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+    $imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    
+    // If file is image, use it as thumbnail
+    if (in_array($ext, $imageExts)) {
+        return [
+            'type' => 'image',
+            'path' => $filePath,
+            'title' => $title
+        ];
+    }
+    
+    // For PDFs and other files, generate unique gradient
+    $colorPalettes = [
+        ['#a78bfa','#7c3aed'],     // Purple
+        ['#60a5fa','#2563eb'],     // Blue
+        ['#34d399','#059669'],     // Green
+        ['#f472b6','#db2777'],     // Pink
+        ['#fb923c','#ea580c'],     // Orange
+        ['#818cf8','#4f46e5'],     // Indigo
+        ['#06b6d4','#0891b2'],     // Cyan
+        ['#8b5cf6','#6d28d9'],     // Violet
+        ['#ec4899','#be185d'],     // Rose
+        ['#f97316','#c2410c'],     // Amber
+    ];
+    
+    // Use noteID to pick a consistent color
+    $idx = abs((int)$noteID % count($colorPalettes));
+    $colors = $colorPalettes[$idx];
+    
+    return [
+        'type' => 'gradient',
+        'color1' => $colors[0],
+        'color2' => $colors[1],
+        'title' => $title
+    ];
+}
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= escape_html($course) ?> Notes - UiTMNoteLink</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= escape_html($cssPath) ?>">
+    <style>
+        .gradient-thumbnail {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            box-sizing: border-box;
+            overflow: hidden;
+            position: relative;
+        }
+        .gradient-thumbnail::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.1;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 20px
+            );
+            pointer-events: none;
+        }
+        .gradient-thumbnail-text {
+            position: relative;
+            z-index: 1;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            line-height: 1.4;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            word-break: break-word;
+        }
+    </style>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,9 +187,18 @@ function escape_html(string $value): string {
                     <div class="empty-message">No notes found for <?= escape_html($course) ?>. Check back later or upload new notes.</div>
                 <?php else: ?>
                     <?php foreach ($notes as $note): ?>
+                        <?php $thumb = getNoteThumb($note['filePath'], $note['noteID'], $note['title']); ?>
                         <article class="recent-card">
                             <a href="display_note.php?id=<?= urlencode($note['noteID']) ?>" class="recent-card__link">
-                                <img src="img/bookmark1.png" alt="<?= escape_html($note['title']) ?>" class="recent-card__thumb">
+                                <div class="recent-card__thumb">
+                                    <?php if ($thumb['type'] === 'image'): ?>
+                                        <img src="<?= escape_html($thumb['path']) ?>" alt="<?= escape_html($thumb['title']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <?php else: ?>
+                                        <div class="gradient-thumbnail" style="background: linear-gradient(135deg, <?= $thumb['color1'] ?>, <?= $thumb['color2'] ?>);">
+                                            <div class="gradient-thumbnail-text"><?= escape_html($thumb['title']) ?></div>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
                                 <div class="recent-card__meta"><?= escape_html($note['title']) ?></div>
                                 <div class="recent-card__meta" style="font-weight: 500; color: #475569; font-size: 0.95rem; padding-top: 0;"><?= escape_html($note['subjectCode']) ?></div>
                             </a>
