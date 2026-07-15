@@ -49,7 +49,7 @@ $sql = "
         s.programme,
         s.profilePicture,
         COUNT(DISTINCT n.noteID) AS totalUploads,
-        ROUND(AVG(r.ratingValue), 1) AS avgRating
+        COALESCE(ROUND(AVG(r.ratingValue), 1), 0.0) AS avgRating
     FROM student s
     INNER JOIN notes n ON n.studentID = s.studentID
     LEFT JOIN rating r ON r.noteID = n.noteID

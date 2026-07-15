@@ -4,18 +4,18 @@ $activeAdminPage = 'contributors';
 
 $contributors = [];
 $sql = "
-    SELECT 
+    SELECT
         s.studentID,
         s.studentName,
         s.programme,
-        '' AS profilePicture,
+        COALESCE(s.profilePicture, '') AS profilePicture,
         COUNT(DISTINCT n.noteID) AS totalUploads,
-        ROUND(AVG(c.rating), 1) AS avgRating
+        COALESCE(ROUND(AVG(r.ratingValue), 1), 0.0) AS avgRating
     FROM student s
     INNER JOIN notes n ON n.studentID = s.studentID
-    LEFT JOIN comment c ON c.noteID = n.noteID
-    GROUP BY s.studentID, s.studentName, s.programme
-    ORDER BY avgRating DESC, totalUploads DESC
+    LEFT JOIN rating r ON r.noteID = n.noteID
+    GROUP BY s.studentID, s.studentName, s.programme, s.profilePicture
+    ORDER BY totalUploads DESC, avgRating DESC
 ";
 
 $result = $conn->query($sql);
