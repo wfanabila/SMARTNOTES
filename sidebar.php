@@ -371,17 +371,13 @@ a {
         <div class="topnav__links">
             <a href="landingpage.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Home</a>
             <a href="<?php echo !empty($isAdminHelp) ? 'admin_notes.php' : 'all_notes.php'; ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Notes</a>
-            <a href="contributors.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Contributors</a>
+            <a href="<?php echo !empty($isAdminHelp) ? 'admin_contributors.php' : 'contributors.php'; ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Contributors</a>
             <a href="<?php echo !empty($isAdminHelp) ? 'admin.php' : 'user_dashboard.php'; ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Dashboard</a>
         </div>
 
     <!-- pfp avatar -->
     <div class="topnav__right">
-<<<<<<< HEAD
-        <a class="topnav__avatar" href="account_setting.php" title="Account Setting">
-=======
-        <a class="topnav__avatar" href="<?php echo !empty($isAdminHelp) ? 'adminprofile.php' : 'account_setting.php'; ?>" aria-label="Open profile">
->>>>>>> 78708dd51fdfe3c4bf4de0080cd2bcb26a474ea9
+        <a class="topnav__avatar" href="<?php echo !empty($isAdminHelp) ? 'adminprofile.php' : 'account_setting.php'; ?>" title="Account Setting" aria-label="Open profile">
             <?php if (!empty($user['profilePicture'])): ?>
                 <img src="<?php echo htmlspecialchars($user['profilePicture']); ?>" alt="Profile picture" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
             <?php else: ?>

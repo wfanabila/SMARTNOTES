@@ -2,7 +2,7 @@
 session_start();
 $isAdminLanding = (($_SESSION['role'] ?? '') === 'admin');
 $landingNotesLink = $isAdminLanding ? 'admin_notes.php' : 'all_notes.php';
-$landingContributorsLink = 'contributors.php';
+$landingContributorsLink = $isAdminLanding ? 'admin_contributors.php' : 'contributors.php';
 $landingDashboardLink = $isAdminLanding ? 'admin.php' : 'user_dashboard.php';
 $recentAdminNotes = [];
 $landingSubjects = [];

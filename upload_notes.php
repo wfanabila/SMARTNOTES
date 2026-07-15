@@ -482,11 +482,10 @@ include_once("sidebar.php");
         </select>
 
         <label>SUBJECT CODE</label>
-        <select name="subjectid" required>
+        <select name="subjectid" id="subjectSelect" required>
             <option value="">-- Select Subject --</option>
             <?php foreach ($subjects as $subject): ?>
-                <option value="<?= $subject['subjectID'] ?>"
-                    <?= (isset($_POST['subjectid']) && $_POST['subjectid'] == $subject['subjectID']) ? 'selected' : '' ?>>
+                <option value="<?= $subject['subjectID'] ?>" <?= (isset($_POST['subjectid']) && $_POST['subjectid'] == $subject['subjectID']) ? 'selected' : '' ?>>
                     <?= htmlspecialchars($subject['subjectCode'] . ' - ' . $subject['subjectName']) ?>
                 </option>
             <?php endforeach; ?>
@@ -513,6 +512,70 @@ include_once("sidebar.php");
         const priceField = document.getElementById('priceField');
         priceField.style.display = (radio.value === 'paid') ? 'block' : 'none';
     }
+
+    // Load subjects for selected course+semester via AJAX
+    (function () {
+        const courseSelect = document.querySelector('select[name="course"]');
+        const semesterSelect = document.querySelector('select[name="semester"]');
+        const subjectSelect = document.getElementById('subjectSelect');
+
+        function setOptions(subjects, preserveSelected) {
+            const prevValue = preserveSelected ? subjectSelect.value : '';
+            const prevText = (preserveSelected && subjectSelect.selectedIndex >= 0)
+                ? subjectSelect.options[subjectSelect.selectedIndex].textContent
+                : '';
+            subjectSelect.innerHTML = '';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = '-- Select Subject --';
+            subjectSelect.appendChild(placeholder);
+            subjects.forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.subjectID;
+                opt.textContent = s.subjectCode + ' - ' + s.subjectName;
+                subjectSelect.appendChild(opt);
+            });
+            // If previous selection should be preserved but it's not in new list,
+            // re-insert it so it remains visible and selected.
+            if (preserveSelected && prevValue) {
+                const found = Array.from(subjectSelect.options).some(o => o.value === prevValue);
+                if (!found) {
+                    const opt = document.createElement('option');
+                    opt.value = prevValue;
+                    opt.textContent = prevText || 'Previously selected subject';
+                    opt.dataset.preserved = '1';
+                    subjectSelect.appendChild(opt);
+                }
+                subjectSelect.value = prevValue;
+            }
+        }
+
+        async function fetchSubjects() {
+            const c = courseSelect.value || '';
+            const sem = semesterSelect.value || '';
+            if (!c) {
+                // if no course selected, leave initial server-populated list
+                return;
+            }
+            try {
+                const url = `sql/fetch_subjects.php?course=${encodeURIComponent(c)}&semester=${encodeURIComponent(sem)}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('Network error');
+                const data = await res.json();
+                if (data && Array.isArray(data.subjects)) {
+                    setOptions(data.subjects, true);
+                }
+            } catch (e) {
+                // silently fail and keep server-rendered list
+                console.error('fetchSubjects error', e);
+            }
+        }
+
+        courseSelect.addEventListener('change', fetchSubjects);
+        semesterSelect.addEventListener('change', fetchSubjects);
+        // initial fetch after page load to ensure filtering matches selected course/semester
+        document.addEventListener('DOMContentLoaded', fetchSubjects);
+    })();
 </script>
 
 </body>

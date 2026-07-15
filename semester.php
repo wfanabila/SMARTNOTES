@@ -32,14 +32,31 @@ if ($conn->connect_error) {
     die('Database connection failed: ' . $conn->connect_error);
 }
 
-$query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
+$likeParam = $course . '%';
+
+// Use programme_subject mapping when available; otherwise fallback to subjectCode LIKE
+$check = $conn->query("SHOW TABLES LIKE 'programme_subject'");
+// Check if notes have a noteStatus column (used for moderation)
+$noteStatusCheck = $conn->query("SHOW COLUMNS FROM notes LIKE 'noteStatus'");
+$statusCondition = ($noteStatusCheck && $noteStatusCheck->num_rows > 0) ? " AND n.noteStatus = 'approved'" : "";
+if ($check && $check->num_rows > 0) {
+    $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
           FROM notes n
           JOIN subject s ON n.subjectID = s.subjectID
           JOIN programme_subject ps ON ps.subjectID = s.subjectID
-          WHERE ps.programmeCode = ? AND ps.semester = ?
+          WHERE ps.programmeCode = ? AND ps.semester = ?" . $statusCondition . "
           ORDER BY n.uploadDate DESC";
-$stmt = $conn->prepare($query);
-$stmt->bind_param('si', $course, $semester);
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('si', $course, $semester);
+} else {
+    $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
+          FROM notes n
+          JOIN subject s ON n.subjectID = s.subjectID
+          WHERE s.subjectCode LIKE ?" . $statusCondition . "
+          ORDER BY n.uploadDate DESC";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('s', $likeParam);
+}
 $stmt->execute();
 $result = $stmt->get_result();
 $notes = [];
@@ -47,8 +64,14 @@ while ($row = $result->fetch_assoc()) {
     $notes[] = $row;
 }
 $stmt->close();
-$subjectStmt = $conn->prepare('SELECT s.subjectCode, s.subjectName FROM programme_subject ps JOIN subject s ON s.subjectID = ps.subjectID WHERE ps.programmeCode = ? AND ps.semester = ? ORDER BY s.subjectCode');
-$subjectStmt->bind_param('si', $course, $semester);
+$check = $conn->query("SHOW TABLES LIKE 'programme_subject'");
+if ($check && $check->num_rows > 0) {
+    $subjectStmt = $conn->prepare('SELECT s.subjectCode, s.subjectName FROM programme_subject ps JOIN subject s ON s.subjectID = ps.subjectID WHERE ps.programmeCode = ? AND ps.semester = ? ORDER BY s.subjectCode');
+    $subjectStmt->bind_param('si', $course, $semester);
+} else {
+    $subjectStmt = $conn->prepare('SELECT s.subjectCode, s.subjectName FROM subject s WHERE s.subjectCode LIKE ? ORDER BY s.subjectCode');
+    $subjectStmt->bind_param('s', $likeParam);
+}
 $subjectStmt->execute();
 $semesterSubjects = $subjectStmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $subjectStmt->close();

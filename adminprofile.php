@@ -34,7 +34,7 @@ $conn->close();
         <a class="admin-profile-settings" href="admin_account_setting.php"><i class="fas fa-sun"></i> Settings</a>
     </aside>
     <main class="admin-profile-main">
-        <header class="admin-profile-topbar"><nav><a href="contributors.php">Contributors</a><a class="active" href="admin.php">Dashboard</a></nav><a href="adminprofile.php" class="admin-profile-top-avatar"><?= admin_escape($adminInitial) ?></a></header>
+        <header class="admin-profile-topbar"><nav><a href="admin_contributors.php">Contributors</a><a class="active" href="admin.php">Dashboard</a></nav><a href="adminprofile.php" class="admin-profile-top-avatar"><?= admin_escape($adminInitial) ?></a></header>
         <section class="admin-profile-content">
             <h1>Admin Profile</h1><p class="admin-profile-subtitle">Your account information.</p>
             <article class="admin-profile-card">

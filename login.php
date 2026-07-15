@@ -143,10 +143,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .toggle-password:hover {
             color: #6b34d9;
         }
-
-        .terms-link:hover {
-            text-decoration: underline !important;
-        }
     </style>
 </head>
 <body>
@@ -228,11 +224,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <!-- Terms + Create account: Student only -->
             <div id="studentOnlyFooter" style="display: <?= $isAdmin ? 'none' : '' ?>;">
                 <p class="terms-text mt-4">
-                    By registering this, you agree to our <a href="terms_of_conditions.html" class="terms-link">Terms and Conditions</a>
+                    By registering this, you agree to our <a href="terms_of_conditions.html">Terms and Conditions</a>
                 </p>
                 
                 <p class="new-user-text">
-                    New user? <a href="register.php?from=login">Create an account</a>
+                    New user? <a href="register.php">Create an account</a>
                 </p>
             </div>
 
