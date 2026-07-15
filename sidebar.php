@@ -15,6 +15,11 @@ $profilePage = (($_SESSION['role'] ?? '') === 'admin')
 $profileTitle = (($_SESSION['role'] ?? '') === 'admin')
     ? 'Admin Profile'
     : 'Account Setting';
+$isAdminNavigation = (($_SESSION['role'] ?? '') === 'admin');
+$homePage = 'landingpage.php';
+$notesPage = $isAdminNavigation ? 'admin_notes.php' : 'all_notes.php';
+$contributorsPage = $isAdminNavigation ? 'admin_contributors.php' : 'contributors.php';
+$dashboardPage = $isAdminNavigation ? 'admin_dashboard.php' : 'user_dashboard.php';
 ?>
 
 <style>
@@ -485,10 +490,10 @@ a {
 
         <!-- top bar -->
         <div class="topnav__links">
-            <a href="#" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Home</a>
-            <a href="all_notes.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Notes</a>
-            <a href="contributors.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Contributors</a>
-            <a href="user_dashboard.php" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Dashboard</a> 
+            <a href="<?php echo htmlspecialchars($homePage, ENT_QUOTES, 'UTF-8'); ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Home</a>
+            <a href="<?php echo htmlspecialchars($notesPage, ENT_QUOTES, 'UTF-8'); ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Notes</a>
+            <a href="<?php echo htmlspecialchars($contributorsPage, ENT_QUOTES, 'UTF-8'); ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Contributors</a>
+            <a href="<?php echo htmlspecialchars($dashboardPage, ENT_QUOTES, 'UTF-8'); ?>" class="w3-bar-item w3-button w3-hover-none w3-border-white w3-bottombar topnav-link">Dashboard</a>
         </div>
 
     <!-- pfp avatar -->
