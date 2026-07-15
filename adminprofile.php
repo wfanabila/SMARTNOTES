@@ -16,24 +16,9 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<div class="admin-profile-layout">
-    <aside class="admin-profile-sidebar">
-        <a href="admin_dashboard.php" class="admin-profile-brand"><img src="img/logo.PNG" alt="UiTM NoteLink"></a>
-        <nav class="admin-profile-menu">
-            <a href="admin_dashboard.php"><i class="far fa-circle"></i><span>Dashboard</span></a>
-            <a href="manage_students.php"><i class="far fa-user"></i><span>Manage Students</span></a>
-            <a href="manage_notes.php"><i class="far fa-square"></i><span>Manage Notes</span></a>
-            <a class="active" href="adminprofile.php"><i class="far fa-user"></i><span>Admin's Profile</span></a>
-        </nav>
-        <div class="admin-profile-account">
-            <p>Account</p>
-            <div class="admin-profile-account__identity"><span><?= admin_escape($adminInitial) ?></span><div><b><?= admin_escape($adminName) ?></b><small><?= admin_escape($adminEmail) ?></small></div></div>
-            <a class="active" href="admin_account_setting.php"><i class="fas fa-circle-info"></i> Account Setting</a>
-            <a href="logout.php"><i class="fas fa-arrow-right-from-bracket"></i> Log Out</a>
-        </div>
-        <a class="admin-profile-settings" href="admin_account_setting.php"><i class="fas fa-sun"></i> Settings</a>
-    </aside>
-    <main class="admin-profile-main">
+<div class="layout">
+    <?php include __DIR__ . '/admin_nav.php'; ?>
+    <main class="content admin-profile-main">
         <header class="admin-profile-topbar"><nav><a href="admin_contributors.php">Contributors</a><a class="active" href="admin_dashboard.php">Dashboard</a></nav><a href="adminprofile.php" class="admin-profile-top-avatar"><?= admin_escape($adminInitial) ?></a></header>
         <section class="admin-profile-content">
             <h1>Admin Profile</h1><p class="admin-profile-subtitle">Your account information.</p>
