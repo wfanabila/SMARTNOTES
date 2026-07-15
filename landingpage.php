@@ -71,7 +71,6 @@ if ($isAdminLanding) {
                     <h2>Explore Programme</h2>
                     <p>Browse specialized archives curated for your major</p>
                 </div>
-                <span class="premium-badge">PREMIUM</span>
             </div>
 
             <div class="tag-grid">
