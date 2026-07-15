@@ -496,27 +496,418 @@ tbody td {
 .admin-settings-form input { width: 100%; border: 1px solid #d1d5db; border-radius: 8px; padding: 11px 12px; font: inherit; }
 .admin-settings-form button { justify-self: start; margin-top: 8px; }
 
-@media (max-width: 900px) {
-    .layout { grid-template-columns: 76px 1fr; }
-    .sidebar { padding: 16px 10px; }
-    .brand-logo-img { width: 54px; }
-    .menu-item { justify-content: center; padding: 12px; }
-    .menu-item span:not(.menu-icon) { display: none; }
-    .content { padding: 20px; min-width: 0; }
-    .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .table-section { grid-template-columns: 1fr; gap: 18px; }
+
+/* Responsive Design */
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .layout { 
+        grid-template-columns: 220px 1fr; 
+    }
+    
+    .sidebar { 
+        padding: 20px 16px;
+    }
+    
+    .brand-logo-img { 
+        width: 100%; 
+    }
+    
+    .content { 
+        padding: 24px 20px; 
+    }
+    
+    .stats-grid { 
+        grid-template-columns: repeat(2, minmax(0, 1fr)); 
+        gap: 16px; 
+    }
+    
+    .table-section { 
+        grid-template-columns: 1fr; 
+        gap: 20px; 
+    }
+    
+    .table-scroll {
+        font-size: 0.9rem;
+    }
+    
+    .welcome-header h2,
+    .section-title h1 {
+        font-size: 1.75rem;
+    }
 }
-@media (max-width: 560px) {
-    .layout { display: block; }
-    .sidebar { position: static; width: 100%; padding: 8px 12px; border-right: 0; border-bottom: 1px solid #e5e7eb; }
-    .brand { display: none; }
-    .menu { flex-direction: row; overflow-x: auto; }
-    .menu-divider, .sign-out { margin: 0; }
-    .menu-item { flex: 0 0 auto; }
-    .content { padding: 16px; }
-    .topbar { gap: 12px; margin-bottom: 20px; }
-    .top-nav { margin: 0; gap: 14px; }
-    .profile-area span { display: none; }
-    .stats-grid { grid-template-columns: 1fr; }
-    .welcome-header h2, .section-title h1 { font-size: 1.45rem; }
+
+/* Mobile Large (481px - 767px) */
+@media (max-width: 767px) {
+    .layout { 
+        grid-template-columns: 70px 1fr; 
+    }
+    
+    .sidebar { 
+        padding: 12px 8px;
+        min-width: 70px;
+    }
+    
+    .brand { 
+        margin-bottom: 20px;
+        justify-content: flex-start;
+    }
+    
+    .brand-logo-img { 
+        width: 45px; 
+    }
+    
+    .menu-item { 
+        justify-content: center; 
+        padding: 10px 8px;
+        gap: 0;
+        font-size: 0.85rem;
+    }
+    
+    .menu-item span:not(.menu-icon) { 
+        display: none; 
+    }
+    
+    .menu-icon {
+        width: 20px;
+    }
+    
+    .menu-divider { 
+        margin: 16px 0; 
+    }
+    
+    .content { 
+        padding: 16px 12px; 
+        min-width: 0;
+    }
+    
+    .topbar { 
+        gap: 12px; 
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+    
+    .top-nav { 
+        margin: 0; 
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .top-nav a {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .stats-grid { 
+        grid-template-columns: repeat(2, minmax(0, 1fr)); 
+        gap: 12px; 
+    }
+    
+    .stat-card {
+        padding: 14px 12px;
+    }
+    
+    .stat-card h3 {
+        font-size: 0.9rem;
+    }
+    
+    .stat-card .number {
+        font-size: 1.6rem;
+    }
+    
+    .table-section { 
+        grid-template-columns: 1fr; 
+        gap: 16px; 
+    }
+    
+    .section-header,
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .action-group,
+    .filter-group {
+        width: 100%;
+    }
+    
+    .table-scroll {
+        font-size: 0.8rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table th,
+    table td {
+        padding: 8px;
+    }
+    
+    .welcome-header h2,
+    .section-title h1 { 
+        font-size: 1.4rem; 
+        margin-bottom: 16px;
+    }
+    
+    .profile-area span { 
+        display: none; 
+    }
+    
+    .student-cell {
+        gap: 8px;
+    }
+    
+    .student-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 0.85rem;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+    }
+    
+    .table-action {
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+    .layout { 
+        display: block; 
+    }
+    
+    .sidebar { 
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        width: 100%; 
+        padding: 8px 10px; 
+        border-right: 0; 
+        border-bottom: 2px solid #e5e7eb;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .brand { 
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+        margin-right: 12px;
+    }
+    
+    .brand-logo-img { 
+        width: 32px;
+        height: auto;
+    }
+    
+    .brand h1 {
+        display: none;
+    }
+    
+    .menu { 
+        flex-direction: row; 
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 4px;
+        padding: 0;
+        flex: 1;
+    }
+    
+    .menu-item { 
+        flex: 0 0 auto;
+        padding: 6px 8px;
+        gap: 0;
+        font-size: 0.75rem;
+        min-width: fit-content;
+    }
+    
+    .menu-item span:not(.menu-icon) { 
+        display: none; 
+    }
+    
+    .menu-icon {
+        width: 18px;
+    }
+    
+    .menu-divider { 
+        display: none;
+    }
+    
+    .sign-out { 
+        margin: 0;
+        flex: 0 0 auto;
+    }
+    
+    .content { 
+        padding: 12px; 
+        padding-top: 16px;
+    }
+    
+    .topbar { 
+        gap: 8px; 
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+    }
+    
+    .top-nav { 
+        margin: 0; 
+        gap: 8px;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    
+    .top-nav a {
+        padding: 5px 8px;
+        font-size: 0.8rem;
+        flex: 0 1 auto;
+    }
+    
+    .stats-grid { 
+        grid-template-columns: 1fr; 
+        gap: 10px; 
+    }
+    
+    .stat-card {
+        padding: 12px 10px;
+        border-radius: 6px;
+    }
+    
+    .stat-card h3 {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+    
+    .stat-card .number {
+        font-size: 1.4rem;
+    }
+    
+    .table-section { 
+        grid-template-columns: 1fr; 
+        gap: 12px; 
+    }
+    
+    .section-header,
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    
+    .action-group,
+    .filter-group {
+        width: 100%;
+    }
+    
+    .action-group input {
+        font-size: 0.9rem;
+    }
+    
+    .filter-group {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 8px;
+    }
+    
+    .filter-pill {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        flex: 0 0 auto;
+    }
+    
+    .table-scroll {
+        font-size: 0.75rem;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 4px;
+    }
+    
+    table {
+        width: 100%;
+        min-width: 500px;
+    }
+    
+    table th,
+    table td {
+        padding: 6px 4px;
+    }
+    
+    table th {
+        font-size: 0.75rem;
+    }
+    
+    .welcome-header h2,
+    .section-title h1 { 
+        font-size: 1.2rem; 
+        margin-bottom: 12px;
+    }
+    
+    .section-title p {
+        font-size: 0.85rem;
+    }
+    
+    .profile-area span { 
+        display: none; 
+    }
+    
+    .student-cell {
+        gap: 6px;
+        flex-wrap: wrap;
+    }
+    
+    .student-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    
+    .student-name,
+    .student-email {
+        display: block;
+        width: 100%;
+    }
+    
+    .student-email {
+        font-size: 0.65rem;
+        margin-top: 2px;
+    }
+    
+    .badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+    }
+    
+    .table-action {
+        gap: 4px;
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .btn-view,
+    .btn-suspend {
+        padding: 4px 6px;
+        font-size: 0.7rem;
+        width: 100%;
+    }
+    
+    .admin-notice, 
+    .admin-error { 
+        padding: 10px 10px; 
+        font-size: 0.85rem;
+        margin-bottom: 12px; 
+    }
+    
+    .admin-settings-form { 
+        gap: 8px; 
+        max-width: 100%;
+    }
+    
+    .admin-settings-form input { 
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
 }

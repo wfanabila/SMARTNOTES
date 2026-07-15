@@ -488,26 +488,394 @@
     justify-content: flex-end;
 }
 
-@media (max-width: 700px) {
-    .settings-form__row {
-        grid-template-columns: 1fr;
+
+/* Responsive Design */
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .topnav {
+        padding: 0 16px !important;
     }
-    .theme-grid {
-        grid-template-columns: 1fr;
+    
+    .topnav__links {
+        gap: 2px !important;
     }
+    
+    .topnav__links a {
+        font-size: 14px;
+        padding: 6px 10px;
+    }
+    
+    .main__container {
+        max-width: 100%;
+        padding: 40px 24px;
+    }
+    
+    .settings-header__title {
+        font-size: 28px;
+    }
+    
+    .settings-card {
+        padding: 20px;
+        margin-bottom: 28px;
+    }
+    
     .settings-card__top {
         flex-direction: column;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+    
+    .settings-form__row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .theme-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
     }
 }
 
-@media (max-width: 480px) {
-    .modal, .pfp-modal {
-        padding: 22px;
+/* Mobile Large (481px - 767px) */
+@media (max-width: 767px) {
+    .topnav {
+        padding: 0 12px !important;
+        height: 52px !important;
     }
+    
+    .topnav__links {
+        display: none !important;
+    }
+    
+    .topnav__logo-icon img {
+        height: 28px;
+    }
+    
+    .topnav__avatar {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .sidebar {
+        top: 52px;
+        width: 56px;
+    }
+    
+    .sidebar:hover {
+        width: 180px;
+    }
+    
+    .main {
+        margin-left: 56px;
+    }
+    
+    .sidebar:hover ~ .main {
+        margin-left: 180px;
+    }
+    
+    .main__container {
+        max-width: 100%;
+        padding: 32px 16px;
+    }
+    
+    .settings-header {
+        margin-bottom: 20px;
+    }
+    
+    .settings-header__title {
+        font-size: 24px;
+    }
+    
+    .settings-header__sub {
+        font-size: 13px;
+    }
+    
+    .settings-card {
+        padding: 16px;
+        margin-bottom: 20px;
+        border-radius: 12px;
+    }
+    
+    .settings-card__top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    
+    .settings-card__identity {
+        width: 100%;
+    }
+    
+    .settings-card__avatar {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .settings-card__name {
+        font-size: 16px;
+    }
+    
+    .settings-card__email {
+        font-size: 12px;
+    }
+    
+    .settings-card__actions {
+        width: 100%;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+    
+    .settings-form {
+        gap: 16px;
+    }
+    
+    .settings-form__group {
+        gap: 12px;
+    }
+    
+    .settings-form__label {
+        font-size: 12px;
+    }
+    
+    .settings-form__input,
+    .settings-form__select {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+    
+    .settings-form__row {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .theme-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .theme-card {
+        padding: 12px;
+    }
+    
+    .modal {
+        width: 90%;
+        padding: 18px;
+    }
+    
+    .modal__title {
+        font-size: 16px;
+    }
+    
+    .modal__content {
+        margin: 12px 0;
+    }
+    
+    .modal__actions {
+        gap: 8px;
+    }
+    
+    .modal__actions .btn {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+    .topnav {
+        padding: 0 8px !important;
+        height: 48px !important;
+    }
+    
+    .topnav__links {
+        display: none !important;
+    }
+    
+    .topnav__logo-icon img {
+        height: 24px;
+    }
+    
+    .topnav__avatar {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .sidebar {
+        top: 48px;
+        width: 52px;
+    }
+    
+    .sidebar:hover {
+        width: 160px;
+    }
+    
+    .main {
+        margin-left: 52px;
+    }
+    
+    .sidebar:hover ~ .main {
+        margin-left: 160px;
+    }
+    
+    .main__container {
+        padding: 24px 12px;
+    }
+    
+    .settings-header {
+        margin-bottom: 16px;
+    }
+    
+    .settings-header__title {
+        font-size: 20px;
+    }
+    
+    .settings-header__sub {
+        font-size: 12px;
+    }
+    
+    .settings-card {
+        padding: 14px;
+        margin-bottom: 16px;
+        border-radius: 10px;
+    }
+    
+    .settings-card__top {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+    
+    .settings-card__identity {
+        width: 100%;
+        gap: 10px;
+    }
+    
+    .settings-card__avatar {
+        width: 44px;
+        height: 44px;
+    }
+    
+    .settings-card__name {
+        font-size: 14px;
+    }
+    
+    .settings-card__email {
+        font-size: 11px;
+    }
+    
+    .settings-card__actions {
+        width: 100%;
+        gap: 6px;
+    }
+    
+    .btn {
+        width: 100%;
+        padding: 7px 12px;
+        font-size: 11px;
+        border-radius: 6px;
+    }
+    
+    .settings-form {
+        gap: 12px;
+    }
+    
+    .settings-form__group {
+        gap: 10px;
+    }
+    
+    .settings-form__label {
+        font-size: 11px;
+    }
+    
+    .settings-form__input,
+    .settings-form__select {
+        padding: 7px 8px;
+        font-size: 13px;
+        border-radius: 6px;
+    }
+    
+    .settings-form__row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .theme-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .theme-card {
+        padding: 10px;
+        border-radius: 8px;
+    }
+    
+    .theme-card h3 {
+        font-size: 12px;
+    }
+    
+    .theme-card p {
+        font-size: 11px;
+    }
+    
+    .modal {
+        width: 95%;
+        padding: 16px;
+        border-radius: 8px;
+    }
+    
+    .modal__title {
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+    
+    .modal__content {
+        margin: 10px 0;
+        font-size: 13px;
+    }
+    
+    .modal__content input {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
+    
     .modal__actions {
         flex-direction: column-reverse;
+        gap: 6px;
+        margin-top: 12px;
     }
+    
     .modal__actions .btn {
         width: 100%;
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+    
+    .pfp-modal {
+        padding: 16px;
+    }
+    
+    .pfp-modal__title {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .pfp-modal__preview {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .pfp-modal__label {
+        font-size: 11px;
+    }
+    
+    .pfp-modal__actions {
+        gap: 6px;
     }
 }

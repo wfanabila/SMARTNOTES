@@ -28,29 +28,19 @@ if ($conn->connect_error) {
 
 $likeParam = $course . '%';
 
-// Prefer programme_subject mapping when available (older DBs may have it).
+// Prefer programme_subject mapping when available, but always include notes by course so uploads appear even if mapping is incomplete.
 $check = $conn->query("SHOW TABLES LIKE 'programme_subject'");
 // Check if notes have a noteStatus column (used for moderation)
 $noteStatusCheck = $conn->query("SHOW COLUMNS FROM notes LIKE 'noteStatus'");
 $statusCondition = ($noteStatusCheck && $noteStatusCheck->num_rows > 0) ? " AND n.noteStatus = 'approved'" : "";
-if ($check && $check->num_rows > 0) {
-    $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
+$query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
               FROM notes n
               JOIN subject s ON n.subjectID = s.subjectID
-              JOIN programme_subject ps ON ps.subjectID = s.subjectID
-              WHERE ps.programmeCode = ?" . $statusCondition . "
+              WHERE n.course = ?" . $statusCondition . "
               ORDER BY n.uploadDate DESC";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('s', $course);
-} else {
-    $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
-              FROM notes n
-              JOIN subject s ON n.subjectID = s.subjectID
-              WHERE s.subjectCode LIKE ?" . $statusCondition . "
-              ORDER BY n.uploadDate DESC";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('s', $likeParam);
-}
+$stmt = $conn->prepare($query);
+$stmt->bind_param('s', $course);
+
 $stmt->execute();
 $result = $stmt->get_result();
 $notes = [];

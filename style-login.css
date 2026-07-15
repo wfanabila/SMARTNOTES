@@ -191,3 +191,224 @@ body {
     margin: 0;
     font-size: 0.9rem;
 }
+
+/* Responsive Design */
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .back-link {
+        top: 30px;
+        left: 30px;
+        font-size: 1rem;
+    }
+
+    .login-wrapper {
+        padding: 20px 12px;
+    }
+
+    .login-card {
+        max-width: 380px;
+        padding: 30px 25px 20px;
+        border-radius: 24px;
+    }
+
+    .login-logo {
+        height: 35px;
+    }
+
+    .login-title {
+        font-size: 1.4rem;
+        margin-bottom: 2px;
+    }
+
+    .login-subtitle {
+        font-size: 0.8rem;
+    }
+
+    .footer {
+        padding: 16px 30px;
+    }
+}
+
+/* Mobile Large (481px - 767px) */
+@media (max-width: 767px) {
+    .back-link {
+        top: 25px;
+        left: 20px;
+        font-size: 0.95rem;
+    }
+
+    .login-wrapper {
+        padding: 16px 12px;
+    }
+
+    .login-card {
+        max-width: 100%;
+        padding: 28px 20px 18px;
+        border-radius: 20px;
+    }
+
+    .login-logo {
+        height: 32px;
+        margin-bottom: 12px;
+    }
+
+    .login-title {
+        font-size: 1.2rem;
+        margin-bottom: 2px;
+    }
+
+    .login-subtitle {
+        font-size: 0.75rem;
+        margin-bottom: 16px;
+    }
+
+    .role-toggle {
+        margin-bottom: 16px !important;
+    }
+
+    .role-btn {
+        padding: 6px 0;
+        font-size: 0.8rem;
+    }
+
+    .form-label {
+        font-size: 0.75rem;
+        margin-bottom: 3px;
+    }
+
+    .custom-input {
+        padding: 7px 12px;
+        font-size: 0.8rem;
+        margin-bottom: 8px;
+    }
+
+    .forgot-password {
+        font-size: 0.65rem;
+    }
+
+    .btn-purple-login {
+        padding: 8px;
+        font-size: 0.85rem;
+        margin-top: 4px;
+    }
+
+    .terms-text {
+        font-size: 0.7rem;
+        margin-top: 12px !important;
+    }
+
+    .new-user-text {
+        font-size: 0.7rem;
+        margin-top: 12px;
+    }
+
+    .footer {
+        padding: 14px 20px;
+        font-size: 0.8rem;
+    }
+
+    .footer p {
+        font-size: 0.8rem;
+    }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+    .back-link {
+        top: 20px;
+        left: 16px;
+        font-size: 0.9rem;
+    }
+
+    .login-wrapper {
+        padding: 12px 10px;
+        margin: auto 0;
+    }
+
+    .login-card {
+        max-width: 100%;
+        padding: 24px 16px 14px;
+        border-radius: 16px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .login-logo {
+        height: 28px;
+        margin-bottom: 8px;
+    }
+
+    .login-title {
+        font-size: 1rem;
+        margin-bottom: 1px;
+    }
+
+    .login-subtitle {
+        font-size: 0.7rem;
+        margin-bottom: 12px;
+    }
+
+    .role-toggle {
+        border-radius: 10px;
+        padding: 2px;
+        gap: 3px;
+        margin-bottom: 12px !important;
+    }
+
+    .role-btn {
+        padding: 5px 0;
+        font-size: 0.75rem;
+        border-radius: 8px;
+    }
+
+    .role-btn.active {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    .form-label {
+        font-size: 0.7rem;
+        margin-bottom: 2px;
+    }
+
+    .custom-input {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        margin-bottom: 6px;
+        border-radius: 16px;
+    }
+
+    .custom-input:focus {
+        box-shadow: 0 0 0 2px rgba(107, 52, 217, 0.08);
+    }
+
+    .forgot-password {
+        font-size: 0.6rem;
+    }
+
+    .btn-purple-login {
+        padding: 7px;
+        font-size: 0.8rem;
+        margin-top: 3px;
+        border-radius: 22px;
+    }
+
+    .terms-text {
+        font-size: 0.65rem;
+        margin-top: 10px !important;
+        margin-bottom: 2px;
+    }
+
+    .new-user-text {
+        font-size: 0.65rem;
+        margin-top: 10px;
+        margin-bottom: 0;
+    }
+
+    .footer {
+        padding: 12px 16px;
+    }
+
+    .footer p {
+        font-size: 0.75rem;
+    }
+}

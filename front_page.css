@@ -444,21 +444,71 @@ body {
 
 /* ===== Responsive ===== */
 
-@media (max-width: 900px) {
-    .zigzag_row,
-    .zigzag_reverse {
-        flex-direction: column;
-        gap: 30px;
-        text-align: center;
+/* Tablet Large (1024px - 1439px) */
+@media (max-width: 1439px) {
+    .navbar {
+        padding: 24px 20px;
     }
 
-    .zigzag_text {
-        max-width: 100%;
+    .text_and_image_container {
+        padding: 24px 32px;
+        gap: 40px;
+    }
+
+    .text_container {
+        margin-left: 60px;
+    }
+
+    .main_heading {
+        font-size: 72px;
+    }
+
+    .image_container {
+        width: 350px;
+        height: 350px;
+    }
+
+    .benefits_section,
+    .how_it_works_section,
+    .mission_section,
+    .final_cta_section {
+        padding: 80px 40px;
+    }
+
+    .benefits_container {
+        max-width: 1000px;
+    }
+
+    .benefit_card {
+        max-width: 300px;
+    }
+}
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .navbar {
+        padding: 20px 16px;
+    }
+
+    .menu_auth {
+        gap: 20px;
+    }
+
+    .btn_purple_primary {
+        padding: 8px 20px;
+        font-size: 16px;
+        margin-right: 16px;
+    }
+
+    .nav_link_login {
+        font-size: 16px;
+        margin-right: 16px;
     }
 
     .text_and_image_container {
         flex-direction: column;
         padding: 20px;
+        gap: 24px;
     }
 
     .text_container {
@@ -475,51 +525,508 @@ body {
         text-align: center;
     }
 
+    .image_container {
+        width: 300px;
+        height: 300px;
+        margin: 0 auto;
+    }
+
     .btn_container {
         margin-left: 0;
         text-align: center;
     }
-}
 
-@media (max-width: 600px) {
     .benefits_section,
     .how_it_works_section,
     .mission_section,
     .final_cta_section {
-        padding: 60px 20px;
+        padding: 70px 32px;
     }
 
     .benefits_container {
-        flex-direction: column;
-        align-items: center;
+        max-width: 900px;
+        gap: 24px;
     }
 
     .benefit_card {
-        max-width: 100%;
+        flex: 0 1 calc(50% - 12px);
+        max-width: 280px;
     }
 
     .section_heading {
-        font-size: 26px;
+        font-size: 28px;
+        margin: 0 0 40px 0;
+    }
+
+    .zigzag_row,
+    .zigzag_reverse {
+        flex-direction: column;
+        gap: 24px;
+        text-align: center;
+    }
+
+    .zigzag_text {
+        max-width: 100%;
+    }
+
+    .zigzag_visual {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
     }
 
     .zigzag_title {
         font-size: 24px;
     }
 
+    .mission_section {
+        padding: 60px 32px;
+    }
+
     .mission_title {
-        font-size: 26px;
+        font-size: 28px;
     }
 
     .final_cta_title {
-        font-size: 26px;
+        font-size: 28px;
     }
 
     .footer_content {
         flex-direction: column;
         text-align: center;
+        gap: 20px;
+    }
+}
+
+/* Mobile Large (481px - 767px) */
+@media (max-width: 767px) {
+    .navbar {
+        padding: 16px 12px;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .logo_uitmnotelink {
+        width: 32px;
+        height: 32px;
+        margin: 0;
+    }
+
+    .menu_auth {
+        gap: 12px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn_purple_primary {
+        padding: 8px 16px;
+        font-size: 14px;
+        margin: 0;
+        border-radius: 20px;
+    }
+
+    .nav_link_login {
+        font-size: 14px;
+        margin: 0;
+    }
+
+    .text_and_image_container {
+        flex-direction: column;
+        padding: 16px;
+        gap: 20px;
+        margin-top: 0;
+    }
+
+    .text_container {
+        margin-left: 0;
+        text-align: center;
     }
 
     .main_heading {
         font-size: 40px;
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    .purple_text {
+        display: block;
+    }
+
+    .sub_heading {
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .image_container {
+        width: 250px;
+        height: 250px;
+        margin: 0 auto;
+    }
+
+    .graduate_image {
+        width: 100%;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .globe_image,
+    .report_image {
+        display: none;
+    }
+
+    .btn_container {
+        margin: 0;
+        text-align: center;
+    }
+
+    .btn_container .btn_purple_primary {
+        padding: 10px 24px;
+        font-size: 14px;
+    }
+
+    .benefits_section,
+    .how_it_works_section,
+    .mission_section,
+    .final_cta_section {
+        padding: 48px 20px;
+    }
+
+    .benefits_container {
+        max-width: 100%;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .benefit_card {
+        flex: 1 1 100%;
+        max-width: 100%;
+        width: 100%;
+        padding: 24px 20px;
+    }
+
+    .benefit_icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .benefit_title {
+        font-size: 16px;
+    }
+
+    .section_heading {
+        font-size: 22px;
+        margin: 0 0 32px 0;
+    }
+
+    .zigzag_row,
+    .zigzag_reverse {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        margin-bottom: 0;
+    }
+
+    .zigzag_text {
+        max-width: 100%;
+    }
+
+    .zigzag_visual {
+        width: 100%;
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    .zigzag_eyebrow {
+        font-size: 12px;
+    }
+
+    .zigzag_title {
+        font-size: 20px;
+    }
+
+    .zigzag_desc {
+        font-size: 14px;
+    }
+
+    .mission_section {
+        padding: 48px 20px;
+    }
+
+    .mission_box {
+        max-width: 100%;
+    }
+
+    .mission_title {
+        font-size: 22px;
+    }
+
+    .mission_text {
+        font-size: 14px;
+    }
+
+    .mission_objectives {
+        max-width: 100%;
+        gap: 12px;
+    }
+
+    .objective_item {
+        font-size: 13px;
+    }
+
+    .final_cta_section {
+        padding: 48px 20px;
+    }
+
+    .final_cta_title {
+        font-size: 22px;
+        max-width: 100%;
+    }
+
+    .footer_content {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+    .navbar {
+        padding: 12px 8px;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .logo_uitmnotelink {
+        width: 28px;
+        height: 28px;
+    }
+
+    .menu_auth {
+        gap: 10px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn_purple_primary {
+        padding: 6px 12px;
+        font-size: 12px;
+        margin: 0;
+        border-radius: 16px;
+    }
+
+    .nav_link_login {
+        font-size: 12px;
+        margin: 0;
+    }
+
+    .text_and_image_container {
+        flex-direction: column;
+        padding: 12px;
+        gap: 16px;
+        margin-top: 0;
+    }
+
+    .text_container {
+        margin-left: 0;
+        text-align: center;
+    }
+
+    .main_heading {
+        font-size: 28px;
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    .purple_text,
+    .purple_bold_text {
+        display: block;
+    }
+
+    .sub_heading {
+        font-size: 14px;
+        text-align: center;
+        margin-top: 12px;
+    }
+
+    .image_container {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+    }
+
+    .graduate_image {
+        width: 100%;
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 20px;
+    }
+
+    .globe_image,
+    .report_image {
+        display: none;
+    }
+
+    .btn_container {
+        margin: 0;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .btn_container .btn_purple_primary {
+        padding: 8px 20px;
+        font-size: 12px;
+        width: 100%;
+        max-width: 200px;
+    }
+
+    .benefits_section,
+    .how_it_works_section,
+    .mission_section,
+    .final_cta_section {
+        padding: 36px 16px;
+    }
+
+    .benefits_container {
+        max-width: 100%;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .benefit_card {
+        flex: 1 1 100%;
+        max-width: 100%;
+        width: 100%;
+        padding: 16px 14px;
+        border-radius: 12px;
+    }
+
+    .benefit_icon {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 12px;
+    }
+
+    .benefit_icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .benefit_title {
+        font-size: 14px;
+    }
+
+    .benefit_description {
+        font-size: 12px;
+    }
+
+    .section_heading {
+        font-size: 18px;
+        margin: 0 0 24px 0;
+    }
+
+    .zigzag_row,
+    .zigzag_reverse {
+        flex-direction: column;
+        gap: 16px;
+        text-align: center;
+        margin-bottom: 0;
+    }
+
+    .zigzag_text {
+        max-width: 100%;
+    }
+
+    .zigzag_visual {
+        width: 100%;
+        max-width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+    }
+
+    .zigzag_eyebrow {
+        font-size: 11px;
+    }
+
+    .zigzag_title {
+        font-size: 18px;
+        margin: 0 0 10px 0;
+    }
+
+    .zigzag_desc {
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    .mission_section {
+        padding: 36px 16px;
+    }
+
+    .mission_box {
+        max-width: 100%;
+    }
+
+    .mission_eyebrow {
+        font-size: 12px;
+    }
+
+    .mission_title {
+        font-size: 18px;
+    }
+
+    .mission_text {
+        font-size: 13px;
+        margin: 0 0 24px 0;
+    }
+
+    .mission_objectives {
+        max-width: 100%;
+        gap: 10px;
+        padding-top: 16px;
+    }
+
+    .objective_item {
+        font-size: 12px;
+        gap: 10px;
+    }
+
+    .objective_dot {
+        width: 6px;
+        height: 6px;
+        margin-top: 6px;
+    }
+
+    .final_cta_section {
+        padding: 36px 16px;
+    }
+
+    .final_cta_title {
+        font-size: 18px;
+        max-width: 100%;
+        margin: 0 auto 16px auto;
+    }
+
+    .final_cta_description {
+        font-size: 13px;
+        margin: 0 auto 20px auto;
+    }
+
+    .final_cta_button {
+        padding: 8px 20px;
+        font-size: 12px;
+    }
+
+    .footer_content {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .footer_section {
+        padding: 0;
     }
 }

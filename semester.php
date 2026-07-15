@@ -1,6 +1,7 @@
 <?php
 $semester = isset($_GET['semester']) ? (int)$_GET['semester'] : 1;
 $course = isset($_GET['course']) ? strtoupper(trim($_GET['course'])) : '';
+$selectedSubject = isset($_GET['subject']) ? strtoupper(trim($_GET['subject'])) : '';
 
 if ($semester < 1 || $semester > 7) {
     $semester = 1;
@@ -34,28 +35,22 @@ if ($conn->connect_error) {
 
 $likeParam = $course . '%';
 
-// Use programme_subject mapping when available; otherwise fallback to subjectCode LIKE
-$check = $conn->query("SHOW TABLES LIKE 'programme_subject'");
-// Check if notes have a noteStatus column (used for moderation)
+// Always use notes.course and notes.semester to find notes uploaded for this course and semester.
 $noteStatusCheck = $conn->query("SHOW COLUMNS FROM notes LIKE 'noteStatus'");
 $statusCondition = ($noteStatusCheck && $noteStatusCheck->num_rows > 0) ? " AND n.noteStatus = 'approved'" : "";
-if ($check && $check->num_rows > 0) {
-    $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
+$query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
           FROM notes n
           JOIN subject s ON n.subjectID = s.subjectID
-          JOIN programme_subject ps ON ps.subjectID = s.subjectID
-          WHERE ps.programmeCode = ? AND ps.semester = ?" . $statusCondition . "
-          ORDER BY n.uploadDate DESC";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('si', $course, $semester);
+          WHERE n.course = ? AND n.semester = ?";
+if ($selectedSubject !== '') {
+    $query .= " AND s.subjectCode = ?";
+}
+$query .= $statusCondition . "\n          ORDER BY n.uploadDate DESC";
+$stmt = $conn->prepare($query);
+if ($selectedSubject !== '') {
+    $stmt->bind_param('sis', $course, $semester, $selectedSubject);
 } else {
-    $query = "SELECT n.noteID, n.title, n.description, n.filePath, n.noteType, n.price, n.uploadDate, s.subjectCode, s.subjectName
-          FROM notes n
-          JOIN subject s ON n.subjectID = s.subjectID
-          WHERE s.subjectCode LIKE ?" . $statusCondition . "
-          ORDER BY n.uploadDate DESC";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('s', $likeParam);
+    $stmt->bind_param('si', $course, $semester);
 }
 $stmt->execute();
 $result = $stmt->get_result();
@@ -64,17 +59,14 @@ while ($row = $result->fetch_assoc()) {
     $notes[] = $row;
 }
 $stmt->close();
-$check = $conn->query("SHOW TABLES LIKE 'programme_subject'");
-if ($check && $check->num_rows > 0) {
-    $subjectStmt = $conn->prepare('SELECT s.subjectCode, s.subjectName FROM programme_subject ps JOIN subject s ON s.subjectID = ps.subjectID WHERE ps.programmeCode = ? AND ps.semester = ? ORDER BY s.subjectCode');
-    $subjectStmt->bind_param('si', $course, $semester);
-} else {
-    $subjectStmt = $conn->prepare('SELECT s.subjectCode, s.subjectName FROM subject s WHERE s.subjectCode LIKE ? ORDER BY s.subjectCode');
-    $subjectStmt->bind_param('s', $likeParam);
-}
+
+$likeCourse = $course . '%';
+$subjectStmt = $conn->prepare('SELECT s.subjectCode, s.subjectName FROM subject s WHERE s.subjectCode LIKE ? ORDER BY s.subjectCode');
+$subjectStmt->bind_param('s', $likeCourse);
 $subjectStmt->execute();
 $semesterSubjects = $subjectStmt->get_result()->fetch_all(MYSQLI_ASSOC);
 $subjectStmt->close();
+
 $conn->close();
 
 function escape_html(string $value): string {
@@ -118,8 +110,16 @@ function escape_html(string $value): string {
                 <?php if (empty($semesterSubjects)): ?>
                     <div class="empty-message">No subjects have been assigned to this semester yet.</div>
                 <?php else: ?>
-                    <?php foreach ($semesterSubjects as $subject): ?>
-                        <article class="recent-card"><div class="recent-card__meta"><?= escape_html($subject['subjectCode']) ?></div><div class="recent-card__meta" style="font-weight:500;color:#475569"><?= escape_html($subject['subjectName']) ?></div></article>
+                    <?php foreach ($semesterSubjects as $subject):
+                    $link = sprintf('%ssemester.php?semester=%d&subject=%s', $filePrefix, $semester, urlencode($subject['subjectCode']));
+                    $isActive = ($selectedSubject === $subject['subjectCode']);
+            ?>
+                        <article class="recent-card<?= $isActive ? ' recent-card--active' : '' ?>">
+                            <a href="<?= escape_html($link) ?>" class="recent-card__link">
+                                <div class="recent-card__meta"><?= escape_html($subject['subjectCode']) ?></div>
+                                <div class="recent-card__meta" style="font-weight:500;color:#475569"><?= escape_html($subject['subjectName']) ?></div>
+                            </a>
+                        </article>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>

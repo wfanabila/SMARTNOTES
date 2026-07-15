@@ -34,16 +34,30 @@ if ($check && $check->num_rows > 0) {
 
 // fallback if none found or programme_subject missing
 if (empty($subjects)) {
-    $like = $course . '%';
-    $stmt2 = $conn->prepare('SELECT subjectID, subjectCode, subjectName FROM subject WHERE subjectCode LIKE ? ORDER BY subjectCode');
-    if ($stmt2) {
-        $stmt2->bind_param('s', $like);
-        $stmt2->execute();
-        $res2 = $stmt2->get_result();
-        while ($r = $res2->fetch_assoc()) {
-            $subjects[] = $r;
+    if ($semester > 0) {
+        $stmt2 = $conn->prepare('SELECT DISTINCT s.subjectID, s.subjectCode, s.subjectName FROM notes n JOIN subject s ON n.subjectID = s.subjectID WHERE n.course = ? AND n.semester = ? ORDER BY s.subjectCode');
+        if ($stmt2) {
+            $stmt2->bind_param('si', $course, $semester);
+            $stmt2->execute();
+            $res2 = $stmt2->get_result();
+            while ($r = $res2->fetch_assoc()) {
+                $subjects[] = $r;
+            }
+            $stmt2->close();
         }
-        $stmt2->close();
+    }
+    if (empty($subjects)) {
+        $like = $course . '%';
+        $stmt3 = $conn->prepare('SELECT subjectID, subjectCode, subjectName FROM subject WHERE subjectCode LIKE ? ORDER BY subjectCode');
+        if ($stmt3) {
+            $stmt3->bind_param('s', $like);
+            $stmt3->execute();
+            $res3 = $stmt3->get_result();
+            while ($r = $res3->fetch_assoc()) {
+                $subjects[] = $r;
+            }
+            $stmt3->close();
+        }
     }
 }
 

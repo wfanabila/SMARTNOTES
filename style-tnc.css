@@ -90,3 +90,167 @@ body {
     margin: 0;
     font-size: 0.9rem;
 }
+
+/* Responsive Design */
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
+    .back-link {
+        top: 30px;
+        left: 30px;
+        font-size: 1rem;
+    }
+
+    .tos-logo {
+        height: 40px;
+        margin-bottom: 16px;
+    }
+
+    .tos-header {
+        font-size: 1.8rem;
+        margin-bottom: 24px;
+    }
+
+    .tos-card {
+        max-width: 90%;
+        padding: 40px 32px;
+        border-radius: 24px;
+    }
+
+    .tos-section-title {
+        font-size: 1rem;
+        margin-top: 20px;
+        margin-bottom: 8px;
+    }
+
+    .tos-text {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .tos-list li {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .footer {
+        padding: 16px 30px;
+    }
+}
+
+/* Mobile Large (481px - 767px) */
+@media (max-width: 767px) {
+    .back-link {
+        top: 25px;
+        left: 20px;
+        font-size: 0.95rem;
+    }
+
+    .tos-logo {
+        height: 36px;
+        margin-bottom: 14px;
+    }
+
+    .tos-header {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+    }
+
+    .tos-card {
+        width: 95%;
+        max-width: 100%;
+        padding: 32px 24px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+    }
+
+    .tos-section-title {
+        font-size: 0.95rem;
+        margin-top: 18px;
+        margin-bottom: 8px;
+    }
+
+    .tos-text {
+        font-size: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .tos-list {
+        padding-left: 16px;
+        margin-bottom: 12px;
+    }
+
+    .tos-list li {
+        font-size: 0.85rem;
+        margin-bottom: 5px;
+    }
+
+    .footer {
+        padding: 14px 20px;
+    }
+
+    .footer p {
+        font-size: 0.8rem;
+    }
+}
+
+/* Mobile Small (320px - 480px) */
+@media (max-width: 480px) {
+    .back-link {
+        top: 20px;
+        left: 16px;
+        font-size: 0.9rem;
+    }
+
+    body {
+        padding: 32px 0 0 0;
+    }
+
+    .tos-logo {
+        height: 32px;
+        margin-bottom: 12px;
+    }
+
+    .tos-header {
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+    }
+
+    .tos-card {
+        width: 95%;
+        max-width: 100%;
+        padding: 24px 16px;
+        border-radius: 16px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+
+    .tos-section-title {
+        font-size: 0.9rem;
+        margin-top: 16px;
+        margin-bottom: 6px;
+    }
+
+    .tos-text {
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+
+    .tos-list {
+        padding-left: 12px;
+        margin-bottom: 10px;
+    }
+
+    .tos-list li {
+        font-size: 0.8rem;
+        margin-bottom: 4px;
+    }
+
+    .footer {
+        padding: 12px 16px;
+    }
+
+    .footer p {
+        font-size: 0.75rem;
+    }
+}
