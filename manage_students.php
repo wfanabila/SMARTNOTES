@@ -143,7 +143,7 @@ function escape(string $text): string {
             <header class="topbar">
                 <div class="top-nav">
                     <a href="admin_contributors.php">Contributors</a>
-                    <a href="admin.php">Dashboard</a>
+                    <a href="admin_dashboard.php">Dashboard</a>
                 </div>
                 <a class="profile-area" href="adminprofile.php" aria-label="Open profile">
                     <div class="profile-circle"><?= admin_escape($adminInitial) ?></div>

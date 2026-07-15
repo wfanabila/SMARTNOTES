@@ -86,7 +86,7 @@ function avatarUrl($name, $profilePicture = '') {
     <main class="content">
         <header class="topbar">
             <div class="top-nav">
-                <a href="admin.php">Dashboard</a>
+                <a href="admin_dashboard.php">Dashboard</a>
                 <a href="admin_contributors.php" class="active">Contributors</a>
             </div>
             <a class="profile-area" href="adminprofile.php" aria-label="Open profile">

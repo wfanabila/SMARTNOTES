@@ -31,7 +31,7 @@ $conn->close();
 ?>
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manage Notes | UiTM NoteLink</title><link rel="stylesheet" href="css/admin.css"><link rel="stylesheet" href="css/manage_notes.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></head>
 <body><div class="layout"><?php include __DIR__ . '/admin_nav.php'; ?><main class="content">
-<header class="topbar"><div class="top-nav"><a href="admin.php">Dashboard</a><a href="manage_notes.php" class="active">Manage Notes</a></div><a class="profile-area" href="adminprofile.php"><div class="profile-circle"><?= admin_escape($adminInitial) ?></div><span><?= admin_escape($adminName) ?></span></a></header>
+<header class="topbar"><div class="top-nav"><a href="admin_dashboard.php">Dashboard</a><a href="manage_notes.php" class="active">Manage Notes</a></div><a class="profile-area" href="adminprofile.php"><div class="profile-circle"><?= admin_escape($adminInitial) ?></div><span><?= admin_escape($adminName) ?></span></a></header>
 <div class="section-header"><div class="section-title"><h1>Manage Notes</h1><p>Review notes uploaded by students. Changes are saved directly to the database.</p></div></div>
 <?php if ($message): ?><p class="admin-notice"><?= admin_escape($message) ?></p><?php endif; ?>
 <div class="controls"><div class="filter-group"><?php foreach (['all' => 'All', 'pending' => 'Pending', 'approved' => 'Approved', 'rejected' => 'Rejected'] as $key => $label): ?><a class="filter-pill <?= $filter === $key ? 'active' : '' ?>" href="manage_notes.php?status=<?= $key ?>"><?= $label ?></a><?php endforeach; ?></div></div>

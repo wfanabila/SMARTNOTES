@@ -4,7 +4,7 @@ if (!isset($activeAdminPage)) { $activeAdminPage = ''; }
 <aside class="sidebar">
     <div class="brand"><img src="img/logo.PNG" alt="UiTM NoteLink" class="brand-logo-img"></div>
     <nav class="menu">
-        <a href="admin.php" class="menu-item <?= $activeAdminPage === 'dashboard' ? 'active' : '' ?>"><span class="menu-icon"><i class="fas fa-th-large"></i></span><span>Dashboard</span></a>
+        <a href="admin_dashboard.php" class="menu-item <?= $activeAdminPage === 'dashboard' ? 'active' : '' ?>"><span class="menu-icon"><i class="fas fa-th-large"></i></span><span>Dashboard</span></a>
         <a href="manage_students.php" class="menu-item <?= $activeAdminPage === 'students' ? 'active' : '' ?>"><span class="menu-icon"><i class="fas fa-users"></i></span><span>Manage Students</span></a>
         <a href="manage_notes.php" class="menu-item <?= $activeAdminPage === 'notes' ? 'active' : '' ?>"><span class="menu-icon"><i class="far fa-file-alt"></i></span><span>Manage Notes</span></a>
         <a href="adminprofile.php" class="menu-item <?= $activeAdminPage === 'profile' ? 'active' : '' ?>"><span class="menu-icon"><i class="fas fa-id-card"></i></span><span>Admin Profile</span></a>

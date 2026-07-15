@@ -18,9 +18,9 @@ $conn->close();
 <body>
 <div class="admin-profile-layout">
     <aside class="admin-profile-sidebar">
-        <a href="admin.php" class="admin-profile-brand"><img src="img/logo.PNG" alt="UiTM NoteLink"></a>
+        <a href="admin_dashboard.php" class="admin-profile-brand"><img src="img/logo.PNG" alt="UiTM NoteLink"></a>
         <nav class="admin-profile-menu">
-            <a href="admin.php"><i class="far fa-circle"></i><span>Dashboard</span></a>
+            <a href="admin_dashboard.php"><i class="far fa-circle"></i><span>Dashboard</span></a>
             <a href="manage_students.php"><i class="far fa-user"></i><span>Manage Students</span></a>
             <a href="manage_notes.php"><i class="far fa-square"></i><span>Manage Notes</span></a>
             <a class="active" href="adminprofile.php"><i class="far fa-user"></i><span>Admin's Profile</span></a>
@@ -34,7 +34,7 @@ $conn->close();
         <a class="admin-profile-settings" href="admin_account_setting.php"><i class="fas fa-sun"></i> Settings</a>
     </aside>
     <main class="admin-profile-main">
-        <header class="admin-profile-topbar"><nav><a href="admin_contributors.php">Contributors</a><a class="active" href="admin.php">Dashboard</a></nav><a href="adminprofile.php" class="admin-profile-top-avatar"><?= admin_escape($adminInitial) ?></a></header>
+        <header class="admin-profile-topbar"><nav><a href="admin_contributors.php">Contributors</a><a class="active" href="admin_dashboard.php">Dashboard</a></nav><a href="adminprofile.php" class="admin-profile-top-avatar"><?= admin_escape($adminInitial) ?></a></header>
         <section class="admin-profile-content">
             <h1>Admin Profile</h1><p class="admin-profile-subtitle">Your account information.</p>
             <article class="admin-profile-card">
