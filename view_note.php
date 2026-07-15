@@ -22,38 +22,6 @@ if ($noteID <= 0) {
 
 $message = "";
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_bookmark'])) {
-    $check_bm = $conn->prepare("SELECT bookmarkID FROM bookmark WHERE studentID = ? AND noteID = ?");
-    $check_bm->bind_param("ii", $studentID, $noteID);
-    $check_bm->execute();
-    $bm_res = $check_bm->get_result();
-    
-    if ($bm_res->num_rows > 0) {
-        $del_bm = $conn->prepare("DELETE FROM bookmark WHERE studentID = ? AND noteID = ?");
-        $del_bm->bind_param("ii", $studentID, $noteID);
-        $del_bm->execute();
-        $del_bm->close();
-    } else {
-        $add_bm = $conn->prepare("INSERT INTO bookmark (studentID, noteID) VALUES (?, ?)");
-        $add_bm->bind_param("ii", $studentID, $noteID);
-        $add_bm->execute();
-        $add_bm->close();
-    }
-    $check_bm->close();
-    
-    header("Location: view_note.php?id=" . $noteID);
-    exit;
-}
-
-$isBookmarked = false;
-$check_status = $conn->prepare("SELECT bookmarkID FROM bookmark WHERE studentID = ? AND noteID = ? LIMIT 1");
-$check_status->bind_param("ii", $studentID, $noteID);
-$check_status->execute();
-if ($check_status->get_result()->num_rows > 0) {
-    $isBookmarked = true;
-}
-$check_status->close();
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_review'])) {
     $commentText = trim($_POST['comment_text']);
     $ratingScore = isset($_POST['rating']) ? (int)$_POST['rating'] : 5;
@@ -99,6 +67,16 @@ if ($purchase_result->num_rows > 0) {
     $hasPurchased = true;
 }
 $purchase_check->close();
+
+// Check if note is bookmarked
+$isBookmarked = false;
+$check_status = $conn->prepare("SELECT bookmarkID FROM bookmark WHERE studentID = ? AND noteID = ? LIMIT 1");
+$check_status->bind_param("ii", $studentID, $noteID);
+$check_status->execute();
+if ($check_status->get_result()->num_rows > 0) {
+    $isBookmarked = true;
+}
+$check_status->close();
 
 $comments = [];
 $total_rating = 0;
@@ -272,16 +250,70 @@ include_once("sidebar.php");
 
             <div class="card-widget">
                 <div class="widget-subtitle" style="margin-bottom:8px;">Bookmark</div>
-                <form action="" method="POST">
-                    <input type="hidden" name="toggle_bookmark" value="1">
-                    <button type="submit" class="btn-action-purple" style="<?= $isBookmarked ? 'background-color: #059669;' : '' ?>">
-                        <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="<?= $isBookmarked ? '#ffffff' : 'none' ?>" stroke="currentColor" stroke-width="2"/></svg>
-                        <?= $isBookmarked ? 'Bookmarked' : 'Bookmark' ?>
-                    </button>
-                </form>
+                <button type="button" id="bookmark-btn" class="btn-action-purple" onclick="toggleBookmark(<?= $noteID ?>)" style="<?= $isBookmarked ? 'background-color: #059669;' : '' ?>" data-bookmarked="<?= $isBookmarked ? 'true' : 'false' ?>">
+                    <svg viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z" fill="<?= $isBookmarked ? '#ffffff' : 'none' ?>" stroke="currentColor" stroke-width="2"/></svg>
+                    <span id="bookmark-text"><?= $isBookmarked ? 'Bookmarked' : 'Bookmark' ?></span>
+                </button>
             </div>
         </div>
     </div>
 </div>
-</body>
-</html>
+
+<script>
+/**
+ * Toggle bookmark via AJAX
+ * Syncs with dashboard without page reload
+ */
+function toggleBookmark(noteID) {
+    const btn = document.getElementById('bookmark-btn');
+    const textSpan = document.getElementById('bookmark-text');
+    const isCurrentlyBookmarked = btn.getAttribute('data-bookmarked') === 'true';
+    
+    // Disable button while processing
+    btn.disabled = true;
+    btn.style.opacity = '0.6';
+    
+    fetch('bookmark_handler.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'action=toggle&noteID=' + noteID
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update button UI
+            btn.setAttribute('data-bookmarked', data.isBookmarked ? 'true' : 'false');
+            textSpan.textContent = data.isBookmarked ? 'Bookmarked' : 'Bookmark';
+            
+            // Update button color
+            if (data.isBookmarked) {
+                btn.style.backgroundColor = '#059669';
+                btn.style.borderColor = '#059669';
+                const svg = btn.querySelector('svg path');
+                if (svg) svg.setAttribute('fill', '#ffffff');
+            } else {
+                btn.style.backgroundColor = '';
+                btn.style.borderColor = '';
+                const svg = btn.querySelector('svg path');
+                if (svg) svg.setAttribute('fill', 'none');
+            }
+            
+            // Show brief feedback
+            console.log(data.message);
+        } else {
+            alert('Error: ' + (data.error || 'Unknown error occurred'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update bookmark. Please try again.');
+    })
+    .finally(() => {
+        // Re-enable button
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    });
+}
+</script>

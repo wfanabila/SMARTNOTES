@@ -440,8 +440,136 @@ $weekSales  = (int) $earningsWeekRow['weekSales'];
         }
     }
 
+    /**
+     * Refresh bookmarks from the server
+     * Called on page load to sync with any bookmark changes from view_note.php
+     */
+    function refreshBookmarks() {
+        fetch('get_bookmarks.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const bookmarksGrid = document.querySelector('#panel-bookmarks .notes-grid');
+                    if (bookmarksGrid) {
+                        // If no bookmarks, show message
+                        if (data.bookmarks.length === 0) {
+                            bookmarksGrid.innerHTML = '<p style="font-style: italic; color: #6b7280; padding: 20px 0; grid-column: 1 / -1; text-align: center;">You haven\'t bookmarked any notes yet.</p>';
+                        } else {
+                            // Generate bookmark HTML
+                            let html = '';
+                            data.bookmarks.forEach(bm => {
+                                const ext = bm.filePath.split('.').pop().toLowerCase();
+                                const imageExts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+                                const isImage = imageExts.includes(ext);
+                                const thumbStyle = isImage ? '' : getGradientStyle(bm.subjectCode);
+                                const thumbContent = isImage 
+                                    ? `<img src="${escapeHtml(bm.filePath)}" alt="Bookmark Cover" style="width: 100%; height: 100%; object-fit: cover;">`
+                                    : `<span style="color:#fff; font-weight:700; font-size:18px; text-shadow:0 1px 4px rgba(0,0,0,.3);">${escapeHtml(bm.subjectCode)}</span>`;
+                                
+                                const badgeType = bm.noteType.toLowerCase() === 'paid' 
+                                    ? `<span class="badge" style="background:#fee2e2; color:#ef4444;">PREMIUM</span><span class="badge" style="background:#fef3c7; color:#d97706;">RM ${parseFloat(bm.price).toFixed(2)}</span>`
+                                    : `<span class="badge" style="background:#d1fae5; color:#10b981;">FREE</span>`;
+
+                                html += `
+                                    <article class="note-card" onclick="window.location.href='view_note.php?id=${bm.noteID}';" style="cursor: pointer;">
+                                        <div class="note-card__thumb" style="${thumbStyle} display:flex; align-items:center; justify-content:center;">
+                                            ${thumbContent}
+                                            <button class="note-card__menu" onclick="event.stopPropagation();">⋮</button>
+                                            <div class="note-card__dropdown" onclick="event.stopPropagation();">
+                                                <a class="dropdown-item" href="view_note.php?id=${bm.noteID}">View Details</a>
+                                                <form method="POST" onsubmit="return confirm('Are you sure you want to remove this note from your bookmarks?');">
+                                                    <input type="hidden" name="remove_bookmarkID" value="${bm.bookmarkID}">
+                                                    <button type="submit" class="dropdown-item btn-delete">Remove</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="note-card__body">
+                                            <div class="note-card__tags">
+                                                <span class="badge">${escapeHtml(bm.subjectCode)}</span>
+                                                ${badgeType}
+                                            </div>
+                                            <h4 class="note-card__title">${escapeHtml(bm.title)}</h4>
+                                            <p class="note-card__sub">${escapeHtml(bm.description)}</p>
+                                        </div>
+                                    </article>
+                                `;
+                            });
+                            bookmarksGrid.innerHTML = html;
+                            
+                            // Re-attach menu button listeners
+                            attachMenuListeners();
+                        }
+                    }
+                }
+            })
+            .catch(error => console.error('Error refreshing bookmarks:', error));
+    }
+
+    /**
+     * Helper function to escape HTML special characters
+     */
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    /**
+     * Helper function to get gradient style for subject code
+     */
+    function getGradientStyle(code) {
+        const palettes = [
+            ['#a78bfa','#7c3aed'],
+            ['#60a5fa','#2563eb'],
+            ['#34d399','#059669'],
+            ['#f472b6','#db2777'],
+            ['#fb923c','#ea580c'],
+            ['#818cf8','#4f46e5'],
+        ];
+        
+        // Simple hash function
+        let hash = 0;
+        for (let i = 0; i < code.length; i++) {
+            hash = ((hash << 5) - hash) + code.charCodeAt(i);
+            hash = hash & hash;
+        }
+        
+        const idx = Math.abs(hash) % palettes.length;
+        const [a, b] = palettes[idx];
+        return `background: linear-gradient(135deg, ${a}, ${b});`;
+    }
+
+    /**
+     * Reattach event listeners to menu buttons after DOM update
+     */
+    function attachMenuListeners() {
+        const menuButtons = document.querySelectorAll('.note-card__menu');
+        menuButtons.forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.stopPropagation();
+                const parentThumb = this.parentElement;
+                const currentDropdown = parentThumb.querySelector('.note-card__dropdown');
+                document.querySelectorAll('.note-card__dropdown').forEach(dropdown => {
+                    if (dropdown !== currentDropdown) {
+                        dropdown.classList.remove('show');
+                    }
+                });
+                currentDropdown.classList.toggle('show');
+            });
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         setSidebarActive('nav-overview');
+        // Refresh bookmarks on page load to sync with view_note.php bookmarks
+        refreshBookmarks();
+    });
+
+    // Also refresh bookmarks when page becomes visible (e.g., returning from another tab)
+    document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) {
+            refreshBookmarks();
+        }
     });
     </script>
 
