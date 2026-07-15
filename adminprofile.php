@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/admin_bootstrap.php';
+$activeAdminPage = 'profile';
 $profileRole = trim((string) ($admin['adminRole'] ?? '')) ?: 'Administrator';
 $profilePhone = trim((string) ($admin['adminPhone'] ?? '')) ?: 'Not set';
 $profileDepartment = trim((string) ($admin['adminDepartment'] ?? '')) ?: 'Not set';

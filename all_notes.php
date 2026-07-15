@@ -35,8 +35,25 @@ $current_page = 'notes';
 // CAPTURE FILTER & SEARCH INPUTS
 // ====================================================================
 $search      = isset($_GET['search']) ? trim($_GET['search']) : '';
-$max_price   = isset($_GET['max_price']) ? (float)$_GET['max_price'] : 50.00;
-$types       = isset($_GET['types']) ? $_GET['types'] : []; // Array: ['free', 'paid']
+$max_price   = isset($_GET['max_price']) ? max(0, min(50, (float) $_GET['max_price'])) : 50.00;
+$types       = isset($_GET['types']) && is_array($_GET['types'])
+    ? array_values(array_intersect($_GET['types'], ['free', 'paid']))
+    : []; // Array: ['free', 'paid']
+$selectedSubjects = isset($_GET['subjects']) && is_array($_GET['subjects'])
+    ? array_values(array_filter($_GET['subjects'], static fn($code) => is_string($code) && $code !== ''))
+    : [];
+
+// Populate the programme/subject choices from the database so the filter
+// always matches the notes that are actually available.
+$availableSubjects = [];
+$subjectsResult = $conn->query('SELECT subjectCode FROM subject ORDER BY subjectCode');
+if ($subjectsResult) {
+    while ($subjectRow = $subjectsResult->fetch_assoc()) {
+        $availableSubjects[] = $subjectRow['subjectCode'];
+    }
+    $subjectsResult->close();
+}
+$selectedSubjects = array_values(array_intersect($selectedSubjects, $availableSubjects));
 
 // ====================================================================
 // DYNAMIC SQL QUERY BUILDING
@@ -61,12 +78,22 @@ if (!empty($search)) {
     $types_string .= "sss";
 }
 
-// 2. Price Range Slider Filter
+// 2. Subject / programme filter
+if (!empty($selectedSubjects)) {
+    $placeholders = implode(',', array_fill(0, count($selectedSubjects), '?'));
+    $query .= " AND s.subjectCode IN ($placeholders)";
+    foreach ($selectedSubjects as $selectedSubject) {
+        $params[] = $selectedSubject;
+        $types_string .= 's';
+    }
+}
+
+// 3. Price Range Slider Filter
 $query .= " AND n.price <= ?";
 $params[] = $max_price;
 $types_string .= "d";
 
-// 3. Notes Type Filter (Free / Premium)
+// 4. Notes Type Filter (Free / Premium)
 if (!empty($types) && count($types) < 2) {
     $chosen_type = $types[0]; // 'free' or 'paid'
     $query .= " AND LOWER(n.noteType) = ?";
@@ -79,17 +106,21 @@ $query .= " ORDER BY n.uploadDate DESC";
 
 // Execute Statement securely
 $stmt = $conn->prepare($query);
-if (!empty($params)) {
+if ($stmt && !empty($params)) {
     $stmt->bind_param($types_string, ...$params);
 }
-$stmt->execute();
-$result = $stmt->get_result();
+$result = false;
+if ($stmt && $stmt->execute()) {
+    $result = $stmt->get_result();
+}
 
 $all_notes = [];
-while ($row = $result->fetch_assoc()) {
-    $all_notes[] = $row;
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $all_notes[] = $row;
+    }
 }
-$stmt->close();
+if ($stmt) $stmt->close();
 $conn->close();
 
 // Helper palette function for fallback backgrounds
@@ -124,16 +155,15 @@ include_once("sidebar.php");
 
         .main {
             margin-left: var(--sidebar-width, 260px);
-            padding: 40px;
+            padding: 28px 40px 40px;
             transition: margin-left 0.3s ease;
         }
 
         .browse-header {
             display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: flex-start;
-            margin-bottom: 30px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
             gap: 20px;
             flex-wrap: wrap;
             width: 100%;
@@ -169,16 +199,17 @@ include_once("sidebar.php");
 
         .page-layout {
             display: grid;
-            grid-template-columns: 260px 1fr;
-            gap: 32px;
+            grid-template-columns: 210px 1fr;
+            gap: 18px;
             align-items: start;
         }
 
         /* Filter Panel */
         .filter-panel {
             background: #f3f0ff;
-            border-radius: 12px;
-            padding: 24px;
+            border: 1px solid #c4b5fd;
+            border-radius: 0;
+            padding: 18px;
         }
         .filter-panel h2 {
             font-size: 20px;
@@ -187,7 +218,7 @@ include_once("sidebar.php");
             color: #111827;
         }
         .filter-section {
-            margin-bottom: 24px;
+            margin-bottom: 18px;
         }
         .filter-section h3 {
             font-size: 12px;
@@ -211,6 +242,7 @@ include_once("sidebar.php");
             height: 16px;
             accent-color: #7c3aed;
         }
+        .filter-empty { font-size: 12px; color: #6b7280; }
         
         .price-slider-container {
             margin-top: 8px;
@@ -244,13 +276,13 @@ include_once("sidebar.php");
         /* Grid Section */
         .notes-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
         }
         .note-card {
             background: #fff;
             border: 1px solid #e5e7eb;
-            border-radius: 8px;
+            border-radius: 0;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -261,7 +293,7 @@ include_once("sidebar.php");
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
         .card-cover {
-            height: 140px;
+            height: 110px;
             position: relative;
             display: flex;
             align-items: center;
@@ -285,7 +317,7 @@ include_once("sidebar.php");
             text-align: center;
         }
         .card-body {
-            padding: 16px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
@@ -394,6 +426,20 @@ include_once("sidebar.php");
             
             <div class="filter-panel">
                 <h2>Filters</h2>
+
+                <div class="filter-section">
+                    <h3>Programme</h3>
+                    <?php if (empty($availableSubjects)): ?>
+                        <p class="filter-empty">No subjects available.</p>
+                    <?php else: ?>
+                        <?php foreach ($availableSubjects as $subjectCode): ?>
+                            <label class="filter-checkbox-label">
+                                <input type="checkbox" name="subjects[]" value="<?= htmlspecialchars($subjectCode, ENT_QUOTES, 'UTF-8') ?>" <?= in_array($subjectCode, $selectedSubjects, true) ? 'checked' : '' ?>>
+                                <?= htmlspecialchars($subjectCode, ENT_QUOTES, 'UTF-8') ?>
+                            </label>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
 
                 <div class="filter-section">
                     <h3>Price Range (RM)</h3>
