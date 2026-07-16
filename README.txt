@@ -211,6 +211,94 @@ A search bar lets users filter FAQs in real time by matching their query against
 
 The Help Center dynamically adapts based on session role — admins see the same interface populated with their own account details via the admin bootstrap, while students see their own profile context, avoiding the need for two separate pages.
 
+E. Landing Page
+This is the main page that students see after logging into the SMARTNOTES system. It serves as the central hub for discovering and accessing study materials.
+
+How to Use:
+Search for Materials – Use the search bar at the top to find study notes by entering a course code, subject name, or keyword.
+
+Quick Filters – Click on any of the programme code buttons (e.g., CSC110, CSC264, CSC267, CSC230, CSC270) to instantly filter notes specific to your course.
+
+Browse Latest Uploads – Scroll down to view the most recently uploaded study materials, displayed as colorful cards.
+
+Access a Note – Click on any note card to open the note details page, where you can preview and download the material.
+
+Key Features:
+Intuitive search functionality
+
+One-click programme code filters
+
+Real-time display of latest notes
+
+Clean and responsive card-based layout
+
+
+F. Admin Management Module
+This page allows administrators to view, monitor, and manage all registered student accounts.
+
+How to Use:
+View All Students – The main table displays a complete list of registered students with their name, email, join date, and total notes contributed.
+
+Search for a Student – Use the search bar to quickly find a specific student by name or email.
+
+Filter by Status – Use the filter tabs (All, Active, Pending, Suspended) to sort students based on their account status.
+
+View Student Profile – Click the View button to see a student's full profile and activity.
+
+Update or Suspend Account – Click the Update button to modify student details, change their role, or suspend their account if necessary.
+
+Add New Student – Click the Add Student button (blue) to manually create and invite a new student account into the system.
+
+Key Features:
+Comprehensive student directory
+
+Search and filter capabilities
+
+Account management tools (view, update, suspend)
+
+Manual student registration
+
+G. Manage Notes
+This page enables administrators to review, approve, or reject study materials uploaded by students before they are published to the platform.
+
+How to Use:
+View All Submissions – The main table shows all uploaded notes with details such as Title, Subject, Uploader's Name, and Price (Free or RM X.XX).
+
+Filter by Status – Use the filter tabs (All, Pending, Approved, Rejected) to sort notes based on their moderation status.
+
+Review a Note – Click the View button to inspect the submitted content and ensure it meets quality guidelines.
+
+Approve a Note – Click the green Approve button to publish the note and make it available to all students.
+
+Reject a Note – Click the orange Reject button to decline a submission if it violates platform guidelines.
+
+Key Features:
+Centralized moderation dashboard
+
+Status-based filtering
+
+Quick approve/reject actions
+
+Transparent submission review process
+
+H. Admin Notes View
+This page provides administrators with a student-like view of all published notes, making it easy to browse and monitor available content.
+
+How to Use:
+Filter Notes – Use the dedicated filter panel on the side to sort notes by Subject or Type (Free / Premium).
+
+Search for Materials – Use the search bar at the top right to quickly locate specific study materials.
+
+Browse Published Notes – All approved notes are displayed as neat, organized cards showing the subject code, uploader name, and note type (Free or Premium).
+
+Key Features:
+Admin-friendly browsing interface
+
+Subject and type filters
+
+Quick search functionality
+
+Card-based visual display
 ---
 
 ## Known Limitations
