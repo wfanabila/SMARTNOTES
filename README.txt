@@ -68,8 +68,6 @@ Admins can manage students, notes, and monitor platform activity through a separ
 
 ## Other Features
 
-*(To be filled in by teammates responsible for these sections — e.g. notes upload/browsing, admin management tools, ratings & comments, etc.)*
-
 A. Notes Features
 
 The Notes module is the core functionality of UiTMNoteLink, allowing students to share and access academic resources in an organized and collaborative environment. It provides a complete workflow from uploading notes to downloading and reviewing study materials. The implementation includes note management, discovery, and moderation features that improve accessibility and encourage knowledge sharing among UiTM students.
@@ -133,6 +131,85 @@ Premium notes include a secure checkout page where students can complete payment
 7. Download Notes
 
 After access is granted (either through free download or successful payment), students can download the study materials directly and keep them for offline revision. The system also records downloads for platform management purposes.
+
+---
+
+B. User Dashboard
+
+The User Dashboard serves as the student's central hub after logging in, giving a quick snapshot of their activity and quick access to their notes and bookmarks.
+
+1. Profile Overview
+
+The dashboard header displays the student's name, profile picture, and bio (editable via Account Settings). If no bio has been set, a friendly prompt encourages the student to add one.
+
+2. Stats Summary
+
+Two stat cards give students an at-a-glance view of their contributions:
+         1. Points Earned – total earnings (RM) from premium note sales, with a weekly breakdown of sales and earnings
+         2. Uploads – total number of notes the student has uploaded
+
+3. My Notes Tab
+
+Displays all notes uploaded by the student as cards, each showing the subject code, note type (Free/Premium with price), title, description, average star rating, review count, and upload date. Each note card includes a dropdown menu to:
+         1. View note details
+         2. Edit the note
+         3. Remove the note (with confirmation prompt, deletes both the database record and the stored file)
+
+4. Bookmarks Tab
+
+Displays notes the student has bookmarked from browsing the platform, with the same card layout as My Notes. Students can remove a bookmark directly from the card's dropdown menu. Bookmarks automatically refresh via AJAX when the page loads or becomes visible again (e.g., returning from viewing a note), keeping the list in sync without a full page reload.
+
+5. Quick Upload Access
+
+A dedicated "New Upload" card is always present in the My Notes grid, giving students a one-click shortcut to the upload page.
+
+---
+
+C. Account Settings
+
+The Account Settings page allows students (and admins, via a shared view) to manage their profile information and account security.
+
+1. Profile Information
+
+Students can update their:
+         1. Full name and email address
+         2. Programme and semester
+         3. Bio
+
+Changes are validated server-side (name and email are required) and saved directly to the database.
+
+2. Profile Picture
+
+Students can upload a profile picture via a drag-and-drop modal or file picker. The system:
+         1. Accepts only JPG/PNG formats, up to 5MB
+         2. Automatically deletes the previous profile picture when a new one is uploaded
+         3. Displays validation errors for unsupported file types or oversized files
+
+3. Password Management
+
+Students can change their password through a modal with:
+         1. Current password verification
+         2. New password confirmation matching
+         3. Minimum 8-character length requirement
+         4. A check to ensure the new password differs from the current one
+
+---
+
+D. Help Center
+
+The Help Center provides self-service support for both students and admins.
+
+1. FAQ Accordion
+
+Common questions are organized into an expandable/collapsible list covering topics like email verification, supported upload formats, how earnings are calculated, and content withdrawal policy.
+
+2. Live Search & Filter
+
+A search bar lets users filter FAQs in real time by matching their query against both the question and answer text, with an empty-state message shown when no results match.
+
+3. Shared Admin/Student View
+
+The Help Center dynamically adapts based on session role — admins see the same interface populated with their own account details via the admin bootstrap, while students see their own profile context, avoiding the need for two separate pages.
 
 ---
 
