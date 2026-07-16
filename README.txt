@@ -70,6 +70,70 @@ Admins can manage students, notes, and monitor platform activity through a separ
 
 *(To be filled in by teammates responsible for these sections — e.g. notes upload/browsing, admin management tools, ratings & comments, etc.)*
 
+A. Notes Features
+
+The Notes module is the core functionality of UiTMNoteLink, allowing students to share and access academic resources in an organized and collaborative environment. It provides a complete workflow from uploading notes to downloading and reviewing study materials. The implementation includes note management, discovery, and moderation features that improve accessibility and encourage knowledge sharing among UiTM students.
+
+1. Upload Notes
+
+Students can upload study notes by providing:
+         1. Note title and description
+         2. Course, semester, and subject
+         3. PDF/document file
+         4. Note type (Free or Premium)
+
+Uploaded notes are categorized automatically, making them easier for other students to discover. Premium notes allow contributors to assign a selling price before submission.
+
+2. Browse Notes
+
+Students can browse notes through dedicated programme and semester pages. Notes are organized by:
+         1. Programme (e.g., CSC110, CSC230, CSC264, CSC267, CSC270)
+         2. Semester
+         3. Subject
+
+The latest uploaded notes are displayed prominently to improve accessibility.
+
+3. Search & Filter
+
+The platform includes filtering features that allow students to quickly locate study materials by:
+         1. Subject
+         2. Course code
+         3. Semester
+         4. Note type (Free/Premium)
+
+This reduces the time required to search for relevant academic resources.
+
+4. View Notes
+
+Before downloading, students can open a note to:
+         1. Preview the document
+         2. Read the description
+         3. View uploader information
+         4. Check whether the note is free or premium
+
+Students can also read reviews left by other users before deciding to download or purchase the note.
+
+5. Ratings & Comments
+
+Each note supports community feedback through:
+         1. Star ratings
+         2. Written comments
+
+Students can share their opinions and experiences, helping others identify high-quality study materials while encouraging contributors to upload useful content.
+
+6. Premium Notes
+
+Contributors may choose to publish notes as:
+
+          1. Free – immediately downloadable by all students.
+          2. Premium – requires payment before download.
+
+Premium notes include a secure checkout page where students can complete payment before gaining access to the file.
+
+7. Download Notes
+
+After access is granted (either through free download or successful payment), students can download the study materials directly and keep them for offline revision. The system also records downloads for platform management purposes.
+
 ---
 
 ## Known Limitations
